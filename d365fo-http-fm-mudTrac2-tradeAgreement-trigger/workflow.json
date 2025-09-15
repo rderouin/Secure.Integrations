@@ -1,0 +1,348 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Condition_if_TerminatewithFailure_is_true": {
+        "actions": {
+          "Terminate": {
+            "inputs": {
+              "runStatus": "Failed"
+            },
+            "type": "Terminate"
+          }
+        },
+        "else": {
+          "actions": {}
+        },
+        "expression": {
+          "and": [
+            {
+              "equals": [
+                "@variables('TerminatewithFailure')",
+                true
+              ]
+            }
+          ]
+        },
+        "runAfter": {
+          "For_each_TradeAgreementLine": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "If"
+      },
+      "For_each_TradeAgreementLine": {
+        "actions": {
+          "Account_Relation_Starts_with_D": {
+            "actions": {
+              "Invoke_a_workflow_d365-sb-http-mudrac-pricebook": {
+                "inputs": {
+                  "body": {
+                    "ACCOUNTRELATION": "@{item()['accountrelation']}"
+                  },
+                  "host": {
+                    "workflow": {
+                      "id": "d365fo-http-fm-mudTrac2-tradeAgreement"
+                    }
+                  }
+                },
+                "type": "Workflow"
+              },
+              "Send_Error_Integration_Log": {
+                "inputs": {
+                  "parameters": {
+                    "entityName": "integration-logs",
+                    "message": {
+                      "contentData": {
+                        "CorrelationId": "",
+                        "MessageDate": "@utcNow()",
+                        "MessageType": "Log",
+                        "Operation": "Information",
+                        "Payload": [
+                          {
+                            "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                            "Identifier": "@workflow()['run']['name']",
+                            "MessageBody": "@{outputs('Invoke_a_workflow_d365-sb-http-mudrac-pricebook')}",
+                            "Workflow": "@workflow()['name']",
+                            "keyfield": "AccountRelation @{item()?['AccountRelation']}",
+                            "status": "Failed"
+                          }
+                        ],
+                        "Source": "@workflow().name",
+                        "SourceId": "@workflow().run.name"
+                      },
+                      "userProperties": {
+                        "Source": "@{workflow().name}"
+                      }
+                    }
+                  },
+                  "serviceProviderConfiguration": {
+                    "connectionName": "PrivateServiceBus",
+                    "operationId": "sendMessage",
+                    "serviceProviderId": "/serviceProviders/serviceBus"
+                  }
+                },
+                "runAfter": {
+                  "Invoke_a_workflow_d365-sb-http-mudrac-pricebook": [
+                    "TIMEDOUT",
+                    "SKIPPED",
+                    "FAILED"
+                  ]
+                },
+                "type": "ServiceProvider"
+              },
+              "Send_to_Integration_Log": {
+                "inputs": {
+                  "parameters": {
+                    "entityName": "integration-logs",
+                    "message": {
+                      "contentData": {
+                        "CorrelationId": "",
+                        "MessageDate": "@utcNow()",
+                        "MessageType": "Log",
+                        "Operation": "Information",
+                        "Payload": [
+                          {
+                            "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                            "Identifier": "@workflow()['run']['name']",
+                            "MessageBody": "@{outputs('Invoke_a_workflow_d365-sb-http-mudrac-pricebook')}",
+                            "Workflow": "@workflow()['name']",
+                            "keyfield": "AccountRelation @{item()?['AccountRelation']}",
+                            "status": "Success"
+                          }
+                        ],
+                        "Source": "@workflow().name",
+                        "SourceId": "@workflow().run.name"
+                      },
+                      "userProperties": {
+                        "Source": "@{workflow().name}"
+                      }
+                    }
+                  },
+                  "serviceProviderConfiguration": {
+                    "connectionName": "PrivateServiceBus",
+                    "operationId": "sendMessage",
+                    "serviceProviderId": "/serviceProviders/serviceBus"
+                  }
+                },
+                "runAfter": {
+                  "Invoke_a_workflow_d365-sb-http-mudrac-pricebook": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "ServiceProvider"
+              },
+              "Set_variable_TerminatewithFailure": {
+                "inputs": {
+                  "name": "TerminatewithFailure",
+                  "value": true
+                },
+                "runAfter": {
+                  "Send_Error_Integration_Log": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "SetVariable"
+              }
+            },
+            "else": {
+              "actions": {
+                "Send_to_Integration_Log2": {
+                  "inputs": {
+                    "parameters": {
+                      "entityName": "integration-logs",
+                      "message": {
+                        "contentData": {
+                          "CorrelationId": "",
+                          "MessageDate": "@utcNow()",
+                          "MessageType": "Log",
+                          "Operation": "Information",
+                          "Payload": [
+                            {
+                              "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                              "Identifier": "@workflow()['run']['name']",
+                              "MessageBody": "@{items('For_each_TradeAgreementLine')?['ItemRelation']}",
+                              "Workflow": "@workflow()['name']",
+                              "keyfield": "AccountRelation:@{items('For_each_TradeAgreementLine')?['ItemRelation']}",
+                              "status": "Skipped"
+                            }
+                          ],
+                          "Source": "@workflow().name",
+                          "SourceId": "@workflow().run.name"
+                        },
+                        "userProperties": {
+                          "Source": "@{workflow().name}"
+                        }
+                      }
+                    },
+                    "serviceProviderConfiguration": {
+                      "connectionName": "PrivateServiceBus",
+                      "operationId": "sendMessage",
+                      "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                  },
+                  "type": "ServiceProvider"
+                }
+              }
+            },
+            "expression": {
+              "and": [
+                {
+                  "startsWith": [
+                    "@item()?['AccountRelation']",
+                    "D"
+                  ]
+                }
+              ]
+            },
+            "type": "If"
+          }
+        },
+        "foreach": "@outputs('Parse_JSON')['body']?['TradeAgreementLine']",
+        "runAfter": {
+          "Initialize_variable_TerminatewithFailure": [
+            "SUCCEEDED"
+          ]
+        },
+        "runtimeConfiguration": {
+          "concurrency": {
+            "repetitions": 15
+          }
+        },
+        "type": "foreach"
+      },
+      "Initialize_variable_TerminatewithFailure": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "TerminatewithFailure",
+              "type": "boolean"
+            }
+          ]
+        },
+        "runAfter": {
+          "Parse_JSON": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Parse_JSON": {
+        "inputs": {
+          "content": "@triggerBody()?['contentData']",
+          "schema": {
+            "properties": {
+              "BusinessEventId": {
+                "type": "string"
+              },
+              "BusinessEventLegalEntity": {
+                "type": "string"
+              },
+              "ContextRecordSubject": {
+                "type": "string"
+              },
+              "ControlNumber": {
+                "type": "integer"
+              },
+              "DataAreaId": {
+                "type": "string"
+              },
+              "EventId": {
+                "type": "string"
+              },
+              "EventTime": {
+                "type": "string"
+              },
+              "EventTimeIso8601": {
+                "type": "string"
+              },
+              "InitiatingUserAADObjectId": {
+                "type": "string"
+              },
+              "JournalNum": {
+                "type": "string"
+              },
+              "MajorVersion": {
+                "type": "integer"
+              },
+              "MinorVersion": {
+                "type": "integer"
+              },
+              "Name": {
+                "type": "string"
+              },
+              "ParentContextRecordSubjects": {
+                "type": "array"
+              },
+              "TradeAgreementLine": {
+                "items": {
+                  "properties": {
+                    "AccountRelation": {
+                      "type": "string"
+                    },
+                    "Amount": {
+                      "type": [
+                        "integer",
+                        "number"
+                      ]
+                    },
+                    "Currency": {
+                      "type": "string"
+                    },
+                    "FromDate": {
+                      "type": "string"
+                    },
+                    "InventSiteId": {
+                      "type": "string"
+                    },
+                    "ItemRelation": {
+                      "type": "string"
+                    },
+                    "ToDate": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "AccountRelation",
+                    "Amount",
+                    "Currency",
+                    "FromDate",
+                    "InventSiteId",
+                    "ItemRelation",
+                    "ToDate"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "runAfter": {},
+        "type": "ParseJson"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_a_BussinessEvent_is_received": {
+        "inputs": {
+          "parameters": {
+            "isSessionsEnabled": false,
+            "subscriptionName": "MudTrac",
+            "topicName": "d365fo-business-events"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "PublicServiceBus",
+            "operationId": "receiveTopicMessages",
+            "serviceProviderId": "/serviceProviders/serviceBus"
+          }
+        },
+        "splitOn": "@triggerOutputs()?['body']",
+        "type": "ServiceProvider"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

@@ -1,0 +1,183 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "type": "Compose",
+                "inputs": "@base64ToString(triggerOutputs()?['body']?['contentData'].$content)",
+                "runAfter": {}
+            },
+            "Delay": {
+                "type": "Wait",
+                "inputs": {
+                    "interval": {
+                        "count": 4,
+                        "unit": "Hour"
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('Compose')",
+                    "schema": {
+                        "properties": {
+                            "BA": {
+                                "type": "string"
+                            },
+                            "InvoiceDate": {
+                                "type": "string"
+                            },
+                            "InvoiceId": {
+                                "type": "string"
+                            },
+                            "LAStartDate": {
+                                "type": "string"
+                            },
+                            "Source": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_to_HMM_invoice_main_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "hmm-invoice",
+                        "message": {
+                            "contentData": "@outputs('Compose')",
+                            "contentType": "Text"
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Delay": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_to_logger_on_success": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "Invoice @{body('Parse_JSON')?['InvoiceId']} : HMM invoice add to main topic successful",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['InvoiceId']}",
+                                        "status": "Success"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "Source": "@workflow().name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Send_message_to_HMM_invoice_main_queue": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_-_failed_log": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "Invoice @{body('Parse_JSON')?['InvoiceId']} : Add to main topic failed",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['InvoiceId']}",
+                                        "status": "Fail"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "Source": "@workflow().name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Send_message_to_HMM_invoice_main_queue": [
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "hmm-invoice-retry",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveQueueMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

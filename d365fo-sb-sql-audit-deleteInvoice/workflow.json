@@ -1,0 +1,207 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Condition": {
+        "type": "If",
+        "expression": {
+          "and": [
+            {
+              "greater": [
+                "@length(body('Execute_stored_procedure_(V2)')?['resultsets']?['Table1'])",
+                0
+              ]
+            },
+            {
+              "equals": [
+                "@body('Execute_stored_procedure_(V2)')?['resultsets']?['Table1'][0]?['D365JournalCreated']",
+                0
+              ]
+            }
+          ]
+        },
+        "actions": {
+          "Send_Success_message_to_log": {
+            "type": "ServiceProvider",
+            "inputs": {
+              "parameters": {
+                "entityName": "open-invoice-logging",
+                "message": {
+                  "contentData": {
+                    "DateTime": " @{convertFromUtc(utcNow(), 'Mountain Standard Time')}",
+                    "Identifier": " @{workflow()['run']['name']}",
+                    "MessageBody": "The record has been updated to bypass duplicate check ",
+                    "WorkFlow": "d365fo-sb-sql-audit-deleteInvoice",
+                    "keyfield": "D365JENumber @{body('Parse_Incoming_Msg_Content')?['JournalNum']}",
+                    "status": "success"
+                  }
+                }
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "PrivateServiceBus",
+                "operationId": "sendMessage",
+                "serviceProviderId": "/serviceProviders/serviceBus"
+              }
+            }
+          }
+        },
+        "else": {
+          "actions": {
+            "Send_Record_failed_to_update_message_to_log": {
+              "type": "ServiceProvider",
+              "inputs": {
+                "parameters": {
+                  "entityName": "open-invoice-logging",
+                  "message": {
+                    "contentData": {
+                      "DateTime": " @{convertFromUtc(utcNow(), 'Mountain Standard Time')}",
+                      "Identifier": " @{workflow()['run']['name']}",
+                      "MessageBody": "@if(equals(body('Execute_stored_procedure_(V2)')?['returncode'], 1), 'The record is not found', 'The record did not update successfully')\r\n",
+                      "WorkFlow": "d365fo-sb-sql-audit-deleteInvoice",
+                      "keyfield": "D365JENumber @{body('Parse_Incoming_Msg_Content')?['JournalNum']}",
+                      "status": "fail"
+                    }
+                  }
+                },
+                "serviceProviderConfiguration": {
+                  "connectionName": "PrivateServiceBus",
+                  "operationId": "sendMessage",
+                  "serviceProviderId": "/serviceProviders/serviceBus"
+                }
+              }
+            }
+          }
+        },
+        "runAfter": {
+          "Execute_stored_procedure_(V2)": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Execute_stored_procedure_(V2)": {
+        "type": "ApiConnection",
+        "inputs": {
+          "host": {
+            "connection": {
+              "referenceName": "sql_auditLogging2"
+            }
+          },
+          "method": "post",
+          "body": {
+            "D365JENumber": "@body('Parse_Incoming_Msg_Content')?['JournalNum']",
+            "OIDocumentID": "@{body('Parse_Incoming_Msg_Content')?['OIDocumentID']}"
+          },
+          "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/procedures/@{encodeURIComponent(encodeURIComponent('[dbo].[UpdateInvoiceCreatedStatus]'))}"
+        },
+        "runAfter": {
+          "Parse_Incoming_Msg_Content": [
+            "SUCCEEDED"
+          ]
+        }
+      },
+      "Parse_Incoming_Msg_Content": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@triggerOutputs()?['body']?['contentData']",
+          "schema": {
+            "properties": {
+              "BusinessEventId": {
+                "type": "string"
+              },
+              "BusinessEventLegalEntity": {
+                "type": "string"
+              },
+              "ContextRecordSubject": {
+                "type": "string"
+              },
+              "ControlNumber": {
+                "type": "integer"
+              },
+              "DataAreaId": {
+                "type": "string"
+              },
+              "EventId": {
+                "type": "string"
+              },
+              "EventTime": {
+                "type": "string"
+              },
+              "EventTimeIso8601": {
+                "type": "string"
+              },
+              "InitiatingUserAADObjectId": {
+                "type": "string"
+              },
+              "JournalName": {
+                "type": "string"
+              },
+              "JournalNum": {
+                "type": "string"
+              },
+              "MajorVersion": {
+                "type": "integer"
+              },
+              "MinorVersion": {
+                "type": "integer"
+              },
+              "ParentContextRecordSubjects": {}
+            },
+            "type": "object"
+          }
+        },
+        "runAfter": {}
+      },
+      "Send_Failure_message_to_log": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "entityName": "open-invoice-logging",
+            "message": {
+              "contentData": {
+                "DateTime": " @{convertFromUtc(utcNow(), 'Mountain Standard Time')}",
+                "Identifier": " @{workflow()['run']['name']}",
+                "MessageBody": "Failed to execute stored procedure",
+                "WorkFlow": "d365fo-sb-sql-audit-deleteInvoice",
+                "keyfield": "D365JENumber @{body('Parse_Incoming_Msg_Content')?['JournalNum']}",
+                "status": "fail"
+              }
+            }
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "PrivateServiceBus",
+            "operationId": "sendMessage",
+            "serviceProviderId": "/serviceProviders/serviceBus"
+          }
+        },
+        "runAfter": {
+          "Execute_stored_procedure_(V2)": [
+            "TIMEDOUT",
+            "SKIPPED",
+            "FAILED"
+          ]
+        }
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_messages_are_available_in_a_topic_subscription_(peek-lock)": {
+        "type": "ServiceProvider",
+        "inputs": {
+          "parameters": {
+            "topicName": "d365fo-business-events",
+            "subscriptionName": "Delete-Invoice-Business-Event",
+            "isSessionsEnabled": false
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "PublicServiceBus",
+            "operationId": "peekLockTopicMessages",
+            "serviceProviderId": "/serviceProviders/serviceBus"
+          }
+        },
+        "splitOn": "@triggerOutputs()?['body']"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

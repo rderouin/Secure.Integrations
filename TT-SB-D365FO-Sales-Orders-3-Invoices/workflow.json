@@ -1,0 +1,654 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_'SalesInvoice'_variable": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SalesInvoice",
+                            "type": "object"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Try": {
+                "type": "Scope",
+                "actions": {
+                    "Set_variable": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "SalesInvoice",
+                            "value": "@body('ParseSalesInvoice')"
+                        },
+                        "runAfter": {
+                            "ParseSalesInvoice": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "GetSalesInvoice": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "dynamicsax-11"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSSalesOrdersHeaderV2'))}/items",
+                            "queries": {
+                                "$filter": "HSCorrelationId eq (@{body('ParseSalesInvoice')?['Payload']?['Id']})",
+                                "$top": 1,
+                                "cross-company": true
+                            }
+                        },
+                        "runAfter": {
+                            "Set_variable": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "IsCreditNote": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@variables('SalesInvoice').Payload.IsReversal",
+                                        true
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "D365FO_Sales_CreditNote_API": {
+                                "type": "Http",
+                                "inputs": {
+                                    "method": "POST",
+                                    "uri": "@{concat('https://',parameters('D365FO')  , '/api/services/HSSalesCreditNoteServiceGroup/HSSalesCreditNoteService/generateCreditNote')}",
+                                    "body": {
+                                        "_request": {
+                                            "DataAreaId": "@variables('SalesInvoice').Payload.LegalEntity",
+                                            "SalesInvoiceId": "@variables('SalesInvoice').Payload.OriginalGlInvoiceNumber",
+                                            "IsReversal": "@variables('SalesInvoice').Payload.IsReversal",
+                                            "SalesOrderCN": "@variables('SalesInvoice').Payload.ProformaInvoiceNumber",
+                                            "EnterpriseIdCN": "@variables('SalesInvoice').Payload.Id",
+                                            "IsTTPrint": "@variables('SalesInvoice').Payload.RequiresPdfRegeneration",
+                                            "SendToBillingService": "@variables('SalesInvoice').Payload.TransactionComplete"
+                                        }
+                                    },
+                                    "authentication": {
+                                        "type": "ActiveDirectoryOAuth",
+                                        "tenant": "@parameters('TenantId')",
+                                        "audience": "@concat('https://',parameters('D365FO'))",
+                                        "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                        "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "fixed",
+                                        "count": 4,
+                                        "interval": "PT5S"
+                                    }
+                                },
+                                "runAfter": {}
+                            }
+                        },
+                        "runAfter": {
+                            "GetSalesInvoice": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "D365FO_Sales_Invoice_API": {
+                                    "type": "Http",
+                                    "inputs": {
+                                        "method": "POST",
+                                        "uri": "@{concat('https://',parameters('D365FO')  , '/api/services/HSTTPrintInvoiceDocServiceGroup/HSTTPrintInvoiceDocService/enqueInvoicePosting')}",
+                                        "body": {
+                                            "_request": {
+                                                "DataAreaId": "@variables('SalesInvoice').Payload.LegalEntity",
+                                                "SalesOrderId": "@variables('SalesInvoice').Payload.ProformaInvoiceNumber",
+                                                "IsTTPrint": "@variables('SalesInvoice').Payload.RequiresPdfRegeneration",
+                                                "SendToBillingService": "@variables('SalesInvoice').Payload.TransactionComplete"
+                                            }
+                                        },
+                                        "authentication": {
+                                            "type": "ActiveDirectoryOAuth",
+                                            "tenant": "@parameters('TenantId')",
+                                            "audience": "@concat('https://',parameters('D365FO'))",
+                                            "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                            "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                        },
+                                        "retryPolicy": {
+                                            "type": "fixed",
+                                            "count": 4,
+                                            "interval": "PT5S"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    },
+                    "ParseSalesInvoice": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@triggerBody()",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "Source": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SourceId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrelationId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageDate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Blobs": {},
+                                    "Payload": {
+                                        "type": "object",
+                                        "properties": {
+                                            "ProformaInvoiceNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "GlInvoiceNumber": {},
+                                            "LegalEntity": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CustomerId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CustomerName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilityId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilityName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SiteId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "InvoicePermutationId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Status": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "IsReversed": {
+                                                "type": "boolean"
+                                            },
+                                            "IsReversal": {
+                                                "type": "boolean"
+                                            },
+                                            "ReversedInvoiceId": {},
+                                            "ReversalInvoiceId": {},
+                                            "Attachments": {
+                                                "type": [
+                                                    "array",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Currency": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "OriginalGlInvoiceNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CustomerNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "EDIFieldValues": {
+                                                "type": [
+                                                    "array",
+                                                    "null"
+                                                ]
+                                            },
+                                            "EDIFieldsValueString": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "InvoiceReversalReason": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "InvoiceReversalDescription": {},
+                                            "RequiresPdfRegeneration": {
+                                                "type": "boolean"
+                                            },
+                                            "TransactionComplete": {
+                                                "type": "boolean"
+                                            },
+                                            "BusinessUnit": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Division": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AccountNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Id": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "CheckIfD365Success": {
+                        "type": "If",
+                        "expression": {
+                            "or": [
+                                {
+                                    "equals": [
+                                        "@body('D365FO_Sales_CreditNote_API')?['Success']",
+                                        true
+                                    ]
+                                },
+                                {
+                                    "equals": [
+                                        "@body('D365FO_Sales_Invoice_API')?['Success']",
+                                        true
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {},
+                        "runAfter": {
+                            "IsCreditNote": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "ComposeD365Error": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                        "body": {
+                                            "Message": "D365 Error:@{concat(body('D365FO_Sales_CreditNote_API')?['ErrorMessage'],body('D365FO_Sales_Invoice_API')?['ErrorMessage'])}"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_'SalesInvoice'_variable": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "On_Failure": {
+                "type": "Scope",
+                "actions": {
+                    "Filter_error_messages": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@union(union(result('CheckIfD365Success'),result('IsCreditNote')), result('Try'))",
+                            "where": "@or(equals(item()?['status'],'Failed') ,and(equals(item()?['name'],'ComposeD365Error'),equals(item()?['status'],'Failed')))"
+                        },
+                        "runAfter": {}
+                    },
+                    "Send_InvoiceAck_failure_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "enterprise-entity-updates",
+                                "message": {
+                                    "contentData": "@outputs('Create_InvoiceAck_failure_message')",
+                                    "contentType": "application/json",
+                                    "sessionId": "@guid()",
+                                    "userProperties": {
+                                        "source": "D365FO",
+                                        "messageType": "InvoiceAck"
+                                    },
+                                    "messageId": "@guid()"
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Create_InvoiceAck_failure_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Return_HTTP_500_(1)": {
+                        "type": "Response",
+                        "kind": "http",
+                        "inputs": {
+                            "statusCode": 500,
+                            "body": "@outputs('Create_InvoiceAck_failure_message')"
+                        },
+                        "runAfter": {
+                            "Send_InvoiceAck_failure_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Create_InvoiceAck_failure_message": {
+                        "type": "Compose",
+                        "inputs": {
+                            "Source": "D365FO",
+                            "SourceId": "@{body('ParseSalesInvoice')['SourceId']}",
+                            "MessageType": "InvoiceAck",
+                            "Operation": "@{body('ParseSalesInvoice')['Operation']}",
+                            "CorrelationId": "@{body('ParseSalesInvoice')['CorrelationId']}",
+                            "MessageDate": "@{body('ParseSalesInvoice')['MessageDate']}",
+                            "Blobs": null,
+                            "Payload": {
+                                "ProformaInvoiceNumber": "@{body('ParseSalesInvoice')['Payload']['ProformaInvoiceNumber']}",
+                                "Id": "@{body('ParseSalesInvoice')['Payload']['Id']}",
+                                "IsSuccessful": false,
+                                "Message": "@coalesce(body('Filter_error_messages')[0]?['outputs']?['body']?['message'], body('Filter_error_messages')[0]?['error']?['message'], body('Filter_error_messages')[0]?['code'])"
+                            }
+                        },
+                        "runAfter": {
+                            "Filter_error_messages": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Failed_(1)": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed",
+                            "runError": {
+                                "message": "@{outputs('Create_InvoiceAck_failure_message')}"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_message_error_log": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_message_error_log": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "integration-logs",
+                                "message": {
+                                    "contentData": {
+                                        "CorrelationId": "",
+                                        "MessageDate": "@utcNow()",
+                                        "MessageType": "Log",
+                                        "Operation": "Information",
+                                        "Payload": [
+                                            {
+                                                "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                "Identifier": "@workflow()['run']['name']",
+                                                "MessageBody": "@{coalesce(body('Filter_error_messages')[0]?['outputs']?['body']?['message'], body('Filter_error_messages')[0]?['error']?['message'], body('Filter_error_messages')[0]?['code'])}",
+                                                "Workflow": "@workflow()['name']",
+                                                "keyfield": "@{variables('SalesInvoice').Payload.ProformaInvoiceNumber}",
+                                                "status": "Fail"
+                                            }
+                                        ],
+                                        "Source": "@workflow().name",
+                                        "SourceId": "@workflow().run.name"
+                                    },
+                                    "userProperties": {
+                                        "Source": "@workflow().name"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Return_HTTP_500_(1)": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "FAILED"
+                    ]
+                }
+            },
+            "On_Success": {
+                "type": "Scope",
+                "actions": {
+                    "Return_HTTP_200": {
+                        "type": "Response",
+                        "kind": "http",
+                        "inputs": {
+                            "statusCode": 200,
+                            "body": "@outputs('Create_InvoiceAck_success_message')"
+                        },
+                        "runAfter": {
+                            "Send_InvoiceAck_success_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_InvoiceAck_success_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "enterprise-entity-updates",
+                                "message": {
+                                    "contentData": "@outputs('Create_InvoiceAck_success_message')",
+                                    "contentType": "application/json",
+                                    "sessionId": "@guid()",
+                                    "userProperties": {
+                                        "source": "D365FO",
+                                        "messageType": "InvoiceAck"
+                                    },
+                                    "messageId": "@guid()"
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Create_InvoiceAck_success_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Create_InvoiceAck_success_message": {
+                        "type": "Compose",
+                        "inputs": {
+                            "Source": "D365FO",
+                            "SourceId": "@{body('ParseSalesInvoice')['SourceId']}",
+                            "MessageType": "InvoiceAck",
+                            "Operation": "@{body('ParseSalesInvoice')['Operation']}",
+                            "CorrelationId": "@{body('ParseSalesInvoice')['CorrelationId']}",
+                            "MessageDate": "@{body('ParseSalesInvoice')['MessageDate']}",
+                            "Blobs": null,
+                            "Payload": {
+                                "ProformaInvoiceNumber": "@{body('ParseSalesInvoice')['Payload']['ProformaInvoiceNumber']}",
+                                "Id": "@{body('ParseSalesInvoice')['Payload']['Id']}",
+                                "IsSuccessful": true,
+                                "Message": ""
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Send_message_success_log": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "integration-logs",
+                                "message": {
+                                    "contentData": {
+                                        "CorrelationId": "",
+                                        "MessageDate": "@utcNow()",
+                                        "MessageType": "Log",
+                                        "Operation": "Information",
+                                        "Payload": [
+                                            {
+                                                "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                "Identifier": "@workflow()['run']['name']",
+                                                "MessageBody": "",
+                                                "Workflow": "@workflow()['name']",
+                                                "keyfield": "@{variables('SalesInvoice').Payload.ProformaInvoiceNumber}",
+                                                "status": "Success"
+                                            }
+                                        ],
+                                        "Source": "@workflow().name",
+                                        "SourceId": "@workflow().run.name"
+                                    },
+                                    "userProperties": {
+                                        "Source": "@workflow().name"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Return_HTTP_200": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Return_HTTP_500_(2)": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 500,
+                    "body": "@body('Filter_error_messages')[0]"
+                },
+                "runAfter": {
+                    "On_Failure": [
+                        "FAILED"
+                    ]
+                },
+                "description": "This path is necessary if the input data was so bad that we couldn't compose a proper error response. "
+            },
+            "Failed_(2)": {
+                "type": "Terminate",
+                "inputs": {
+                    "runStatus": "Failed"
+                },
+                "runAfter": {
+                    "Return_HTTP_500_(2)": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {},
+                "correlation": {
+                    "clientTrackingId": "@if(equals(triggerBody()?['Payload']?['ProformaInvoiceNumber'], null), guid(), triggerBody()?['Payload']?['ProformaInvoiceNumber'])"
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

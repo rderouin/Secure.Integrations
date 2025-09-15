@@ -1,0 +1,205 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('Parse_JSON')?['Result']",
+                                ""
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Send_succcess_status_to_OI": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-post-update",
+                                "message": {
+                                    "contentData": {
+                                        "OIInvoiceReceived": "",
+                                        "OIDocumentID": "@{body('Parse_JSON')?['OIInvoiceID']}",
+                                        "RetryQueue": "0",
+                                        "MessageBody": "D365 journal posting successful: @{body('Parse_JSON')?['JournalNum']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Send_message_to_audit_-_if_success": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-audit",
+                                "message": {
+                                    "contentData": {
+                                        "D365AttachmentAdded": "",
+                                        "D365JENumber": "@{body('Parse_JSON')?['JournalNum']}",
+                                        "D365JournalCreated": "",
+                                        "D365JournalPosted": "1",
+                                        "InRetryQueue": "",
+                                        "LastUpdated": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                                        "MessageBody": "@{body('Parse_JSON')?['Result']}",
+                                        "OIApproved": "",
+                                        "OIDocDataRetrieved": "",
+                                        "OIDocumentID": "@{body('Parse_JSON')?['OIInvoiceID']}",
+                                        "OIExported": "",
+                                        "OIFutureDatedInvoice": "",
+                                        "OIInvoiceAmount": "",
+                                        "OIInvoiceNumber": "",
+                                        "OIPOInvoice": "",
+                                        "OIVendor": "",
+                                        "RetryCount": "0",
+                                        "Identifier": " @{workflow()['run']['name']}",
+                                        "WORKFLOW": " @{workflow()['name']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_succcess_status_to_OI": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Send_fail_status_to_OI": {
+                            "type": "ServiceProvider",
+                            "inputs": {
+                                "parameters": {
+                                    "entityName": "open-invoice-post-update",
+                                    "message": {
+                                        "contentData": {
+                                            "OIInvoiceReceived": "",
+                                            "OIDocumentID": "@{body('Parse_JSON')?['OIInvoiceID']}",
+                                            "RetryQueue": "0",
+                                            "MessageBody": "D365 journal posting unsuccessful: @{body('Parse_JSON')?['JournalNum']}@{body('Parse_JSON')?['Result']}"
+                                        }
+                                    }
+                                },
+                                "serviceProviderConfiguration": {
+                                    "connectionName": "PrivateServiceBus",
+                                    "operationId": "sendMessage",
+                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                }
+                            },
+                            "runAfter": {}
+                        },
+                        "Send_message_to_audit": {
+                            "type": "ServiceProvider",
+                            "inputs": {
+                                "parameters": {
+                                    "entityName": "open-invoice-audit",
+                                    "message": {
+                                        "contentData": {
+                                            "D365AttachmentAdded": "",
+                                            "D365JENumber": "@{body('Parse_JSON')?['JournalNum']}",
+                                            "D365JournalCreated": "",
+                                            "D365JournalPosted": "",
+                                            "InRetryQueue": "",
+                                            "LastUpdated": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                                            "MessageBody": "@{body('Parse_JSON')?['Result']}",
+                                            "OIApproved": "",
+                                            "OIDocDataRetrieved": "",
+                                            "OIDocumentID": "@{body('Parse_JSON')?['OIInvoiceID']}",
+                                            "OIExported": "",
+                                            "OIFutureDatedInvoice": "",
+                                            "OIInvoiceAmount": "",
+                                            "OIInvoiceNumber": "",
+                                            "OIPOInvoice": "",
+                                            "OIVendor": "",
+                                            "RetryCount": "0",
+                                            "Identifier": " @{workflow()['run']['name']}",
+                                            "WORKFLOW": " @{workflow()['name']}"
+                                        }
+                                    }
+                                },
+                                "serviceProviderConfiguration": {
+                                    "connectionName": "PrivateServiceBus",
+                                    "operationId": "sendMessage",
+                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                }
+                            },
+                            "runAfter": {
+                                "Send_fail_status_to_OI": [
+                                    "Succeeded"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "JournalNum": {
+                                "type": "string"
+                            },
+                            "Name": {
+                                "type": "string"
+                            },
+                            "OIInvoiceID": {
+                                "type": "string"
+                            },
+                            "Result": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "oi-apinvoice-posting",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

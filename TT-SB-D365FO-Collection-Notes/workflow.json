@@ -1,0 +1,519 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "Id": {
+                                "type": "string"
+                            },
+                            "AccountNumber": {
+                                "type": "string"
+                            },
+                            "AttachmentIndicatorType": {
+                                "type": "string"
+                            },
+                            "BillofLading": {},
+                            "BusinessUnit": {
+                                "type": "string"
+                            },
+                            "CollectionOwner": {
+                                "type": "string"
+                            },
+                            "CollectionReason": {
+                                "type": "string"
+                            },
+                            "CollectionNotes": {
+                                "type": "string"
+                            },
+                            "CreatedAt": {
+                                "type": "string"
+                            },
+                            "CreatedBy": {},
+                            "CreatedById": {},
+                            "Currency": {
+                                "type": "string"
+                            },
+                            "CustomerCreditStatus": {
+                                "type": "string"
+                            },
+                            "CustomerId": {
+                                "type": "string"
+                            },
+                            "CustomerName": {
+                                "type": "string"
+                            },
+                            "CustomerNumber": {
+                                "type": "string"
+                            },
+                            "CustomerWatchListStatus": {
+                                "type": "string"
+                            },
+                            "DistributionMethod": {
+                                "type": "string"
+                            },
+                            "Division": {
+                                "type": "string"
+                            },
+                            "DocumentType": {
+                                "type": "string"
+                            },
+                            "DowNonDow": {
+                                "type": "string"
+                            },
+                            "EDIFieldsValueString": {},
+                            "EntityType": {
+                                "type": "string"
+                            },
+                            "FacilityId": {
+                                "type": "string"
+                            },
+                            "FacilityName": {
+                                "type": "string"
+                            },
+                            "GeneratorNames": {},
+                            "GlInvoiceNumber": {
+                                "type": "string"
+                            },
+                            "HasAttachments": {
+                                "type": "string"
+                            },
+                            "InvoiceAmount": {
+                                "type": "integer"
+                            },
+                            "InvoiceConfigurationId": {
+                                "type": "string"
+                            },
+                            "InvoiceEndDate": {
+                                "type": "string"
+                            },
+                            "InvoicePermutationId": {
+                                "type": "string"
+                            },
+                            "InvoiceReversalDescription": {},
+                            "InvoiceReversalReason": {
+                                "type": "string"
+                            },
+                            "InvoiceStartDate": {
+                                "type": "string"
+                            },
+                            "IsReversal": {
+                                "type": "boolean"
+                            },
+                            "IsReversed": {
+                                "type": "boolean"
+                            },
+                            "LastDistributionDate": {},
+                            "LastSentById": {
+                                "type": "string"
+                            },
+                            "LastSentByName": {},
+                            "LegalEntity": {
+                                "type": "string"
+                            },
+                            "LoadConfirmationId": {
+                                "type": "string"
+                            },
+                            "LoadConfirmationNumber": {},
+                            "ManifestNumber": {},
+                            "OriginalGlInvoiceNumber": {},
+                            "OriginalProformaInvoiceNumber": {},
+                            "Paid": {
+                                "type": "boolean"
+                            },
+                            "ProformaInvoiceNumber": {
+                                "type": "string"
+                            },
+                            "RequiresPdfRegeneration": {
+                                "type": "boolean"
+                            },
+                            "ReversalInvoiceId": {},
+                            "ReversedInvoiceId": {},
+                            "SalesLineCount": {
+                                "type": "integer"
+                            },
+                            "SiteId": {
+                                "type": "string"
+                            },
+                            "SourceLocationFormattedIdentifier": {},
+                            "SourceLocationId": {
+                                "type": "string"
+                            },
+                            "SourceLocationIdentifier": {},
+                            "SourceLocationTypeId": {
+                                "type": "string"
+                            },
+                            "SourceLocationTypeName": {},
+                            "Status": {
+                                "type": "string"
+                            },
+                            "TicketDateRangeEnd": {
+                                "type": "string"
+                            },
+                            "TicketDateRangeStart": {
+                                "type": "string"
+                            },
+                            "TransactionComplete": {
+                                "type": "boolean"
+                            },
+                            "UpdatedAt": {
+                                "type": "string"
+                            },
+                            "UpdatedBy": {
+                                "type": "string"
+                            },
+                            "UpdatedById": {
+                                "type": "string"
+                            },
+                            "id": {
+                                "type": "string"
+                            },
+                            "Attachments": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Id": {
+                                            "type": "string"
+                                        },
+                                        "AttachedOn": {
+                                            "type": "string"
+                                        },
+                                        "BlobPath": {
+                                            "type": "string"
+                                        },
+                                        "ContainerName": {
+                                            "type": "string"
+                                        },
+                                        "ContentType": {
+                                            "type": "string"
+                                        },
+                                        "FileName": {
+                                            "type": "string"
+                                        },
+                                        "IsUploaded": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "Id",
+                                        "AttachedOn",
+                                        "BlobPath",
+                                        "ContainerName",
+                                        "ContentType",
+                                        "FileName",
+                                        "IsUploaded"
+                                    ]
+                                }
+                            },
+                            "EDIFieldValues": {
+                                "type": "array"
+                            },
+                            "Generators": {
+                                "type": "object",
+                                "properties": {
+                                    "Key": {
+                                        "type": "string"
+                                    },
+                                    "InvoiceEntityId": {
+                                        "type": "string"
+                                    },
+                                    "Raw": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "_rid": {
+                                "type": "string"
+                            },
+                            "_self": {
+                                "type": "string"
+                            },
+                            "_etag": {
+                                "type": "string"
+                            },
+                            "_attachments": {
+                                "type": "string"
+                            },
+                            "_ts": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_-_CollectionOwner": [
+                        "Succeeded"
+                    ]
+                },
+                "trackedProperties": {
+                    "GLInvoiceNumber": "@{body('Parse_JSON')?['Payload']?['GlInvoiceNumber']}"
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                "@length(variables('GlInvoice'))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Compose-ReasonCode": {
+                        "type": "Compose",
+                        "inputs": {
+                            "None": "Other",
+                            "SentToAdvisorForReview": "Sent to Advisor for review",
+                            "SentToSalesFieldForReview": "Sent to Sales – Field for review",
+                            "SentToSalesCorporateForReview": "Sent to Sales – Corporate for review",
+                            "SentToARForReview": "Sent to AR for review",
+                            "SentToFacilityForReview": "Sent to Facility for review",
+                            "SentToEDIForEntry": "Sent to EDI for entry",
+                            "EnteredInEDIPlatform": "Entered in EDI platform",
+                            "SubmittedStatusInEDIPlatform": "Submitted status in EDI platform",
+                            "ApprovedStatusInEDIPlatform": "Approved status in EDI platform",
+                            "ResubmittedStatusInEDIPlatform": "Resubmitted status in EDI platform",
+                            "MonthlyARStatementSent": "Monthly AR statement sent",
+                            "Paid": "Paid",
+                            "Other": "Other",
+                            "SentForPayment": "Sent for Payment"
+                        },
+                        "runAfter": {}
+                    },
+                    "Compose-CollectionOwner": {
+                        "type": "Compose",
+                        "inputs": {
+                            "Unknown": "Facility Admin",
+                            "FacilityAdmin": "Facility Admin",
+                            "Advisor": "Advisor",
+                            "AR": "AR",
+                            "SalesCorporate": "Sales - Corporate",
+                            "SalesField": "Sales - Field",
+                            "EDITeam": "EDI Team"
+                        },
+                        "runAfter": {
+                            "Compose-ReasonCode": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_Reason_initial": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "CollectionReasonOwner",
+                            "value": "@body('Parse_JSON')?['Payload']?['CollectionReason']"
+                        },
+                        "runAfter": {
+                            "Compose-CollectionOwner": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_-_CollectionReason": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "CollectionRason",
+                            "value": "@{outputs('Compose-ReasonCode')?[variables('CollectionReasonOwner')]}"
+                        },
+                        "runAfter": {
+                            "Set_variable_Reason_initial": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_Owner_Initial": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "CollectionReasonOwner",
+                            "value": "@body('Parse_JSON')?['Payload']?['CollectionOwner']"
+                        },
+                        "runAfter": {
+                            "Set_variable_-_CollectionReason": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_CollectionOwner": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "CollectionOwner",
+                            "value": "@{outputs('Compose-CollectionOwner')?[variables('CollectionReasonOwner')]}"
+                        },
+                        "runAfter": {
+                            "Set_variable_Owner_Initial": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Execute_action": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "dynamicsax"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "_legalEntity": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                "_invoiceId": "@{body('Parse_JSON')?['Payload']?['GlInvoiceNumber']}",
+                                "_accountNum": "@body('Parse_JSON')?['Payload']?['CustomerNumber']",
+                                "_status": "@body('Parse_JSON')?['Payload']?['Status']",
+                                "_reason": "@{if(equals(variables('CollectionRason'),'none'),'Other',variables('CollectionRason'))}",
+                                "_collectionOwner": "@variables('CollectionOwner')",
+                                "_statusChangeDate": "@body('Parse_JSON')?['Payload']?['UpdatedAt']",
+                                "_followUpDate": "@body('Parse_JSON')?['Payload']?['UpdatedAt']",
+                                "_amountCur": "@body('Parse_JSON')?['Payload']?['InvoiceAmount']",
+                                "_transActionBalance": "@body('Parse_JSON')?['Payload']?['InvoiceAmount']",
+                                "_note": "@{if(equals(body('Parse_JSON')?['Payload']?['CollectionNotes'], null), '', body('Parse_JSON')?['Payload']?['CollectionNotes'])}",
+                                "_createdBy": "@body('Parse_JSON')?['Payload']?['UpdatedBy']"
+                            },
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('IntegrationODataActions/Microsoft.Dynamics.DataEntities.addCollectionNote'))}"
+                        },
+                        "runAfter": {
+                            "Set_variable_CollectionOwner": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Set_variable_IsReversed": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_IsReversed": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "IsReversed",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Set_variable_IsReversed": {
+                "type": "SetVariable",
+                "inputs": {
+                    "name": "IsReversed",
+                    "value": "@body('Parse_JSON')?['Payload']?['IsReversed']"
+                },
+                "runAfter": {
+                    "Set_variable_GlInvoice": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_GlInvoice": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "GlInvoice",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_IsReversed": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Set_variable_GlInvoice": {
+                "type": "SetVariable",
+                "inputs": {
+                    "name": "GlInvoice",
+                    "value": "@body('Parse_JSON')?['Payload']?['GlInvoiceNumber']"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_CollectionReason": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CollectionRason",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_CollectionreasonOwner": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_CollectionreasonOwner": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CollectionReasonOwner",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_GlInvoice": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_CollectionOwner": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CollectionOwner",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_CollectionReason": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "enterprise-entity-updates",
+                        "subscriptionName": "collection-notes",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

@@ -1,0 +1,330 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_variable_retryCount": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "retryCount",
+                            "type": "integer",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Scope": {
+                "type": "Scope",
+                "actions": {
+                    "Compose_2": {
+                        "type": "Compose",
+                        "inputs": "@body('Get_rows_D365_audit_record_for_OIinvoice')?['value']?[0]?['RetryCount']",
+                        "runAfter": {
+                            "Get_rows_D365_audit_record_for_OIinvoice": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Condition": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@length(body('Get_rows_D365_audit_record_for_OIinvoice')?['value'])",
+                                        0
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Set_variable": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "retryCount",
+                                    "value": "@int(body('Parse_JSON')?['RetryCount'])"
+                                },
+                                "runAfter": {}
+                            }
+                        },
+                        "runAfter": {
+                            "Compose_2": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Set_variable_2": {
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "retryCount",
+                                        "value": "@add(body('Get_rows_D365_audit_record_for_OIinvoice')?['value']?[0]?['RetryCount'],int(body('Parse_JSON')?['RetryCount']))"
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    },
+                    "Get_rows_D365_audit_record_for_OIinvoice": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_auditLogging2"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365APInvoiceAudit]'))}/items",
+                            "queries": {
+                                "$filter": "OIDocumentID eq '@{body('Parse_JSON')?['OIDocumentID']}'",
+                                "$orderby": "RecordId desc"
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Insert_row_Audit_DB": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_auditLogging2"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "OIDocumentID": "@{string(body('Parse_JSON')?['OIDocumentID'])}",
+                                "OIInvoiceNumber": "@{string(body('Parse_JSON')?['OIInvoiceNumber'])}",
+                                "OIInvoiceAmount": "@if(equals(body('Parse_JSON')?['OIInvoiceAmount'],''),null,body('Parse_JSON')?['OIInvoiceAmount'])",
+                                "OIApproved": "@body('Parse_JSON')?['OIApproved']",
+                                "OIDocDataRetrieved": "@body('Parse_JSON')?['OIDocDataRetrieved']",
+                                "OIExported": "@body('Parse_JSON')?['OIExported']",
+                                "D365JournalCreated": "@if(equals(body('Parse_JSON')?['D365JournalCreated'],''),null,body('Parse_JSON')?['D365JournalCreated'])",
+                                "D365JournalPosted": "@if(equals(body('Parse_JSON')?['D365JournalPosted'],''),null,body('Parse_JSON')?['D365JournalPosted'])",
+                                "D365JENumber": "@body('Parse_JSON')?['D365JENumber']",
+                                "D365AttachmentAdded": "@body('Parse_JSON')?['D365AttachmentAdded']",
+                                "OIPOInvoice": "@body('Parse_JSON')?['OIPOInvoice']",
+                                "OIFutureDatedInvoice": "@body('Parse_JSON')?['OIFutureDatedInvoice']",
+                                "InRetryQueue": "@body('Parse_JSON')?['InRetryQueue']",
+                                "RetryCount": "@variables('retryCount')",
+                                "MessageBody": "@{if(greater(length(body('Parse_JSON')?['MessageBody']),4000),substring(body('Parse_JSON')?['MessageBody'],0,3999),body('Parse_JSON')?['MessageBody'])}",
+                                "LastUpdated": "@body('Parse_JSON')?['LastUpdated']",
+                                "OIVendorName": "@body('Parse_JSON')?['OIVendorName']",
+                                "OISiteCode": "@body('Parse_JSON')?['OISiteCode']",
+                                "OIInvoiceDate": "@body('Parse_JSON')?['OIInvoiceDate']",
+                                "OIVendorCode": "@body('Parse_JSON')?['OIVendor']",
+                                "Identifier": "@body('Parse_JSON')?['Identifier']",
+                                "WORKFLOW": "@body('Parse_JSON')?['WORKFLOW']"
+                            },
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365APInvoiceAudit]'))}/items"
+                        },
+                        "runAfter": {
+                            "Condition": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Parse_JSON": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('Parse_JSON_2')?['contentData']",
+                            "schema": {
+                                "properties": {
+                                    "D365AttachmentAdded": {
+                                        "type": "string"
+                                    },
+                                    "D365JENumber": {
+                                        "type": "string"
+                                    },
+                                    "D365JournalCreated": {
+                                        "type": "string"
+                                    },
+                                    "D365JournalPosted": {
+                                        "type": "string"
+                                    },
+                                    "InRetryQueue": {
+                                        "type": "string"
+                                    },
+                                    "LastUpdated": {
+                                        "type": "string"
+                                    },
+                                    "MessageBody": {
+                                        "type": "string"
+                                    },
+                                    "OIApproved": {
+                                        "type": "string"
+                                    },
+                                    "OIDocDataRetrieved": {
+                                        "type": "string"
+                                    },
+                                    "OIDocumentID": {
+                                        "type": "string"
+                                    },
+                                    "OIExported": {
+                                        "type": "string"
+                                    },
+                                    "OIFutureDatedInvoice": {
+                                        "type": "string"
+                                    },
+                                    "OIInvoiceAmount": {
+                                        "type": "string"
+                                    },
+                                    "OIInvoiceNumber": {
+                                        "type": "string"
+                                    },
+                                    "OIPOInvoice": {
+                                        "type": "string"
+                                    },
+                                    "OIVendor": {
+                                        "type": "string"
+                                    },
+                                    "RetryCount": {
+                                        "type": "string"
+                                    },
+                                    "OIVendorName": {
+                                        "type": "string"
+                                    },
+                                    "OIInvoiceDate": {
+                                        "type": "string"
+                                    },
+                                    "OISiteCode": {
+                                        "type": "string"
+                                    },
+                                    "Identifier": {
+                                        "type": "string"
+                                    },
+                                    "WORKFLOW": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON_2": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Parse_JSON_2": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@triggerOutputs()?['body']",
+                            "schema": {
+                                "properties": {
+                                    "contentData": {
+                                        "type": "string"
+                                    },
+                                    "contentType": {
+                                        "type": "string"
+                                    },
+                                    "deliveryCount": {
+                                        "type": "integer"
+                                    },
+                                    "enqueuedSequenceNumber": {
+                                        "type": "integer"
+                                    },
+                                    "enqueuedTimeUtc": {
+                                        "type": "string"
+                                    },
+                                    "lockToken": {
+                                        "type": "string"
+                                    },
+                                    "lockedUntilUtc": {
+                                        "type": "string"
+                                    },
+                                    "messageId": {
+                                        "type": "string"
+                                    },
+                                    "scheduledEnqueueTimeUtc": {
+                                        "type": "string"
+                                    },
+                                    "sequenceNumber": {
+                                        "type": "integer"
+                                    },
+                                    "timeToLive": {
+                                        "type": "string"
+                                    },
+                                    "userProperties": {
+                                        "properties": {
+                                            "diagnostic-Id": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_retryCount": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_an_email_(V2)": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "office365"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "To": "rpayavula@secure-energy.com",
+                        "Subject": "Error - OIInvoice-auditDB @{workflow()['run']['name']}",
+                        "Body": "<p>Hi,<br>\n<br>\nError processing auditing.<br>\n<br>\nThanks,<br>\nOIInvoice-auditDB</p>",
+                        "Importance": "Normal"
+                    },
+                    "path": "/v2/Mail"
+                },
+                "runAfter": {
+                    "Scope": [
+                        "FAILED",
+                        "TIMEDOUT"
+                    ]
+                }
+            },
+            "Terminate": {
+                "type": "Terminate",
+                "inputs": {
+                    "runStatus": "Failed"
+                },
+                "runAfter": {
+                    "Send_an_email_(V2)": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "open-invoice-audit"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveQueueMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

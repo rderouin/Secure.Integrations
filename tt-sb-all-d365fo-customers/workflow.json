@@ -1,0 +1,1971 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_Header_message": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']",
+                    "schema": {
+                        "properties": {
+                            "contentData": {
+                                "type": [
+                                    "object",
+                                    "string"
+                                ]
+                            },
+                            "deliveryCount": {
+                                "type": "integer"
+                            },
+                            "enqueuedSequenceNumber": {
+                                "type": "integer"
+                            },
+                            "enqueuedTimeUtc": {
+                                "type": "string"
+                            },
+                            "label": {
+                                "type": "string"
+                            },
+                            "lockToken": {
+                                "type": "string"
+                            },
+                            "lockedUntilUtc": {
+                                "type": "string"
+                            },
+                            "messageId": {
+                                "type": "string"
+                            },
+                            "scheduledEnqueueTimeUtc": {
+                                "type": "string"
+                            },
+                            "sequenceNumber": {
+                                "type": "integer"
+                            },
+                            "sessionId": {
+                                "type": "string"
+                            },
+                            "timeToLive": {
+                                "type": "string"
+                            },
+                            "userProperties": {
+                                "properties": {
+                                    "machineName": {
+                                        "type": "string"
+                                    },
+                                    "messageType": {
+                                        "type": "string"
+                                    },
+                                    "source": {
+                                        "type": "string"
+                                    },
+                                    "userName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_-_Contacts_Array": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Switch_MessageType": {
+                "type": "Switch",
+                "expression": "@body('Parse_Header_message')?['userProperties']?['messageType']",
+                "cases": {
+                    "Case_Account": {
+                        "case": "Account",
+                        "actions": {
+                            "Parse_JSON": {
+                                "type": "ParseJson",
+                                "inputs": {
+                                    "content": "@body('Parse_Header_message')?['contentData']",
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Source": {
+                                                "type": "string"
+                                            },
+                                            "SourceId": {
+                                                "type": "string"
+                                            },
+                                            "MessageType": {
+                                                "type": "string"
+                                            },
+                                            "Operation": {
+                                                "type": "string"
+                                            },
+                                            "CorrelationId": {
+                                                "type": "string"
+                                            },
+                                            "MessageDate": {
+                                                "type": "string"
+                                            },
+                                            "Blobs": {},
+                                            "Payload": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Name": {
+                                                        "type": "string"
+                                                    },
+                                                    "NickName": {},
+                                                    "AccountNumber": {
+                                                        "type": "string"
+                                                    },
+                                                    "CustomerNumber": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "BillingType": {
+                                                        "type": "string"
+                                                    },
+                                                    "AccountStatus": {
+                                                        "type": "string"
+                                                    },
+                                                    "WatchListStatus": {
+                                                        "type": "string"
+                                                    },
+                                                    "CreditStatus": {
+                                                        "type": "string"
+                                                    },
+                                                    "CreditLimit": {
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "AccountPrimaryContactId": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "AccountPrimaryContactName": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "LegalEntityId": {
+                                                        "type": "string"
+                                                    },
+                                                    "LegalEntity": {
+                                                        "type": "string"
+                                                    },
+                                                    "AccountPrimaryContactPhoneNumber": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "AccountPrimaryContactEmail": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "AccountTypes": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "Key": {
+                                                                "type": "string"
+                                                            },
+                                                            "Raw": {
+                                                                "type": "string"
+                                                            },
+                                                            "List": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "Contacts": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "IsPrimaryAccountContact": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "IsDeleted": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "IsActive": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "Name": {
+                                                                    "type": "string"
+                                                                },
+                                                                "LastName": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Email": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "PhoneNumber": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "JobTitle": {},
+                                                                "Contact": {},
+                                                                "AccountContactAddress": {
+                                                                    "type": [
+                                                                        "object",
+                                                                        "null"
+                                                                    ],
+                                                                    "properties": {
+                                                                        "Street": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "City": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "ZipCode": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "Country": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "Province": {
+                                                                            "type": [
+                                                                                "string",
+                                                                                "null"
+                                                                            ]
+                                                                        },
+                                                                        "Id": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "ContactFunctions": {
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "Key": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "Raw": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "List": {
+                                                                            "type": "array",
+                                                                            "items": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "SignatoryType": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "Id": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "IsPrimaryAccountContact",
+                                                                "IsDeleted",
+                                                                "IsActive",
+                                                                "Name",
+                                                                "LastName",
+                                                                "Email",
+                                                                "PhoneNumber",
+                                                                "JobTitle",
+                                                                "Contact",
+                                                                "AccountContactAddress",
+                                                                "ContactFunctions",
+                                                                "SignatoryType",
+                                                                "Id"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "AccountAddresses": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "IsPrimaryAddress": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "IsDeleted": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "AddressType": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "Street": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "City": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "ZipCode": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "Country": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "Province": {
+                                                                    "type": [
+                                                                        "string",
+                                                                        "null"
+                                                                    ]
+                                                                },
+                                                                "Id": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "BillingTransferRecipientId": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "BillingTransferRecipientName": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "EnableNewTruckingCompany": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "EnableNewThirdPartyAnalytical": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "HasPriceBook": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "IsEdiFieldsEnabled": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "IsElectronicBillingEnabled": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "MailingRecipientName": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "IsBlocked": {
+                                                        "type": [
+                                                            "boolean",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "Email": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "Attachments": {
+                                                        "type": "array"
+                                                    },
+                                                    "LastTransactionDate": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "LastIntegrationDateTime": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "EnableCreditMessagingRedFlag": {
+                                                        "type": [
+                                                            "boolean",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "DUNSNumber": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "GSTNumber": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "OperatorLicenseCode": {},
+                                                    "IncludeExternalDocumentAttachmentInLC": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "IncludeInternalDocumentAttachmentInLC": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "CurrencyCode": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "IsAccountActive": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "NetOff": {
+                                                        "type": [
+                                                            "boolean",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "CreditApplicationReceived": {
+                                                        "type": [
+                                                            "boolean",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "EnableCreditMessagingGeneral": {
+                                                        "type": [
+                                                            "boolean",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "CreatedBy": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "CreatedById": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "CreatedAt": {
+                                                        "type": "string"
+                                                    },
+                                                    "UpdatedAt": {
+                                                        "type": "string"
+                                                    },
+                                                    "UpdatedBy": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "UpdatedById": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "DocumentType": {
+                                                        "type": "string"
+                                                    },
+                                                    "EntityType": {
+                                                        "type": "string"
+                                                    },
+                                                    "Id": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "runAfter": {},
+                                "trackedProperties": {
+                                    "CustomerNumber": "@{body('Parse_JSON')?['Payload']?['CustomerNumber']}",
+                                    "AccountNumber": "@{body('Parse_JSON')?['Payload']?['AccountNumber']}"
+                                }
+                            },
+                            "Set_variable_Customer_message_check": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "CustomerMessageCheck",
+                                    "value": "@body('Parse_JSON')?['Payload']?['AccountTypes']?['List']"
+                                },
+                                "runAfter": {
+                                    "Set_variable_-_EnableCreditMessagingRedFlag": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Condition_CustomerPayloadCheck": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "contains": [
+                                                "@variables('CustomerMessageCheck')",
+                                                "Customer"
+                                            ]
+                                        },
+                                        {
+                                            "greater": [
+                                                "@length(body('Parse_JSON')?['Payload']?['Contacts'])",
+                                                0
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Set_variable_-_PartyNumber": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "PartyNumber",
+                                            "value": "@body('Parse_JSON')?['SourceId']"
+                                        },
+                                        "runAfter": {}
+                                    },
+                                    "Set_variable_-_PrimaryContactId": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "PrimaryContactID",
+                                            "value": "@body('Parse_JSON')?['Payload']?['AccountPrimaryContactId']"
+                                        },
+                                        "runAfter": {
+                                            "Set_variable_-_PartyNumber": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Set_variable_-_PersonAddressArray": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "PersonAddressArray",
+                                            "value": "@body('Parse_JSON')?['Payload']?['AccountAddresses']"
+                                        },
+                                        "runAfter": {
+                                            "Set_variable_-_PrimaryContactId": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Parse_JSON_-_PersonAddressArray": {
+                                        "type": "ParseJson",
+                                        "inputs": {
+                                            "content": "@variables('PersonAddressArray')",
+                                            "schema": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "IsPrimaryAddress": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "IsDeleted": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "AddressType": {
+                                                            "type": "string"
+                                                        },
+                                                        "Street": {
+                                                            "type": "string"
+                                                        },
+                                                        "City": {
+                                                            "type": "string"
+                                                        },
+                                                        "ZipCode": {
+                                                            "type": "string"
+                                                        },
+                                                        "Country": {
+                                                            "type": "string"
+                                                        },
+                                                        "Province": {
+                                                            "type": "string"
+                                                        },
+                                                        "Id": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "IsPrimaryAddress",
+                                                        "IsDeleted",
+                                                        "AddressType",
+                                                        "Street",
+                                                        "City",
+                                                        "ZipCode",
+                                                        "Country",
+                                                        "Province",
+                                                        "Id"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Set_variable_-_PersonAddressArray": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Filter_array_-_Person_Address": {
+                                        "type": "Query",
+                                        "inputs": {
+                                            "from": "@body('Parse_JSON_-_PersonAddressArray')",
+                                            "where": "@equals(item()['IsPrimaryAddress'], true)"
+                                        },
+                                        "runAfter": {
+                                            "Parse_JSON_-_PersonAddressArray": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "For_each_-_Contact_Primary_Address": {
+                                        "type": "Foreach",
+                                        "foreach": "@body('Filter_array_-_Person_Address')",
+                                        "actions": {
+                                            "Set_variable_-_Street_name": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "PersonStreetName",
+                                                    "value": "@items('For_each_-_Contact_Primary_Address')?['Street']"
+                                                },
+                                                "runAfter": {}
+                                            },
+                                            "Set_variable_-_PersonCity": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "PersonCity",
+                                                    "value": "@items('For_each_-_Contact_Primary_Address')?['City']"
+                                                },
+                                                "runAfter": {
+                                                    "Set_variable_-_Street_name": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Set_variable_PersonPostalCode": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "PersonPostalCode",
+                                                    "value": "@items('For_each_-_Contact_Primary_Address')?['ZipCode']"
+                                                },
+                                                "runAfter": {
+                                                    "Set_variable_-_PersonCity": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Set_variable_-_PersonProvince": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "PersonProvince",
+                                                    "value": "@items('For_each_-_Contact_Primary_Address')?['Province']"
+                                                },
+                                                "runAfter": {
+                                                    "Set_variable_PersonPostalCode": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Set_variable_-_PersonCountry": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "PersonCountry",
+                                                    "value": "@{if(equals(items('For_each_-_Contact_Primary_Address')?['Country'],'CA'),'CAN','USA')}"
+                                                },
+                                                "runAfter": {
+                                                    "Set_variable_-_PersonProvince": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Set_variable_PrimaryAddressID": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "PrimaryAddressID",
+                                                    "value": "@items('For_each_-_Contact_Primary_Address')?['Id']"
+                                                },
+                                                "runAfter": {
+                                                    "Set_variable_-_PersonCountry": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Filter_array_-_Person_Address": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Get_Customer_(List)": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "dynamicsax-4"
+                                                }
+                                            },
+                                            "method": "get",
+                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('CustomersV3'))}/items",
+                                            "queries": {
+                                                "$filter": "HSCorrelationId eq @{body('Parse_JSON')?['Payload']?['Id']}",
+                                                "$top": 1,
+                                                "$select": "CustomerAccount,dataAreaId,PartyNumber",
+                                                "cross-company": true
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Set_variable_-_Contacts_Array": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Customer_not_exist": {
+                                        "type": "If",
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "equals": [
+                                                        "@length(body('Get_Customer_(List)')?['value'])",
+                                                        0
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "actions": {
+                                            "Get_Prospects": {
+                                                "type": "ApiConnection",
+                                                "inputs": {
+                                                    "host": {
+                                                        "connection": {
+                                                            "referenceName": "dynamicsax-4"
+                                                        }
+                                                    },
+                                                    "method": "get",
+                                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('Prospects'))}/items",
+                                                    "queries": {
+                                                        "$filter": "HSCorrelationId eq @{body('Parse_JSON')?['Payload']?['Id']}",
+                                                        "$top": 1,
+                                                        "$select": "HSCustAccountStr,dataAreaId,ProspectPartyNumber",
+                                                        "cross-company": true
+                                                    }
+                                                },
+                                                "runAfter": {}
+                                            },
+                                            "Prospect_not_exist": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@length(body('Get_Prospects')?['value'])",
+                                                                0
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Create_Prospect": {
+                                                        "type": "ApiConnection",
+                                                        "inputs": {
+                                                            "host": {
+                                                                "connection": {
+                                                                    "referenceName": "dynamicsax-4"
+                                                                }
+                                                            },
+                                                            "method": "post",
+                                                            "body": {
+                                                                "ProspectId": "@body('Parse_JSON')?['Payload']?['AccountNumber']",
+                                                                "CurrencyCode": "@{if(equals(body('Parse_JSON')?['Payload']?['LegalEntity'],'SESU'),'USD','CAD')}",
+                                                                "ProspectRelationTypeId": "Relation",
+                                                                "dataAreaId": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                                                "ProspectStatusCode": "@body('Parse_JSON')?['Payload']?['CreditStatus']",
+                                                                "ProspectPartyType": "Organization",
+                                                                "PrimaryPhoneNumber": "@body('Parse_JSON')?['Payload']?['AccountPrimaryContactPhoneNumber']",
+                                                                "PrimaryPhoneNumberDescription": "Phone",
+                                                                "CustomerGroupId": "GEN",
+                                                                "PrimaryEmailAddressDescription": "Email",
+                                                                "PrimaryEmailAddress": "@body('Parse_JSON')?['Payload']?['AccountPrimaryContactEmail']",
+                                                                "ProspectName": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                                "HSCustAccountStr": "@{body('Parse_JSON')?['Payload']?['CustomerNumber']}",
+                                                                "HSTTAppCreditMessaging": "@{if(equals(variables('EnableCreditMessagingGeneral'),false),'No','Yes')}",
+                                                                "HSCreditApplicationReceived": "@{if(equals(variables('CreditApplicationReceived'),false),'No','Yes')}",
+                                                                "HSCorrelationId": "@body('Parse_JSON')?['Payload']?['Id']"
+                                                            },
+                                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('Prospects'))}/items"
+                                                        },
+                                                        "runAfter": {}
+                                                    },
+                                                    "Set_variable_-_Party_number": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "PartyNumber",
+                                                            "value": "@body('Create_Prospect')?['ProspectPartyNumber']"
+                                                        },
+                                                        "runAfter": {
+                                                            "Create_Prospect": [
+                                                                "Succeeded"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "runAfter": {
+                                                    "Get_Prospects": [
+                                                        "Succeeded"
+                                                    ]
+                                                },
+                                                "else": {
+                                                    "actions": {
+                                                        "For_each_-_Prospect_Party_number": {
+                                                            "type": "Foreach",
+                                                            "foreach": "@body('Get_Prospects')?['value']",
+                                                            "actions": {
+                                                                "Set_variable_-_Prospect_Party_number": {
+                                                                    "type": "SetVariable",
+                                                                    "inputs": {
+                                                                        "name": "PartyNumber",
+                                                                        "value": "@items('For_each_-_Prospect_Party_number')?['ProspectPartyNumber']"
+                                                                    },
+                                                                    "runAfter": {}
+                                                                }
+                                                            },
+                                                            "runAfter": {
+                                                                "Execute(Update_prospect)": [
+                                                                    "Succeeded"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "Execute(Update_prospect)": {
+                                                            "type": "ApiConnection",
+                                                            "inputs": {
+                                                                "host": {
+                                                                    "connection": {
+                                                                        "referenceName": "dynamicsax-4"
+                                                                    }
+                                                                },
+                                                                "method": "post",
+                                                                "body": {
+                                                                    "SourceID": "@body('Parse_JSON')?['Payload']?['Id']",
+                                                                    "LegalEntity": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                                                    "ProspectName": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                                    "TypeID": "Relation",
+                                                                    "Status": "@body('Parse_JSON')?['Payload']?['CreditStatus']",
+                                                                    "CustomerAccount": "@{body('Parse_JSON')?['Payload']?['CustomerNumber']}",
+                                                                    "CreditApplicationRecived": "@{if(equals(variables('CreditApplicationReceived'),false),'No','Yes')}",
+                                                                    "TTAppCreditMessaging": "@{if(equals(variables('EnableCreditMessagingGeneral'),false),'No','Yes')}",
+                                                                    "addressDescription": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                                    "addressStreet": "@variables('PersonStreetName')",
+                                                                    "addressCityName": "@variables('PersonCity')",
+                                                                    "addressStateId": "@variables('PersonProvince')",
+                                                                    "addressCountry": "@variables('PersonCountry')"
+                                                                },
+                                                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSProspects/Microsoft.Dynamics.DataEntities.UpdateProspect'))}"
+                                                            },
+                                                            "runAfter": {}
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Get_Customer_(List)": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "else": {
+                                            "actions": {
+                                                "For_each_-_Customer_Party_Number": {
+                                                    "type": "Foreach",
+                                                    "foreach": "@body('Get_Customer_(List)')?['value']",
+                                                    "actions": {
+                                                        "Set_variable_-_Customer_Party_number": {
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "PartyNumber",
+                                                                "value": "@items('For_each_-_Customer_Party_Number')?['PartyNumber']"
+                                                            },
+                                                            "runAfter": {}
+                                                        }
+                                                    },
+                                                    "runAfter": {
+                                                        "Set_variable_-_IsCustomer": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                },
+                                                "Set_variable_-_IsCustomer": {
+                                                    "type": "SetVariable",
+                                                    "inputs": {
+                                                        "name": "IsCustomer",
+                                                        "value": true
+                                                    },
+                                                    "runAfter": {}
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "Set_variable_-_Contacts_Array": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "ContactList",
+                                            "value": "@body('Parse_JSON')?['Payload']?['Contacts']"
+                                        },
+                                        "runAfter": {
+                                            "For_each_-_Contact_Primary_Address": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Set_variable_Customer_message_check": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "else": {
+                                    "actions": {
+                                        "Cancel_Flow": {
+                                            "type": "Terminate",
+                                            "inputs": {
+                                                "runStatus": "Cancelled"
+                                            },
+                                            "runAfter": {}
+                                        }
+                                    }
+                                }
+                            },
+                            "For_each_-_Contacts": {
+                                "type": "Foreach",
+                                "foreach": "@body('Parse_JSON')?['Payload']?['Contacts']",
+                                "actions": {
+                                    "Contacts_Person_list": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "dynamicsax-4"
+                                                }
+                                            },
+                                            "method": "get",
+                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('ContactPersons'))}/items",
+                                            "queries": {
+                                                "$filter": "HSCorrelationId eq @{items('For_each_-_Contacts')?['Id']}",
+                                                "$top": 1,
+                                                "$select": "ContactPersonId,dataAreaId",
+                                                "cross-company": true
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Wait_one_second_(1)": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Contact_not_exist": {
+                                        "type": "If",
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "equals": [
+                                                        "@length(body('Contacts_Person_list')?['value'])",
+                                                        0
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "actions": {
+                                            "HaveAddress": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "not": {
+                                                                "equals": [
+                                                                    "@items('For_each_-_Contacts')?['AccountContactAddress']",
+                                                                    null
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Create_Contacts": {
+                                                        "type": "ApiConnection",
+                                                        "inputs": {
+                                                            "host": {
+                                                                "connection": {
+                                                                    "referenceName": "dynamicsax-7"
+                                                                }
+                                                            },
+                                                            "method": "post",
+                                                            "body": {
+                                                                "AssociatedPartyNumber": "@variables('PartyNumber')",
+                                                                "dataAreaId": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                                                "IsVIP": "@{if(equals(items('For_each_-_Contacts')?['IsPrimaryAccountContact'],true),'Yes','No')}",
+                                                                "PrimaryAddressDescription": "@items('For_each_-_Contacts')?['AccountContactAddress']?['Street']",
+                                                                "PrimaryAddressCountryRegionId": "@{if(equals(items('For_each_-_Contacts')?['AccountContactAddress']?['Country'],'CA'),'CAN','USA')}",
+                                                                "PrimaryPhoneNumber": "@items('For_each_-_Contacts')?['PhoneNumber']",
+                                                                "PrimaryAddressStreet": "@items('For_each_-_Contacts')?['AccountContactAddress']?['Street']",
+                                                                "LastName": "@items('For_each_-_Contacts')?['LastName']",
+                                                                "PrimaryAddressCity": "@items('For_each_-_Contacts')?['AccountContactAddress']?['City']",
+                                                                "PrimaryAddressZipCode": "@items('For_each_-_Contacts')?['AccountContactAddress']?['ZipCode']",
+                                                                "PrimaryAddressStateId": "@{items('For_each_-_Contacts')?['AccountContactAddress']?['Province']}",
+                                                                "PrimaryEmailAddress": "@items('For_each_-_Contacts')?['Email']",
+                                                                "FirstName": "@items('For_each_-_Contacts')?['Name']",
+                                                                "HSCorrelationId": "@items('For_each_-_Contacts')?['Id']"
+                                                            },
+                                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('ContactPersons'))}/items"
+                                                        },
+                                                        "runAfter": {}
+                                                    }
+                                                },
+                                                "runAfter": {},
+                                                "else": {
+                                                    "actions": {
+                                                        "Create_Contacts_-_WO_Address": {
+                                                            "type": "ApiConnection",
+                                                            "inputs": {
+                                                                "host": {
+                                                                    "connection": {
+                                                                        "referenceName": "dynamicsax-7"
+                                                                    }
+                                                                },
+                                                                "method": "post",
+                                                                "body": {
+                                                                    "AssociatedPartyNumber": "@variables('PartyNumber')",
+                                                                    "dataAreaId": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                                                    "IsVIP": "@{if(equals(items('For_each_-_Contacts')?['IsPrimaryAccountContact'],true),'Yes','No')}",
+                                                                    "PrimaryPhoneNumber": "@items('For_each_-_Contacts')?['PhoneNumber']",
+                                                                    "LastName": "@items('For_each_-_Contacts')?['LastName']",
+                                                                    "PrimaryEmailAddress": "@items('For_each_-_Contacts')?['Email']",
+                                                                    "FirstName": "@items('For_each_-_Contacts')?['Name']",
+                                                                    "HSCorrelationId": "@items('For_each_-_Contacts')?['Id']"
+                                                                },
+                                                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('ContactPersons'))}/items"
+                                                            },
+                                                            "runAfter": {}
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Contacts_Person_list": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "else": {
+                                            "actions": {
+                                                "HaveAddress-Update": {
+                                                    "type": "If",
+                                                    "expression": {
+                                                        "and": [
+                                                            {
+                                                                "not": {
+                                                                    "equals": [
+                                                                        "@items('For_each_-_Contacts')?['AccountContactAddress']",
+                                                                        null
+                                                                    ]
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "actions": {
+                                                        "Update_Contacts": {
+                                                            "type": "ApiConnection",
+                                                            "inputs": {
+                                                                "host": {
+                                                                    "connection": {
+                                                                        "referenceName": "dynamicsax-7"
+                                                                    }
+                                                                },
+                                                                "method": "post",
+                                                                "body": {
+                                                                    "SourceID": "@items('For_each_-_Contacts')?['Id']",
+                                                                    "LegalEntity": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                                                    "FirstName": "@items('For_each_-_Contacts')?['Name']",
+                                                                    "LastName": "@items('For_each_-_Contacts')?['LastName']",
+                                                                    "IsVIP": "@{if(equals(items('For_each_-_Contacts')?['IsPrimaryAccountContact'],true),'Yes','No')}",
+                                                                    "Email": "@items('For_each_-_Contacts')?['Email']",
+                                                                    "Phone": "@items('For_each_-_Contacts')?['PhoneNumber']",
+                                                                    "Street": "@items('For_each_-_Contacts')?['AccountContactAddress']?['Street']",
+                                                                    "City": "@items('For_each_-_Contacts')?['AccountContactAddress']?['City']",
+                                                                    "PostalCode": "@items('For_each_-_Contacts')?['AccountContactAddress']?['ZipCode']",
+                                                                    "StateId": "@items('For_each_-_Contacts')?['AccountContactAddress']?['Province']",
+                                                                    "CountryRegionId": "@{if(equals(items('For_each_-_Contacts')?['AccountContactAddress']?['Country'],'CA'),'CAN','USA')}"
+                                                                },
+                                                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSContactPersons/Microsoft.Dynamics.DataEntities.UpdateContactPerson'))}"
+                                                            },
+                                                            "runAfter": {}
+                                                        }
+                                                    },
+                                                    "runAfter": {},
+                                                    "else": {
+                                                        "actions": {
+                                                            "Update_Contacs_WO_Address": {
+                                                                "type": "ApiConnection",
+                                                                "inputs": {
+                                                                    "host": {
+                                                                        "connection": {
+                                                                            "referenceName": "dynamicsax-7"
+                                                                        }
+                                                                    },
+                                                                    "method": "post",
+                                                                    "body": {
+                                                                        "SourceID": "@items('For_each_-_Contacts')?['Id']",
+                                                                        "LegalEntity": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                                                        "FirstName": "@items('For_each_-_Contacts')?['Name']",
+                                                                        "LastName": "@items('For_each_-_Contacts')?['LastName']",
+                                                                        "IsVIP": "@{if(equals(items('For_each_-_Contacts')?['IsPrimaryAccountContact'],true),'Yes','No')}",
+                                                                        "Email": "@items('For_each_-_Contacts')?['Email']",
+                                                                        "Phone": "@items('For_each_-_Contacts')?['PhoneNumber']",
+                                                                        "Street": "",
+                                                                        "City": "",
+                                                                        "PostalCode": "",
+                                                                        "StateId": "",
+                                                                        "CountryRegionId": "@{if(equals(body('Parse_JSON')?['Payload']?['LegalEntity'],'SESU'),'USA','CAN')}"
+                                                                    },
+                                                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSContactPersons/Microsoft.Dynamics.DataEntities.UpdateContactPerson'))}"
+                                                                },
+                                                                "runAfter": {}
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "Wait_one_second_(1)": {
+                                        "type": "Wait",
+                                        "inputs": {
+                                            "interval": {
+                                                "count": 1,
+                                                "unit": "Second"
+                                            }
+                                        },
+                                        "runAfter": {}
+                                    }
+                                },
+                                "runAfter": {
+                                    "Condition_CustomerPayloadCheck": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "runtimeConfiguration": {
+                                    "concurrency": {
+                                        "repetitions": 1
+                                    }
+                                }
+                            },
+                            "Set_variable_-_NetOff": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "NetOff",
+                                    "value": "@if(equals(body('Parse_JSON')?['Payload']?['NetOff'],null),false,body('Parse_JSON')?['Payload']?['NetOff'])"
+                                },
+                                "runAfter": {
+                                    "Parse_JSON": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_variable_-_CreditApplicationReceived": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "CreditApplicationReceived",
+                                    "value": "@if(equals(body('Parse_JSON')?['Payload']?['CreditApplicationReceived'],null),false,body('Parse_JSON')?['Payload']?['CreditApplicationReceived'])"
+                                },
+                                "runAfter": {
+                                    "Set_variable_-_NetOff": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_variable_EnableCreditMessagingGeneral": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "EnableCreditMessagingGeneral",
+                                    "value": "@if(equals(body('Parse_JSON')?['Payload']?['EnableCreditMessagingGeneral'],null),false,body('Parse_JSON')?['Payload']?['EnableCreditMessagingGeneral'])"
+                                },
+                                "runAfter": {
+                                    "Set_variable_-_CreditApplicationReceived": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_variable_-_EnableCreditMessagingRedFlag": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "EnableCreditMessagingRedFlag",
+                                    "value": "@if(equals(body('Parse_JSON')?['Payload']?['EnableCreditMessagingRedFlag'],null),false,body('Parse_JSON')?['Payload']?['EnableCreditMessagingRedFlag'])"
+                                },
+                                "runAfter": {
+                                    "Set_variable_EnableCreditMessagingGeneral": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Condition_-_If_Customer": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "equals": [
+                                                "@variables('IsCustomer')",
+                                                true
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Execute_action_-_Update_Customer": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "dynamicsax-4"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "body": {
+                                                "SourceID": "@body('Parse_JSON')?['Payload']?['Id']",
+                                                "CustomerAccount": "@body('Parse_JSON')?['Payload']?['CustomerNumber']",
+                                                "LegalEntity": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                                "customerName": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                "custClassificationId": "@{if(equals(body('Parse_JSON')?['Payload']?['WatchListStatus'],'Undefined'),'',body('Parse_JSON')?['Payload']?['WatchListStatus'])}",
+                                                "taxExemptNumber": "@body('Parse_JSON')?['Payload']?['GSTNumber']",
+                                                "displayRedFlag": "@{if(equals(body('Parse_JSON')?['Payload']?['DisplayRedFlagMessage'],true),'Yes','No')}",
+                                                "billingType": "@body('Parse_JSON')?['Payload']?['BillingType']",
+                                                "creditLimit": "@if(equals(body('Parse_JSON')?['Payload']?['CreditLimit'],null),0,body('Parse_JSON')?['Payload']?['CreditLimit'])",
+                                                "currencyCode": "@{if(equals(body('Parse_JSON')?['Payload']?['LegalEntity'],'SESU'),'USD','CAD')}",
+                                                "NetOff": "@{if(equals(variables('NetOff'),false),'No','Yes')}",
+                                                "CreditMessaging": "@{if(equals(variables('EnableCreditMessagingGeneral'),false),'No','Yes')}",
+                                                "CreditApplicationReceived": "@{if(equals(variables('CreditApplicationReceived'),false),'No','Yes')}",
+                                                "customerDUNSNumber": "@{body('Parse_JSON')?['Payload']?['DUNSNumber']}",
+                                                "customerContactID": "@variables('PrimaryContactID')",
+                                                "addressDescription": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                "addressStreet": "@variables('PersonStreetName')",
+                                                "addressCityName": "@variables('PersonCity')",
+                                                "addressStateId": "@variables('PersonProvince')",
+                                                "addressCountry": "@variables('PersonCountry')"
+                                            },
+                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSCustomers/Microsoft.Dynamics.DataEntities.UpdateCustomer'))}"
+                                        },
+                                        "runAfter": {}
+                                    }
+                                },
+                                "runAfter": {
+                                    "For_each_-_Contacts": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "For_each_-_Party_Address": {
+                                "type": "Foreach",
+                                "foreach": "@body('Parse_JSON_-_PersonAddressArray')",
+                                "actions": {
+                                    "Get_Party_LocationID": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "dynamicsax-4"
+                                                }
+                                            },
+                                            "method": "get",
+                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('PartyLocationPostalAddressesV2'))}/items",
+                                            "queries": {
+                                                "$filter": "HSCorrelationId eq @{items('For_each_-_Party_Address')?['Id']}",
+                                                "$top": 1,
+                                                "$select": "PartyNumber,LocationId,ValidFrom,Street,City, ZipCode,CountryRegionId,State",
+                                                "cross-company": true
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Wait_one_second_(2)": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "For_each_Party_LocationID": {
+                                        "type": "Foreach",
+                                        "foreach": "@body('Get_Party_LocationID')?['value']",
+                                        "actions": {
+                                            "Set_variable_-_Party_LocationID": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "PartyLocationID",
+                                                    "value": "@items('For_each_Party_LocationID')?['LocationId']"
+                                                },
+                                                "runAfter": {}
+                                            },
+                                            "Condition": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@items('For_each_-_Party_Address')?['IsPrimaryAddress']",
+                                                                "@true"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Set_variable_-_PartyPrimaryLocationId": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "PartyPrimaryLocationId",
+                                                            "value": "@items('For_each_Party_LocationID')?['LocationId']"
+                                                        },
+                                                        "runAfter": {}
+                                                    }
+                                                },
+                                                "runAfter": {
+                                                    "Set_variable_-_Party_LocationID": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Get_Party_LocationID": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Condition_-_If_address_already_exist": {
+                                        "type": "If",
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "greater": [
+                                                        "@length(body('Get_Party_LocationID')?['value'])",
+                                                        0
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "actions": {
+                                            "Condition_-_Check_Deleted": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@items('For_each_-_Party_Address')?['IsDeleted']",
+                                                                "@false"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Set_variable_Address_To": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "AddressChangeTo",
+                                                            "value": "@{concat(items('For_each_-_Party_Address')?['Street'],' | ',items('For_each_-_Party_Address')?['City'],' | ',items('For_each_-_Party_Address')?['Province'],' | ',items('For_each_-_Party_Address')?['ZipCode'])}"
+                                                        },
+                                                        "runAfter": {}
+                                                    },
+                                                    "Set_variable_Address_From": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "AddressChangeFrom",
+                                                            "value": "@{concat(body('Get_Party_LocationID')['value'][0]['Street'],' | ',body('Get_Party_LocationID')['value'][0]['City'],' | ',body('Get_Party_LocationID')['value'][0]['State'],' | ',body('Get_Party_LocationID')['value'][0]['ZipCode'])}"
+                                                        },
+                                                        "runAfter": {
+                                                            "Set_variable_Address_To": [
+                                                                "Succeeded"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "Condition_-_Check_if_address_changed": {
+                                                        "type": "If",
+                                                        "expression": {
+                                                            "or": [
+                                                                {
+                                                                    "equals": [
+                                                                        "@variables('AddressChangeFrom')",
+                                                                        "@variables('AddressChangeTo')"
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        "actions": {},
+                                                        "runAfter": {
+                                                            "Set_variable_Address_From": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "else": {
+                                                            "actions": {
+                                                                "Set_variable_PartyLocationID": {
+                                                                    "type": "SetVariable",
+                                                                    "inputs": {
+                                                                        "name": "PartyLocationID",
+                                                                        "value": "@{body('Get_Party_LocationID')['value'][0]['LocationId']}"
+                                                                    },
+                                                                    "runAfter": {}
+                                                                },
+                                                                "Execute_action_-_Update_Party_address": {
+                                                                    "type": "ApiConnection",
+                                                                    "inputs": {
+                                                                        "host": {
+                                                                            "connection": {
+                                                                                "referenceName": "dynamicsax-7"
+                                                                            }
+                                                                        },
+                                                                        "method": "post",
+                                                                        "body": {
+                                                                            "partyNumber": "@variables('PartyNumber')",
+                                                                            "locationID": "@variables('PartyLocationID')",
+                                                                            "addressDescription": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                                            "addressStreet": "@items('For_each_-_Party_Address')?['Street']",
+                                                                            "addressCityName": "@items('For_each_-_Party_Address')?['City']",
+                                                                            "addressStateId": "@items('For_each_-_Party_Address')?['Province']",
+                                                                            "addressZipCode": "@items('For_each_-_Party_Address')?['ZipCode']",
+                                                                            "addressCountry": "@{if(equals(items('For_each_-_Party_Address')?['Country'],'CA'),'CAN','USA')}",
+                                                                            "isPrimary": "@{if(equals(items('For_each_-_Party_Address')?['IsPrimaryAddress'],true),'Yes','No')}",
+                                                                            "isDeleted": "No"
+                                                                        },
+                                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSCustomers/Microsoft.Dynamics.DataEntities.UpdatePartyAddress'))}"
+                                                                    },
+                                                                    "runAfter": {
+                                                                        "Set_variable_PartyLocationID": [
+                                                                            "Succeeded"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "runAfter": {},
+                                                "else": {
+                                                    "actions": {
+                                                        "Execute_action_-_Delete_Party_Address": {
+                                                            "type": "ApiConnection",
+                                                            "inputs": {
+                                                                "host": {
+                                                                    "connection": {
+                                                                        "referenceName": "dynamicsax-7"
+                                                                    }
+                                                                },
+                                                                "method": "post",
+                                                                "body": {
+                                                                    "partyNumber": "@variables('PartyNumber')",
+                                                                    "locationID": "@variables('PartyLocationID')",
+                                                                    "addressDescription": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                                    "addressStreet": "@items('For_each_-_Party_Address')?['Street']",
+                                                                    "addressCityName": "@items('For_each_-_Party_Address')?['City']",
+                                                                    "addressStateId": "@items('For_each_-_Party_Address')?['Province']",
+                                                                    "addressZipCode": "@items('For_each_-_Party_Address')?['ZipCode']",
+                                                                    "addressCountry": "@{if(equals(items('For_each_-_Party_Address')?['Country'],'CA'),'CAN','USA')}",
+                                                                    "isDeleted": "Yes"
+                                                                },
+                                                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSCustomers/Microsoft.Dynamics.DataEntities.UpdatePartyAddress'))}"
+                                                            },
+                                                            "runAfter": {}
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "For_each_Party_LocationID": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        "else": {
+                                            "actions": {
+                                                "Create_Party_Address": {
+                                                    "type": "ApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "connection": {
+                                                                "referenceName": "dynamicsax-7"
+                                                            }
+                                                        },
+                                                        "method": "post",
+                                                        "body": {
+                                                            "PartyNumber": "@variables('PartyNumber')",
+                                                            "Description": "@body('Parse_JSON')?['Payload']?['Name']",
+                                                            "LocationId": "",
+                                                            "ValidFrom": "@{utcNow()}",
+                                                            "IsPrimary": "@{if(equals(items('For_each_-_Party_Address')?['IsPrimaryAddress'],true),'Yes','No')}",
+                                                            "Street": "@items('For_each_-_Party_Address')?['Street']",
+                                                            "ValidTo": "2154-12-31T23:59:59Z",
+                                                            "City": "@items('For_each_-_Party_Address')?['City']",
+                                                            "CountryRegionId": "@{if(equals(items('For_each_-_Party_Address')?['Country'],'CA'),'CAN','USA')}",
+                                                            "State": "@items('For_each_-_Party_Address')?['Province']",
+                                                            "ZipCode": "@items('For_each_-_Party_Address')?['ZipCode']",
+                                                            "HSCorrelationId": "@items('For_each_-_Party_Address')?['Id']"
+                                                        },
+                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('PartyLocationPostalAddressesV2'))}/items"
+                                                    },
+                                                    "runAfter": {
+                                                        "SetVariable-PostalCode": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                },
+                                                "Set_variable-PrimaryOrNot": {
+                                                    "type": "SetVariable",
+                                                    "inputs": {
+                                                        "name": "IsCustomer",
+                                                        "value": "@items('For_each_-_Party_Address')?['IsPrimaryAddress']"
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "SetVariable-PostalCode": {
+                                                    "type": "SetVariable",
+                                                    "inputs": {
+                                                        "name": "PersonPostalCode",
+                                                        "value": "@{if(equals(items('For_each_-_Party_Address')?['IsPrimaryAddress'],true),'Yes','No')}"
+                                                    },
+                                                    "runAfter": {
+                                                        "Set_variable-PrimaryOrNot": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "Wait_one_second_(2)": {
+                                        "type": "Wait",
+                                        "inputs": {
+                                            "interval": {
+                                                "count": 1,
+                                                "unit": "Second"
+                                            }
+                                        },
+                                        "runAfter": {}
+                                    }
+                                },
+                                "runAfter": {
+                                    "Condition_-_If_Customer": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "runtimeConfiguration": {
+                                    "concurrency": {
+                                        "repetitions": 1
+                                    }
+                                }
+                            },
+                            "Execute_action_-_SetPrimaryAddress": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "dynamicsax-4"
+                                        }
+                                    },
+                                    "method": "post",
+                                    "body": {
+                                        "partyNumber": "@variables('PartyNumber')",
+                                        "locationID": "@variables('PartyPrimaryLocationId')"
+                                    },
+                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSCustomers/Microsoft.Dynamics.DataEntities.UpdatePartyPrimaryAddress'))}"
+                                },
+                                "runAfter": {
+                                    "For_each_-_Party_Address": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "default": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "Parse_Header_message": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_Party_number": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PartyNumber",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_variable_-_PersonAddressArray": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PersonAddressArray",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_PartyLocationID": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Variable-PersonStreetName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PersonStreetName",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_PersonAddressArray": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_PersonCountry": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PersonCountry",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Variable-PersonStreetName": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_PersonPostalCode": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PersonPostalCode",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_PersonCountry": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_PersonCity": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PersonCity",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_PersonPostalCode": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_PersonProvince": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PersonProvince",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_PersonCity": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_Customer_message_check": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CustomerMessageCheck",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_PrimaryAddressID": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_NetOff": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "NetOff",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_Customer_message_check": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_CreditApplicationReceived": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CreditApplicationReceived",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_NetOff": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_EnableCreditMessagingGeneral": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "EnableCreditMessagingGeneral",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_CreditApplicationReceived": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable__-_EnableCreditMessagingRedFlag": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "EnableCreditMessagingRedFlag",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_EnableCreditMessagingGeneral": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_IsCustomer": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "IsCustomer",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable__-_EnableCreditMessagingRedFlag": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_Primary_Contact_ID": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PrimaryContactID",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_IsCustomer": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_Contacts_Array": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ContactList",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_PartyLocationID": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PartyLocationID",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_Address_To": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_Address_from_": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "AddressChangeFrom",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_Party_number": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_Address_To": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "AddressChangeTo",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_Address_from_": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_PrimaryAddressID": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PrimaryAddressID",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_PersonProvince": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PartyPrimaryLocationId",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_Primary_Contact_ID": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "enterprise-entity-updates",
+                        "subscriptionName": "d365fo-CustomerAndContacts",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

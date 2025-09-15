@@ -1,0 +1,227 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "type": "Compose",
+                "inputs": "@triggerOutputs()?['body']?['contentData']",
+                "runAfter": {}
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "not": {
+                                "equals": [
+                                    "@length(body('Get_rows_(V2)')?['value'])",
+                                    0
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "actions": {
+                    "Execute_stored_procedure_(V2)": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_mudtrac"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "AccountRelation": "@{body('Parse_JSON')['TradeAgreementLine'][0]['AccountRelation']}"
+                            },
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('MUDTrackServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('MUDTrackDBName')))}/procedures/@{encodeURIComponent(encodeURIComponent('[dbo].[DeletePriceBooks]'))}"
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Get_rows_(V2)": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "For_each_line_in_Trade_Agreement": {
+                "type": "Foreach",
+                "foreach": "@body('Parse_JSON')['TradeAgreementLine']",
+                "actions": {
+                    "Insert_row_(V2)": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_mudtrac"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "ACCOUNTRELATION": "@{items('For_each_line_in_Trade_Agreement')['AccountRelation']}",
+                                "NAME": "@body('Parse_JSON')['Name']",
+                                "INVENTSITEID": "@{items('For_each_line_in_Trade_Agreement')['InventSiteId']}",
+                                "ITEMRELATION": "@{items('For_each_line_in_Trade_Agreement')['ItemRelation']}",
+                                "FROMDATE": "@{if(equals(items('For_each_line_in_Trade_Agreement')['FromDate'],''),'1900-01-01',items('For_each_line_in_Trade_Agreement')['FromDate'])}",
+                                "TODATE": "@{if(equals(items('For_each_line_in_Trade_Agreement')['ToDate'],''),'1900-01-01',items('For_each_line_in_Trade_Agreement')['ToDate'])}",
+                                "AMOUNT": "@items('For_each_line_in_Trade_Agreement')['Amount']",
+                                "CURRENCY": "@{items('For_each_line_in_Trade_Agreement')['Currency']}",
+                                "DATAAREAID": "@body('Parse_JSON')['DataAreaId']"
+                            },
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('MUDTrackServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('MUDTrackDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365_Mudtrac_Pricebook]'))}/items"
+                        },
+                        "runAfter": {},
+                        "trackedProperties": {
+                            "AccountRelation": "@{body('Insert_row_(V2)')['ACCOUNTRELATION']}",
+                            "InventSiteId": "@{body('Insert_row_(V2)')['INVENTSITEID']}",
+                            "ItemRelation": "@{body('Insert_row_(V2)')['ITEMRELATION']}"
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Condition": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Get_rows_(V2)": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql_mudtrac"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('MUDTrackServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('MUDTrackDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365_Mudtrac_Pricebook]'))}/items",
+                    "queries": {
+                        "$filter": "ACCOUNTRELATION eq '@{body('Parse_JSON')['TradeAgreementLine'][0]['AccountRelation']}'"
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('Compose')",
+                    "schema": {
+                        "$schema": "http://json-schema.org/draft-04/schema#",
+                        "properties": {
+                            "BusinessEventId": {
+                                "type": "string"
+                            },
+                            "ControlNumber": {
+                                "type": "integer"
+                            },
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "EventId": {
+                                "type": "string"
+                            },
+                            "EventTime": {
+                                "type": "string"
+                            },
+                            "JournalNum": {
+                                "type": "string"
+                            },
+                            "MajorVersion": {
+                                "type": "integer"
+                            },
+                            "MinorVersion": {
+                                "type": "integer"
+                            },
+                            "Name": {
+                                "type": "string"
+                            },
+                            "TradeAgreementLine": {
+                                "items": [
+                                    {
+                                        "properties": {
+                                            "AccountRelation": {
+                                                "type": "string"
+                                            },
+                                            "Amount": {
+                                                "type": "number"
+                                            },
+                                            "Currency": {
+                                                "type": "string"
+                                            },
+                                            "FromDate": {
+                                                "type": "string"
+                                            },
+                                            "InventSiteId": {
+                                                "type": "string"
+                                            },
+                                            "ItemRelation": {
+                                                "type": "string"
+                                            },
+                                            "ToDate": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "AccountRelation",
+                                            "Amount",
+                                            "Currency",
+                                            "FromDate",
+                                            "InventSiteId",
+                                            "ItemRelation",
+                                            "ToDate"
+                                        ],
+                                        "type": "object"
+                                    }
+                                ],
+                                "type": "array"
+                            }
+                        },
+                        "required": [
+                            "BusinessEventId",
+                            "ControlNumber",
+                            "DataAreaId",
+                            "EventId",
+                            "EventTime",
+                            "JournalNum",
+                            "MajorVersion",
+                            "MinorVersion",
+                            "Name",
+                            "TradeAgreementLine"
+                        ],
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "MudTrac",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

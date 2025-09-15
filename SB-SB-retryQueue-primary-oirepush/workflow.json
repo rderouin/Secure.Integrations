@@ -1,0 +1,389 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each": {
+                "type": "Foreach",
+                "foreach": "@variables('MessageArray')",
+                "actions": {
+                    "Compose": {
+                        "type": "Compose",
+                        "inputs": "@items('For_each')",
+                        "runAfter": {
+                            "Set_variable": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Condition_check_if_invoice_date_exists": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "not": {
+                                        "equals": [
+                                            "@body('Parse_JSON')?['InvoiceDate']",
+                                            "@null"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Condition_check_if_invoice_date_is_in_past": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "less": [
+                                                "@body('Parse_JSON')?['InvoiceDate']",
+                                                "@convertFromUtc(utcNow(),'Mountain Standard Time')"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Set_variable_3": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "SendFlag",
+                                            "value": true
+                                        },
+                                        "runAfter": {}
+                                    }
+                                },
+                                "runAfter": {},
+                                "else": {
+                                    "actions": {
+                                        "Send_message_to_retry": {
+                                            "type": "ServiceProvider",
+                                            "inputs": {
+                                                "parameters": {
+                                                    "entityName": "open-invoice-retry",
+                                                    "message": {
+                                                        "contentData": "@outputs('Compose')",
+                                                        "contentType": "text/plain"
+                                                    }
+                                                },
+                                                "serviceProviderConfiguration": {
+                                                    "connectionName": "PrivateServiceBus",
+                                                    "operationId": "sendMessage",
+                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                }
+                                            },
+                                            "runAfter": {}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Compose_payload": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Set_variable_2": {
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "SendFlag",
+                                        "value": true
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    },
+                    "Set_variable": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "SendFlag",
+                            "value": false
+                        },
+                        "runAfter": {}
+                    },
+                    "Condition_send": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@variables('SendFlag')",
+                                        true
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Send_message": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "open-invoice-primary",
+                                        "message": {
+                                            "contentData": "@outputs('Compose_payload')",
+                                            "contentType": "text",
+                                            "to": "retry"
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {}
+                            },
+                            "Delay": {
+                                "type": "Wait",
+                                "inputs": {
+                                    "interval": {
+                                        "count": 10,
+                                        "unit": "Second"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Send_message": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Condition_check_if_invoice_date_exists": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Parse_JSON": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('Parse_JSON_content')?['contentData']",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "ImageInvoiceId": {
+                                        "type": "string"
+                                    },
+                                    "InvoiceDate": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON_content": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Parse_JSON_content": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@outputs('Compose')",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "contentData": {
+                                        "type": "string"
+                                    },
+                                    "contentType": {
+                                        "type": "string"
+                                    },
+                                    "userProperties": {
+                                        "type": "object",
+                                        "properties": {
+                                            "diagnostic-Id": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "messageId": {
+                                        "type": "string"
+                                    },
+                                    "scheduledEnqueueTimeUtc": {
+                                        "type": "string"
+                                    },
+                                    "timeToLive": {
+                                        "type": "string"
+                                    },
+                                    "deliveryCount": {
+                                        "type": "integer"
+                                    },
+                                    "enqueuedSequenceNumber": {
+                                        "type": "integer"
+                                    },
+                                    "enqueuedTimeUtc": {
+                                        "type": "string"
+                                    },
+                                    "lockedUntilUtc": {
+                                        "type": "string"
+                                    },
+                                    "lockToken": {
+                                        "type": "string"
+                                    },
+                                    "sequenceNumber": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Compose": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Compose_payload": {
+                        "type": "Compose",
+                        "inputs": "@body('Parse_JSON')",
+                        "runAfter": {
+                            "Parse_JSON": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Until": [
+                        "Succeeded"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "repetitions": 1
+                    }
+                }
+            },
+            "Initialize_variable_SendFlag": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SendFlag",
+                            "type": "boolean"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_variable_Counter": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Counter",
+                            "type": "integer",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_SendFlag": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_MessageArray": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "MessageArray",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_Counter": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Until": {
+                "type": "Until",
+                "expression": "@equals(variables('Counter'), 0)",
+                "limit": {
+                    "count": 60,
+                    "timeout": "PT1H"
+                },
+                "actions": {
+                    "Get_messages_from_a_queue": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "queueName": "open-invoice-retry"
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "getMessagesFromQueue",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Set_variable_counter": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "Counter",
+                            "value": "@length(outputs('Get_messages_from_a_queue')?['body'])"
+                        },
+                        "runAfter": {
+                            "Get_messages_from_a_queue": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_MessageArray": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "MessageArray",
+                            "value": "@outputs('Compose_array')"
+                        },
+                        "runAfter": {
+                            "Compose_array": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Compose_array": {
+                        "type": "Compose",
+                        "inputs": "@union(outputs('Get_messages_from_a_queue')?['body'],variables('MessageArray'))",
+                        "runAfter": {
+                            "Set_variable_counter": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_MessageArray": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "Recurrence": {
+                "type": "Recurrence",
+                "recurrence": {
+                    "frequency": "Day",
+                    "interval": 1,
+                    "timeZone": "Mountain Standard Time",
+                    "schedule": {
+                        "hours": [
+                            "4"
+                        ],
+                        "minutes": [
+                            0
+                        ]
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

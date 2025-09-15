@@ -1,0 +1,169 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "Description": {
+                                "type": "string"
+                            },
+                            "InvoiceId": {
+                                "type": "string"
+                            },
+                            "JournalNum": {
+                                "type": "string"
+                            },
+                            "LegalEntity": {
+                                "type": "string"
+                            },
+                            "OIInvoice": {
+                                "type": "string"
+                            },
+                            "PaidStatus": {
+                                "type": "string"
+                            },
+                            "PaymentAmount": {
+                                "type": "number"
+                            },
+                            "PaymentDate": {
+                                "type": "string"
+                            },
+                            "PaymentId": {
+                                "type": "string"
+                            },
+                            "UnsettledAmount": {
+                                "type": "number"
+                            },
+                            "VendAccount": {
+                                "type": "string"
+                            },
+                            "PaymentAmountC": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {}
+            },
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "open-invoice-post-update",
+                        "message": {
+                            "contentData": {
+                                "MessageBody": "Payment: @{body('Parse_JSON')?['PaymentId']} - @{body('Parse_JSON')?['PaymentAmountC']} - @{variables('PaymentDateC')}",
+                                "OIDocumentID": "@{body('Parse_JSON')?['OIInvoice']}",
+                                "OIInvoiceReceived": "0",
+                                "RetryQueue": "0"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_PaymentDate": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "HTTP_for_payment_posting": {
+                "type": "Http",
+                "inputs": {
+                    "method": "POST",
+                    "uri": "@{parameters('OIUrl')}/docp/events/supply-chain/v1/invoice.payment.update",
+                    "body": {
+                        "events": [
+                            {
+                                "data": {
+                                    "eventContext": {
+                                        "itemID": "@{body('Parse_JSON')?['OIInvoice']}"
+                                    },
+                                    "transform": {
+                                        "invoice": {
+                                            "payment": {
+                                                "action": "Post",
+                                                "description": "@{body('Parse_JSON')?['Description']}",
+                                                "paymentDate": "@{body('Parse_JSON')?['PaymentDate']}",
+                                                "paymentId": "@{body('Parse_JSON')?['PaymentId']}",
+                                                "paymentTotal": "@body('Parse_JSON')?['PaymentAmount']"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "authentication": {
+                        "type": "ClientCertificate",
+                        "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                        "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+                    }
+                },
+                "runAfter": {
+                    "Send_message": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Terminate": {
+                "type": "Terminate",
+                "inputs": {
+                    "runStatus": "Succeeded"
+                },
+                "runAfter": {
+                    "HTTP_for_payment_posting": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_PaymentDate": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PaymentDateC",
+                            "type": "string",
+                            "value": "@{replace(body('Parse_JSON')?['PaymentDate'],'-','/')}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "oi-apinvoice-payment-posting",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

@@ -1,0 +1,302 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_'Account_Response'_(Object)": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Account Response",
+                            "type": "object"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "If_a_valid_AccountType_was_provided": {
+                "type": "If",
+                "expression": {
+                    "or": [
+                        {
+                            "equals": [
+                                "@triggerBody()?['AccountType']",
+                                "Customer"
+                            ]
+                        },
+                        {
+                            "equals": [
+                                "@triggerBody()?['AccountType']",
+                                "Vendor"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "If_the_account_type_is_'Vendor'": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@triggerBody()?['AccountType']",
+                                        "Vendor"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Get_Vendor_Account": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "dynamicsax-2"
+                                        }
+                                    },
+                                    "method": "get",
+                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('VendorsV2'))}/items",
+                                    "queries": {
+                                        "$filter": "dataAreaId eq '@{triggerBody()?['DataAreaId']}' and VendorAccountNumber eq '@{triggerBody()?['AccountNumber']}'",
+                                        "$top": 1,
+                                        "cross-company": true
+                                    }
+                                },
+                                "runAfter": {}
+                            },
+                            "Set_Account_Response_(Vendor)": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "Account Response",
+                                    "value": "@body('Get_Vendor_Account')"
+                                },
+                                "runAfter": {
+                                    "Get_Vendor_Account": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {},
+                        "else": {
+                            "actions": {
+                                "Get_Customer_Account": {
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "referenceName": "dynamicsax-2"
+                                            }
+                                        },
+                                        "method": "get",
+                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('CustomersV3'))}/items",
+                                        "queries": {
+                                            "$filter": "dataAreaId eq '@{triggerBody()?['DataAreaId']}' and CustomerAccount eq '@{triggerBody()?['AccountNumber']}'",
+                                            "$top": 1,
+                                            "cross-company": true
+                                        }
+                                    },
+                                    "runAfter": {}
+                                },
+                                "Set_Account_Response_(Customer)": {
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "Account Response",
+                                        "value": "@body('Get_Customer_Account')"
+                                    },
+                                    "runAfter": {
+                                        "Get_Customer_Account": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "If_the_account_was_found": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "not": {
+                                        "equals": [
+                                            "@empty(variables('Account Response'))",
+                                            true
+                                        ]
+                                    }
+                                },
+                                {
+                                    "greater": [
+                                        "@length(variables('Account Response')?['value'])",
+                                        0
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Get_Payment_Terms": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "dynamicsax-2"
+                                        }
+                                    },
+                                    "method": "get",
+                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('PaymentTerms'))}/items",
+                                    "queries": {
+                                        "$filter": "dataAreaId eq '@{triggerBody()?['DataAreaId']}' and Name eq '@{if(equals(triggerBody()?['AccountType'], 'Vendor'), variables('Account Response')?['value'][0]['DefaultPaymentTermsName'], variables('Account Response')?['value'][0]['PaymentTerms'])}'",
+                                        "$top": 1,
+                                        "cross-company": true
+                                    }
+                                },
+                                "runAfter": {}
+                            },
+                            "If_the_payment_term_was_found": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "not": {
+                                                "equals": [
+                                                    "@empty(variables('Account Response'))",
+                                                    true
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "greater": [
+                                                "@length(variables('Account Response')?['value'])",
+                                                0
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Return_Payment_Term_in_Days": {
+                                        "type": "Response",
+                                        "kind": "http",
+                                        "inputs": {
+                                            "statusCode": 200,
+                                            "headers": {
+                                                "Content-Type": "application/json"
+                                            },
+                                            "body": {
+                                                "DataAreaId": "@triggerBody()?['DataAreaId']",
+                                                "AccountType": "@triggerBody()?['AccountType']",
+                                                "AccountNumber": "@triggerBody()?['AccountNumber']",
+                                                "PaymentTerm": "@{if(equals(triggerBody()?['AccountType'], 'Vendor'), variables('Account Response')?['value'][0]['DefaultPaymentTermsName'], variables('Account Response')?['value'][0]['PaymentTerms'])}",
+                                                "Days": "@int(body('Get_Payment_Terms')?['value'][0]['NumberOfDays'])"
+                                            }
+                                        },
+                                        "runAfter": {}
+                                    }
+                                },
+                                "runAfter": {
+                                    "Get_Payment_Terms": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "else": {
+                                    "actions": {
+                                        "Return_Zero_Days_(2)": {
+                                            "type": "Response",
+                                            "kind": "http",
+                                            "inputs": {
+                                                "statusCode": 200,
+                                                "headers": {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                "body": {
+                                                    "DataAreaId": "@triggerBody()?['DataAreaId']",
+                                                    "AccountType": "@triggerBody()?['AccountType']",
+                                                    "AccountNumber": "@triggerBody()?['AccountNumber']",
+                                                    "PaymentTerm": null,
+                                                    "Days": 0
+                                                }
+                                            },
+                                            "runAfter": {}
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "If_the_account_type_is_'Vendor'": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Return_Zero_Days_(1)": {
+                                    "type": "Response",
+                                    "kind": "http",
+                                    "inputs": {
+                                        "statusCode": 200,
+                                        "headers": {
+                                            "Content-Type": "application/json"
+                                        },
+                                        "body": {
+                                            "DataAreaId": "@triggerBody()?['DataAreaId']",
+                                            "AccountType": "@triggerBody()?['AccountType']",
+                                            "AccountNumber": "@triggerBody()?['AccountNumber']",
+                                            "PaymentTerm": null,
+                                            "Days": 0
+                                        }
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_'Account_Response'_(Object)": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Return_HTTP_500": {
+                            "type": "Response",
+                            "kind": "http",
+                            "inputs": {
+                                "statusCode": 500,
+                                "headers": {
+                                    "Content-Type": "text/plain"
+                                },
+                                "body": "An AccountType of 'Customer' or 'Vendor' must be provided."
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "AccountNumber": {
+                                "type": "string"
+                            },
+                            "AccountType": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

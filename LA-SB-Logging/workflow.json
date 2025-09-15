@@ -1,0 +1,156 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "Payload": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "DateTime": {
+                                            "type": "string"
+                                        },
+                                        "Identifier": {
+                                            "type": "string"
+                                        },
+                                        "MessageBody": {
+                                            "type": "string"
+                                        },
+                                        "Workflow": {
+                                            "type": "string"
+                                        },
+                                        "keyfield": {
+                                            "type": "string"
+                                        },
+                                        "status": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "Identifier",
+                                        "status"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "Send_an_alert_email": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "office365"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "To": "rpayavula@secure-energy.com",
+                        "Subject": "OIInvoice_Integrations-Logging Error @{workflow()['run']['name']}",
+                        "Body": "<p>Hi,<br>\n<br>\nPlease find below error while logging to database<br>\n<br>\n@{body('Insert_row_Logging')}<br>\n<br>\nThanks,<br>\nLogic App Logging App</p>",
+                        "Importance": "Normal"
+                    },
+                    "path": "/v2/Mail"
+                },
+                "runAfter": {
+                    "For_each": [
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            },
+            "Terminate": {
+                "type": "Terminate",
+                "inputs": {
+                    "runStatus": "Failed"
+                },
+                "runAfter": {
+                    "Send_an_alert_email": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "For_each": {
+                "type": "Foreach",
+                "foreach": "@body('Parse_JSON')?['Payload']",
+                "actions": {
+                    "Insert_row_Logging": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_auditLogging"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "WorkFlow": "@items('For_each')?['Workflow']",
+                                "Identifier": "@items('For_each')?['Identifier']",
+                                "MessageBody": "@items('For_each')?['MessageBody']",
+                                "DateTime": "@items('For_each')?['DateTime']",
+                                "keyfield": "@items('For_each')?['keyfield']",
+                                "status": "@items('For_each')?['status']"
+                            },
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[IntegrationLog]'))}/items"
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "integration-logs",
+                        "subscriptionName": "hmm-logs",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

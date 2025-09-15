@@ -1,0 +1,461 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "SetContent": {
+                "type": "SetVariable",
+                "inputs": {
+                    "name": "Content",
+                    "value": "@{body('Read_blob_content')?['content']}"
+                },
+                "runAfter": {
+                    "Read_blob_content": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Refactor_data": {
+                "type": "JavaScriptCode",
+                "inputs": {
+                    "code": "var str = workflowContext.actions.SetContent.inputs.value;\r\nconst delimiter = ',';\r\nconst lineBreak = '\\r\\n';\r\nvar lines = str.split(lineBreak);\r\nvar headers = lines[0].split(delimiter);\r\nheaders.push('Correlationid');\r\nvar legalEntity = '';\r\nvar result = [];\r\nfor(var i = 1; i < lines.length; i++){\r\n    var obj = {};\r\n    var currentline = lines[i].split(delimiter);\r\n\tvar insertData = false;\r\n    for(var j = 0; j < headers.length - 1; j++){\r\n        if (headers[j] == ''){\r\n            legalEntity = currentline[j];\r\n        }\r\n\t\tif (currentline[j] != undefined && currentline[j].toString() != ''){\r\n\t\t\tinsertData = true;\r\n\t\t}\r\n\t\tobj[headers[j]] = currentline[j];\r\n    }\r\n\tif (insertData === true){\r\n\t\tobj[headers[headers.length - 1]] = workflowContext.actions.CorrelationId.inputs.variables[0].value;\r\n\t\tresult.push(obj);\r\n\t}\r\n}\r\nvar obj = {\r\n    csvResult : result,\r\n    legalEntity : legalEntity\r\n};\r\nreturn obj;"
+                },
+                "runAfter": {
+                    "SetContent": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Create_CSV_table": {
+                "type": "Table",
+                "inputs": {
+                    "from": "@outputs('Refactor_data')?['csvResult']",
+                    "format": "CSV"
+                },
+                "runAfter": {
+                    "Parse_CSV_Result": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "HTTP": {
+                "type": "Http",
+                "inputs": {
+                    "method": "POST",
+                    "uri": "@{concat(parameters('D365FO_url'), if(endsWith(parameters('D365FO_url'), '/'), '', '/'), 'api/connector/enqueue/', parameters('TradeAgreementRecurringIntegrationId'), '?&entity=Trade agreement processing', '&company=', variables('LegalEntity'))}",
+                    "headers": {
+                        "x-ms-dyn-externalidentifier": "@triggerBody()?['body']?['name']"
+                    },
+                    "body": "@body('Create_CSV_table')",
+                    "authentication": {
+                        "audience": "00000015-0000-0000-c000-000000000000",
+                        "authority": "https://login.windows.net",
+                        "clientId": "@parameters('APIKey')",
+                        "secret": "@parameters('APISecret')",
+                        "tenant": "@parameters('TenantGuid')",
+                        "type": "ActiveDirectoryOAuth"
+                    }
+                },
+                "runAfter": {
+                    "Create_Header": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Create_Header": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "dynamicsax"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "dataAreaId": "@variables('LegalEntity')",
+                        "CorrelationID": "@variables('CorrelationId')",
+                        "Status": "Created",
+                        "UserName": "@body('Message')?['Payload']?['UpdatedBy']",
+                        "FileName": "@body('Message')?['Payload']?['UploadFileName']"
+                    },
+                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSTAFileProcessings'))}/items"
+                },
+                "runAfter": {
+                    "Set_Legal_Entity": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Set_Legal_Entity": {
+                "type": "SetVariable",
+                "inputs": {
+                    "name": "LegalEntity",
+                    "value": "@body('Parse_CSV_Result')?['LEGALENTITY']"
+                },
+                "runAfter": {
+                    "Create_CSV_table": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_CSV_Result": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('Refactor_data')['csvResult'][0]",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "LEGALENTITY": {
+                                "type": "string"
+                            },
+                            "CUSTACCOUNT": {
+                                "type": "string"
+                            },
+                            "SALESQUOTETYPE": {
+                                "type": "string"
+                            },
+                            "CURRENCY": {
+                                "type": "string"
+                            },
+                            "ACCOUNTRELATION": {
+                                "type": "string"
+                            },
+                            "SOURCELOCATION": {
+                                "type": "string"
+                            },
+                            "ITEMID": {
+                                "type": "string"
+                            },
+                            "SITEID": {
+                                "type": "string"
+                            },
+                            "UNITID": {
+                                "type": "string"
+                            },
+                            "AMOUNT": {
+                                "type": "string"
+                            },
+                            "FROMDATE": {
+                                "type": "string"
+                            },
+                            "TODATE": {
+                                "type": "string"
+                            },
+                            "Correlationid": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Refactor_data": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@outputs('HTTP')['statusCode']",
+                                200
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Upload_blob_to_storage_container": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "containerName": "trade-agreements",
+                                "blobName": "@concat(parameters('TradeAgreementBlobStorageSuccessPath'), '/',body('Message')?['Payload']?['Id'])",
+                                "content": "@variables('Content')",
+                                "overrideIfExists": "@true"
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "integration_storage",
+                                "operationId": "uploadBlob",
+                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Get_blob_SAS_URI_using_path": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Upload_blob_to_storage_container_2": {
+                            "type": "ServiceProvider",
+                            "inputs": {
+                                "parameters": {
+                                    "containerName": "trade-agreements",
+                                    "blobName": "@concat(parameters('TradeAgreementBlobStorageFailedPath'), '/',body('Message')?['Payload']?['Id'])",
+                                    "content": "@variables('Content')",
+                                    "overrideIfExists": "@true"
+                                },
+                                "serviceProviderConfiguration": {
+                                    "connectionName": "integration_storage",
+                                    "operationId": "uploadBlob",
+                                    "serviceProviderId": "/serviceProviders/AzureBlob"
+                                }
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "CorrelationId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CorrelationId",
+                            "type": "string",
+                            "value": "@guid()"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "InitializeBlobName": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Init_Content": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Content",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "CorrelationId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Init_Legal_Entity": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "LegalEntity",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Init_Content": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Read_blob_content": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@variables('ContainerName')",
+                        "blobName": "@variables('BlobName')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "integration_storage",
+                        "operationId": "readBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "Init_Legal_Entity": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Get_blob_SAS_URI_using_path": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@variables('ContainerName')",
+                        "blobName": "@variables('BlobName')",
+                        "permissions": "Read,Write,List,Delete"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "integration_storage",
+                        "operationId": "getBlobSASUri",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "HTTP": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Delete_blob": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "containerName": "@variables('ContainerName')",
+                        "blobName": "@variables('BlobName')"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "integration_storage",
+                        "operationId": "deleteBlob",
+                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                    }
+                },
+                "runAfter": {
+                    "Condition": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Message": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "Blobs": {},
+                            "Payload": {
+                                "type": "object",
+                                "properties": {
+                                    "OriginalFileName": {
+                                        "type": "string"
+                                    },
+                                    "UploadFileName": {
+                                        "type": "string"
+                                    },
+                                    "BlobPath": {
+                                        "type": "string"
+                                    },
+                                    "Uri": {
+                                        "type": "string"
+                                    },
+                                    "CreatedBy": {
+                                        "type": "string"
+                                    },
+                                    "CreatedById": {
+                                        "type": "string"
+                                    },
+                                    "CreatedAt": {
+                                        "type": "string"
+                                    },
+                                    "UpdatedAt": {
+                                        "type": "string"
+                                    },
+                                    "UpdatedBy": {
+                                        "type": "string"
+                                    },
+                                    "UpdatedById": {
+                                        "type": "string"
+                                    },
+                                    "DocumentType": {
+                                        "type": "string"
+                                    },
+                                    "EntityType": {
+                                        "type": "string"
+                                    },
+                                    "Id": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "InitializeContainerNameFromMessage": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ContainerName",
+                            "type": "string",
+                            "value": "@{split(body('Message')?['Payload']?['Uri'], '/')[3]}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Compose": {
+                "type": "Compose",
+                "inputs": "@split(body('Message')?['Payload']?['Uri'], '/')",
+                "runAfter": {
+                    "Message": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "InitializeBlobName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BlobName",
+                            "type": "string",
+                            "value": "@body('Message')?['Payload']?['BlobPath']"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "InitializeContainerNameFromMessage": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "enterprise-entity-updates",
+                        "subscriptionName": "d365fo-TradeAgreementUploads",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

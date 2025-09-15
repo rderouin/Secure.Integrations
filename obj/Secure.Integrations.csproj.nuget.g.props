@@ -1,0 +1,2261 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">C:\Users\rdero\.nuget\packages\</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.14.0</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="C:\Users\rdero\.nuget\packages\" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\annotations-23.0.0.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\annotations-23.0.0.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\annotations-23.0.0.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\annotations-23.0.0.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\checker-qual-3.12.0.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\checker-qual-3.12.0.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\checker-qual-3.12.0.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\checker-qual-3.12.0.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\error_prone_annotations-2.7.1.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\error_prone_annotations-2.7.1.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\error_prone_annotations-2.7.1.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\error_prone_annotations-2.7.1.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\failureaccess-1.0.1.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\failureaccess-1.0.1.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\failureaccess-1.0.1.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\failureaccess-1.0.1.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\guava-31.0.1-jre.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\guava-31.0.1-jre.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\guava-31.0.1-jre.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\guava-31.0.1-jre.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\j2objc-annotations-1.3.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\j2objc-annotations-1.3.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\j2objc-annotations-1.3.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\j2objc-annotations-1.3.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-annotations-2.13.2.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-annotations-2.13.2.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\jackson-annotations-2.13.2.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\jackson-annotations-2.13.2.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-core-2.13.2.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-core-2.13.2.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\jackson-core-2.13.2.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\jackson-core-2.13.2.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-databind-2.13.2.1.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-databind-2.13.2.1.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\jackson-databind-2.13.2.1.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\jackson-databind-2.13.2.1.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-datatype-jsr310-2.13.2.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jackson-datatype-jsr310-2.13.2.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\jackson-datatype-jsr310-2.13.2.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\jackson-datatype-jsr310-2.13.2.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jsr305-3.0.2.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\jsr305-3.0.2.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\jsr305-3.0.2.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\jsr305-3.0.2.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\lib\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\lib\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\lib\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\lib\listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\org.microsoft.functions-1.0.0.jar" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JAR\azure-functions\functionApp\org.microsoft.functions-1.0.0.jar')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JAR\azure-functions\functionApp\org.microsoft.functions-1.0.0.jar</TargetPath>
+      <DestinationSubDirectory>JAR\azure-functions\functionApp\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JAR\azure-functions\functionApp\org.microsoft.functions-1.0.0.jar</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\customError.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\customError.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Analysis\customError.js</TargetPath>
+      <DestinationSubDirectory>JS\Analysis\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Analysis\customError.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\helper.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\helper.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Analysis\helper.js</TargetPath>
+      <DestinationSubDirectory>JS\Analysis\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Analysis\helper.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\index.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\index.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Analysis\index.js</TargetPath>
+      <DestinationSubDirectory>JS\Analysis\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Analysis\index.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\userCodeDependencyHandler.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Analysis\userCodeDependencyHandler.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Analysis\userCodeDependencyHandler.js</TargetPath>
+      <DestinationSubDirectory>JS\Analysis\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Analysis\userCodeDependencyHandler.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\customError.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\customError.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Runtime\customError.js</TargetPath>
+      <DestinationSubDirectory>JS\Runtime\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Runtime\customError.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\functionInputHandler.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\functionInputHandler.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Runtime\functionInputHandler.js</TargetPath>
+      <DestinationSubDirectory>JS\Runtime\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Runtime\functionInputHandler.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\helper.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\helper.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Runtime\helper.js</TargetPath>
+      <DestinationSubDirectory>JS\Runtime\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Runtime\helper.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\index.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\Runtime\index.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\Runtime\index.js</TargetPath>
+      <DestinationSubDirectory>JS\Runtime\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\Runtime\index.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\.bin\esparse" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\.bin\esparse')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\.bin\esparse</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\.bin\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\.bin\esparse</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\.bin\esvalidate" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\.bin\esvalidate')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\.bin\esvalidate</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\.bin\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\.bin\esvalidate</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\.npmrc" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\.npmrc')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\esprima\.npmrc</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\esprima\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\esprima\.npmrc</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\LICENSE.BSD" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\LICENSE.BSD')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\esprima\LICENSE.BSD</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\esprima\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\esprima\LICENSE.BSD</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\dist\esprima.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\dist\esprima.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\esprima\dist\esprima.js</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\esprima\dist\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\esprima\dist\esprima.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\package.json" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\esprima\package.json')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\esprima\package.json</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\esprima\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\esprima\package.json</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\.babelrc" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\.babelrc')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\estraverse\.babelrc</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\estraverse\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\estraverse\.babelrc</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\.jshintrc" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\.jshintrc')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\estraverse\.jshintrc</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\estraverse\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\estraverse\.jshintrc</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\.npmrc" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\.npmrc')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\estraverse\.npmrc</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\estraverse\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\estraverse\.npmrc</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\LICENSE.BSD" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\LICENSE.BSD')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\estraverse\LICENSE.BSD</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\estraverse\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\estraverse\LICENSE.BSD</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\estraverse.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\estraverse.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\estraverse\estraverse.js</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\estraverse\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\estraverse\estraverse.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\gulpfile.js" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\gulpfile.js')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\estraverse\gulpfile.js</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\estraverse\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\estraverse\gulpfile.js</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\package.json" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\JS\node_modules\estraverse\package.json')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>JS\node_modules\estraverse\package.json</TargetPath>
+      <DestinationSubDirectory>JS\node_modules\estraverse\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>JS\node_modules\estraverse\package.json</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\.azurefunctions\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\.azurefunctions\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\.azurefunctions\Microsoft.Azure.Functions.Worker.Extensions.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Extensions.FunctionMetadataLoader.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Extensions.FunctionMetadataLoader.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Extensions.FunctionMetadataLoader.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\.azurefunctions\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Extensions.FunctionMetadataLoader.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Host.Storage.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Host.Storage.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Host.Storage.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\.azurefunctions\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\.azurefunctions\Microsoft.Azure.WebJobs.Host.Storage.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.WindowsAzure.Storage.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\Microsoft.WindowsAzure.Storage.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\.azurefunctions\Microsoft.WindowsAzure.Storage.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\.azurefunctions\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\.azurefunctions\Microsoft.WindowsAzure.Storage.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\function.deps.json" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\function.deps.json')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\.azurefunctions\function.deps.json</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\.azurefunctions\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\.azurefunctions\function.deps.json</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\ref\Microsoft.Azure.Functions.Worker.Extensions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\.azurefunctions\ref\Microsoft.Azure.Functions.Worker.Extensions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\.azurefunctions\ref\Microsoft.Azure.Functions.Worker.Extensions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\.azurefunctions\ref\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\.azurefunctions\ref\Microsoft.Azure.Functions.Worker.Extensions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Azure.Core.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Azure.Core.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Azure.Core.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Azure.Core.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.Attributes.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.Attributes.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Bond.Attributes.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Bond.Attributes.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.IO.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.IO.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Bond.IO.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Bond.IO.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.JSON.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.JSON.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Bond.JSON.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Bond.JSON.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.Reflection.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.Reflection.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Bond.Reflection.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Bond.Reflection.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Bond.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Bond.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Bond.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Flow.Functions.NetFxWorker.Package.xml" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Flow.Functions.NetFxWorker.Package.xml')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Flow.Functions.NetFxWorker.Package.xml</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Flow.Functions.NetFxWorker.Package.xml</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Google.Protobuf.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Google.Protobuf.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Google.Protobuf.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Google.Protobuf.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Grpc.Core.Api.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Grpc.Core.Api.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Grpc.Core.Api.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Grpc.Core.Api.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Grpc.Core.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Grpc.Core.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Grpc.Core.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Grpc.Core.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Charsets.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Charsets.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IKVM.OpenJDK.Charsets.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IKVM.OpenJDK.Charsets.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Core.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Core.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IKVM.OpenJDK.Core.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IKVM.OpenJDK.Core.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Text.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Text.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IKVM.OpenJDK.Text.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IKVM.OpenJDK.Text.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Util.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.Util.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IKVM.OpenJDK.Util.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IKVM.OpenJDK.Util.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.XML.API.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.OpenJDK.XML.API.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IKVM.OpenJDK.XML.API.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IKVM.OpenJDK.XML.API.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.Runtime.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IKVM.Runtime.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IKVM.Runtime.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IKVM.Runtime.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxEvents.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxEvents.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxEvents.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxEvents.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxEvents.lib" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxEvents.lib')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxEvents.lib</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxEvents.lib</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxHealth.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxHealth.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxHealth.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxHealth.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxHealth.lib" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxHealth.lib')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxHealth.lib</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxHealth.lib</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetricExtensions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetricExtensions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxMetricExtensions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxMetricExtensions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetricExtensionsManaged.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetricExtensionsManaged.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxMetricExtensionsManaged.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxMetricExtensionsManaged.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetrics.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetrics.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxMetrics.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxMetrics.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetrics.lib" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\IfxMetrics.lib')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\IfxMetrics.lib</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\IfxMetrics.lib</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.ApplicationInsights.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.ApplicationInsights.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.ApplicationInsights.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.ApplicationInsights.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Core.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Core.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Functions.Worker.Core.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Functions.Worker.Core.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Abstractions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Abstractions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Abstractions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Abstractions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Http.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Http.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Http.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Functions.Worker.Extensions.Http.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Grpc.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.Grpc.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Functions.Worker.Grpc.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Functions.Worker.Grpc.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Functions.Worker.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Functions.Worker.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Functions.Worker.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.KeyVault.Core.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.KeyVault.Core.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.KeyVault.Core.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.KeyVault.Core.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Abstractions.NetFx.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.Common.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.BuiltIn.Xslt.NetFx.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Common.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Common.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Common.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Common.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Common.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Common.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Common.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Common.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Common.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.EventSource.Edge.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe.config" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe.config')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe.config</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.exe.config</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Functions.NetFxWorker.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.Languages.Common.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Abstractions.NetFx.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.Common.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Azure.Workflows.ServiceProviders.Sap.NetFx.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Bcl.AsyncInterfaces.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Bcl.AsyncInterfaces.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Bcl.AsyncInterfaces.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Bcl.AsyncInterfaces.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Events.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Events.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Events.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Events.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Health.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Health.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Health.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Health.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Metrics.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Metrics.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Metrics.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Cloud.InstrumentationFramework.Metrics.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.CodeAnalysis.CSharp.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.CodeAnalysis.CSharp.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.CodeAnalysis.CSharp.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.CodeAnalysis.CSharp.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.CodeAnalysis.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.CodeAnalysis.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.CodeAnalysis.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.CodeAnalysis.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.Abstractions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.Abstractions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.Abstractions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.Abstractions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.Binder.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.Binder.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.Binder.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.Binder.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.CommandLine.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.CommandLine.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.CommandLine.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.CommandLine.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.EnvironmentVariables.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.EnvironmentVariables.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.EnvironmentVariables.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.EnvironmentVariables.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.FileExtensions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.FileExtensions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.FileExtensions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.FileExtensions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.Json.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.Json.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.Json.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.Json.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.UserSecrets.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.UserSecrets.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.UserSecrets.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.UserSecrets.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Configuration.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Configuration.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Configuration.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.DependencyInjection.Abstractions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.DependencyInjection.Abstractions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.DependencyInjection.Abstractions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.DependencyInjection.Abstractions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.DependencyInjection.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.DependencyInjection.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.DependencyInjection.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.DependencyInjection.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.FileProviders.Abstractions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.FileProviders.Abstractions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.FileProviders.Abstractions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.FileProviders.Abstractions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.FileProviders.Physical.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.FileProviders.Physical.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.FileProviders.Physical.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.FileProviders.Physical.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.FileSystemGlobbing.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.FileSystemGlobbing.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.FileSystemGlobbing.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.FileSystemGlobbing.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Hosting.Abstractions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Hosting.Abstractions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Hosting.Abstractions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Hosting.Abstractions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Hosting.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Hosting.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Hosting.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Hosting.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Abstractions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Abstractions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Logging.Abstractions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Logging.Abstractions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Configuration.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Configuration.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Logging.Configuration.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Logging.Configuration.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Console.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Console.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Logging.Console.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Logging.Console.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Debug.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.Debug.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Logging.Debug.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Logging.Debug.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.EventLog.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.EventLog.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Logging.EventLog.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Logging.EventLog.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.EventSource.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.EventSource.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Logging.EventSource.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Logging.EventSource.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Logging.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Logging.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Logging.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Options.ConfigurationExtensions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Options.ConfigurationExtensions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Options.ConfigurationExtensions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Options.ConfigurationExtensions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Options.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Options.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Options.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Options.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Primitives.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Extensions.Primitives.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Extensions.Primitives.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Extensions.Primitives.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.Common.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.Common.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Sap.Common.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Sap.Common.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.Common.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.Common.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Sap.Common.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Sap.Common.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.Common.xml" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.Common.xml')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Sap.Common.xml</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Sap.Common.xml</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.NCo.Common.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.NCo.Common.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Sap.NCo.Common.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Sap.NCo.Common.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.NCo.Common.pdb" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.Sap.NCo.Common.pdb')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.Sap.NCo.Common.pdb</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.Sap.NCo.Common.pdb</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.WindowsAzure.ResourceStack.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.WindowsAzure.ResourceStack.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.WindowsAzure.ResourceStack.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.WindowsAzure.ResourceStack.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.WindowsAzure.Storage.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Microsoft.WindowsAzure.Storage.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Microsoft.WindowsAzure.Storage.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Microsoft.WindowsAzure.Storage.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Newtonsoft.Json.Schema.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Newtonsoft.Json.Schema.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Newtonsoft.Json.Schema.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Newtonsoft.Json.Schema.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Newtonsoft.Json.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Newtonsoft.Json.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Newtonsoft.Json.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Newtonsoft.Json.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Buffers.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Buffers.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Buffers.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Buffers.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Collections.Immutable.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Collections.Immutable.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Collections.Immutable.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Collections.Immutable.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Diagnostics.DiagnosticSource.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Diagnostics.DiagnosticSource.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Diagnostics.DiagnosticSource.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Diagnostics.DiagnosticSource.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Memory.Data.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Memory.Data.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Memory.Data.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Memory.Data.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Memory.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Memory.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Memory.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Memory.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Net.Http.Formatting.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Net.Http.Formatting.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Net.Http.Formatting.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Net.Http.Formatting.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Numerics.Vectors.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Numerics.Vectors.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Numerics.Vectors.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Numerics.Vectors.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Reflection.Metadata.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Reflection.Metadata.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Reflection.Metadata.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Reflection.Metadata.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Runtime.CompilerServices.Unsafe.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Runtime.CompilerServices.Unsafe.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Runtime.CompilerServices.Unsafe.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Runtime.CompilerServices.Unsafe.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Text.Encoding.CodePages.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Text.Encoding.CodePages.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Text.Encoding.CodePages.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Text.Encoding.CodePages.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Text.Encodings.Web.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Text.Encodings.Web.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Text.Encodings.Web.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Text.Encodings.Web.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Text.Json.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Text.Json.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Text.Json.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Text.Json.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Threading.Channels.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Threading.Channels.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Threading.Channels.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Threading.Channels.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Threading.Tasks.Extensions.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.Threading.Tasks.Extensions.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.Threading.Tasks.Extensions.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.Threading.Tasks.Extensions.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.ValueTuple.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\System.ValueTuple.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\System.ValueTuple.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\System.ValueTuple.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Telemetry.Contracts.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Telemetry.Contracts.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Telemetry.Contracts.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Telemetry.Contracts.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Telemetry.Tfx.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Telemetry.Tfx.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Telemetry.Tfx.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Telemetry.Tfx.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Tfx.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Tfx.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Tfx.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Tfx.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Tfx.lib" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\Tfx.lib')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\Tfx.lib</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\Tfx.lib</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\concrt140.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\concrt140.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\concrt140.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\concrt140.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\cs\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\cs\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\cs\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\cs\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\cs\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\cs\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\cs\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\cs\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\cs\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\cs\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\de\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\de\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\de\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\de\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\de\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\de\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\de\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\de\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\de\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\de\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\es\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\es\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\es\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\es\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\es\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\es\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\es\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\es\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\es\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\es\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\extensions.json" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\extensions.json')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\extensions.json</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\extensions.json</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\fr\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\fr\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\fr\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\fr\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\fr\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\fr\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\fr\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\fr\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\fr\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\fr\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\functions.metadata" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\functions.metadata')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\functions.metadata</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\functions.metadata</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\grpc_csharp_ext.x64.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\grpc_csharp_ext.x64.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\grpc_csharp_ext.x64.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\grpc_csharp_ext.x64.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\grpc_csharp_ext.x86.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\grpc_csharp_ext.x86.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\grpc_csharp_ext.x86.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\grpc_csharp_ext.x86.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\it\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\it\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\it\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\it\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\it\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\it\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\it\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\it\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\it\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\it\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ja\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ja\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\ja\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\ja\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\ja\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ja\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ja\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\ja\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\ja\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\ja\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ko\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ko\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\ko\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\ko\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\ko\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ko\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ko\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\ko\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\ko\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\ko\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\libgrpc_csharp_ext.x64.dylib" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\libgrpc_csharp_ext.x64.dylib')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\libgrpc_csharp_ext.x64.dylib</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\libgrpc_csharp_ext.x64.dylib</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\libgrpc_csharp_ext.x64.so" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\libgrpc_csharp_ext.x64.so')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\libgrpc_csharp_ext.x64.so</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\libgrpc_csharp_ext.x64.so</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\mfc140u.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\mfc140u.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\mfc140u.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\mfc140u.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\mfcm140u.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\mfcm140u.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\mfcm140u.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\mfcm140u.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\msvcp140.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\msvcp140.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\msvcp140.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\msvcp140.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\msvcp140_1.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\msvcp140_1.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\msvcp140_1.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\msvcp140_1.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\msvcp140_2.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\msvcp140_2.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\msvcp140_2.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\msvcp140_2.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pl\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pl\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\pl\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\pl\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\pl\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pl\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pl\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\pl\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\pl\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\pl\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pt-BR\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pt-BR\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\pt-BR\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\pt-BR\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\pt-BR\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pt-BR\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\pt-BR\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\pt-BR\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\pt-BR\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\pt-BR\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ref\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ref\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\ref\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\ref\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\ref\Microsoft.Azure.Workflows.Functions.NetFxWorker.Package.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ru\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ru\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\ru\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\ru\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\ru\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ru\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\ru\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\ru\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\ru\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\ru\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\saxon-he-10.2.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\saxon-he-10.2.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\saxon-he-10.2.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\saxon-he-10.2.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\saxon-he-api-10.2.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\saxon-he-api-10.2.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\saxon-he-api-10.2.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\saxon-he-api-10.2.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\tr\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\tr\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\tr\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\tr\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\tr\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\tr\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\tr\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\tr\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\tr\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\tr\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcamp140.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcamp140.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\vcamp140.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\vcamp140.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vccorlib140.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vccorlib140.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\vccorlib140.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\vccorlib140.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcomp140.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcomp140.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\vcomp140.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\vcomp140.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcruntime140.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcruntime140.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\vcruntime140.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\vcruntime140.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcruntime140_1.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\vcruntime140_1.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\vcruntime140_1.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\vcruntime140_1.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\worker.config.json" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\worker.config.json')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\worker.config.json</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\worker.config.json</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\zh-Hans\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\zh-Hans\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\zh-Hans\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\zh-Hant\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.CSharp.resources.dll</Link>
+    </None>
+    <None Include="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.resources.dll" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\contentFiles\any\any\NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.resources.dll')">
+      <NuGetPackageId>Microsoft.Azure.Workflows.WebJobs.Extension</NuGetPackageId>
+      <NuGetPackageVersion>1.2.18.1</NuGetPackageVersion>
+      <NuGetItemType>None</NuGetItemType>
+      <Pack>false</Pack>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.resources.dll</TargetPath>
+      <DestinationSubDirectory>NetFxWorker\zh-Hant\</DestinationSubDirectory>
+      <Private>True</Private>
+      <Link>NetFxWorker\zh-Hant\Microsoft.CodeAnalysis.resources.dll</Link>
+    </None>
+  </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.net.sdk.functions\3.0.13\build\Microsoft.NET.Sdk.Functions.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.sdk.functions\3.0.13\build\Microsoft.NET.Sdk.Functions.props')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\build\Microsoft.Azure.Workflows.WebJobs.Extension.props" Condition="Exists('$(NuGetPackageRoot)microsoft.azure.workflows.webjobs.extension\1.2.18.1\build\Microsoft.Azure.Workflows.WebJobs.Extension.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgMicrosoft_Azure_WebJobs_Script_ExtensionsMetadataGenerator Condition=" '$(PkgMicrosoft_Azure_WebJobs_Script_ExtensionsMetadataGenerator)' == '' ">C:\Users\rdero\.nuget\packages\microsoft.azure.webjobs.script.extensionsmetadatagenerator\1.2.2</PkgMicrosoft_Azure_WebJobs_Script_ExtensionsMetadataGenerator>
+    <PkgMicrosoft_Azure_Functions_Analyzers Condition=" '$(PkgMicrosoft_Azure_Functions_Analyzers)' == '' ">C:\Users\rdero\.nuget\packages\microsoft.azure.functions.analyzers\1.0.0</PkgMicrosoft_Azure_Functions_Analyzers>
+    <PkgMicrosoft_NET_Sdk_Functions Condition=" '$(PkgMicrosoft_NET_Sdk_Functions)' == '' ">C:\Users\rdero\.nuget\packages\microsoft.net.sdk.functions\3.0.13</PkgMicrosoft_NET_Sdk_Functions>
+    <PkgMicrosoft_CodeAnalysis_Analyzers Condition=" '$(PkgMicrosoft_CodeAnalysis_Analyzers)' == '' ">C:\Users\rdero\.nuget\packages\microsoft.codeanalysis.analyzers\3.0.0</PkgMicrosoft_CodeAnalysis_Analyzers>
+    <PkgMicrosoft_AspNetCore_Razor_Design Condition=" '$(PkgMicrosoft_AspNetCore_Razor_Design)' == '' ">C:\Users\rdero\.nuget\packages\microsoft.aspnetcore.razor.design\2.2.0</PkgMicrosoft_AspNetCore_Razor_Design>
+  </PropertyGroup>
+</Project>

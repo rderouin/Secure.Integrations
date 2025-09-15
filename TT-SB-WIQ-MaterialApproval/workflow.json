@@ -1,0 +1,845 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "HTTP_Get_Auth_token": {
+                "inputs": {
+                    "body": {
+                        "email": "@{parameters('spartan-wiq')['username']}",
+                        "password": "@{parameters('spartan-wiq')['password']}"
+                    },
+                    "method": "POST",
+                    "uri": "@{parameters('spartan-wiq')['url']}/api/external-auth/token"
+                },
+                "runAfter": {
+                    "Parse_JSON_Payload": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
+            },
+            "HTTP__Post_to_WIQ": {
+                "inputs": {
+                    "body": {
+                        "Payload": {
+                            "AFE": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['AFE']}",
+                            "AccumulatedTonnage": "@body('Parse_JSON_Payload')?['contentData']?['Payload']?['AccumulatedTonnage']",
+                            "AnalyticalExpiryDate": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['AnalyticalExpiryDate']}",
+                            "BillingCustomerContact": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['BillingCustomerContact']}",
+                            "BillingCustomerContactAddress": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['BillingCustomerContactAddress']}",
+                            "BillingCustomerName": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['BillingCustomerName']}",
+                            "Description": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['Description']}",
+                            "DisposalUnits": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['DisposalUnits']}",
+                            "EDICode": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['EDICode']}",
+                            "Facility": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['Facility']}",
+                            "GeneratorRepresentative": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['GeneratorRepresentative']}",
+                            "HazardousNonhazardous": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['HazardousNonhazardous']}",
+                            "MaterialApprovalNumber": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['MaterialApprovalNumber']}",
+                            "PO": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['PO']}",
+                            "RigNumber": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['RigNumber']}",
+                            "SiteId": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['SiteId']}",
+                            "SourceRegion": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['SourceRegion']}",
+                            "SubstanceName": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['SubstanceName']}",
+                            "ThirdPartyAnalyticalCompanyContact": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['ThirdPartyAnalyticalCompanyContact']}",
+                            "ThirdPartyAnalyticalCompanyName": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['ThirdPartyAnalyticalCompanyName']}",
+                            "TruckingCompanyContact": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['TruckingCompanyContact']}",
+                            "TruckingCompanyName": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['TruckingCompanyName']}",
+                            "WLAFNumber": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['WLAFNumber']}",
+                            "WasteCodeName": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['WasteCodeName']}",
+                            "WellClassification": "@{body('Parse_JSON_Payload')?['contentData']?['Payload']?['WellClassification']}"
+                        }
+                    },
+                    "headers": {
+                        "Authorization": "Bearer @{body('Parse_JSON_auth_token')?['data']?['token']}"
+                    },
+                    "method": "POST",
+                    "retryPolicy": {
+                        "count": 10,
+                        "interval": "PT50S",
+                        "type": "exponential"
+                    },
+                    "uri": "@{parameters('spartan-wiq')['url']}/api/external-landfill-applications/material-approval"
+                },
+                "runAfter": {
+                    "Parse_JSON_auth_token": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
+            },
+            "Parse_JSON_Payload": {
+                "inputs": {
+                    "content": "@triggerBody()",
+                    "schema": {
+                        "properties": {
+                            "contentData": {
+                                "properties": {
+                                    "Blobs": {},
+                                    "CorrelationId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageDate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Operation": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Payload": {
+                                        "properties": {
+                                            "AFE": {},
+                                            "AccumulatedTonnage": {
+                                                "type": [
+                                                    "null",
+                                                    "number"
+                                                ]
+                                            },
+                                            "ActivateAutofillTareWeight": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AdditionalService": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AdditionalServiceAdded": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AdditionalServiceName": {},
+                                            "AnalyticalExpiryAlertActive": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AnalyticalExpiryDate": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AnalyticalExpiryDatePrevious": {},
+                                            "AnalyticalExpiryEmailActive": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AnalyticalFailed": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ApplicantSignatories": {
+                                                "type": "array"
+                                            },
+                                            "ApplicantSignatoriesInfo": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ApproximateDeliveryDate": {},
+                                            "BillingCustomerContact": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "BillingCustomerContactAddress": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "BillingCustomerContactId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "BillingCustomerContactReceiveLoadSummary": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "BillingCustomerId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "BillingCustomerName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CountryCode": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CreatedAt": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CreatedBy": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CreatedById": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Description": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "DisposalEstimateAmount": {},
+                                            "DisposalUnits": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "DocumentType": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "DownHoleType": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "EDICode": {},
+                                            "EnableEndOfJobInvoicing": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "EndDate": {},
+                                            "EntityType": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Facility": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilityId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilityServiceId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilityServiceName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilityServiceNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilityServiceSubstanceIndexId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "GeneratorId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "GeneratorName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "GeneratorRepresenativeId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "GeneratorRepresentative": {},
+                                            "HazardousNonhazardous": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Id": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "IncludeSupportingDocLink": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "IsActive": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LabIdNumber": {},
+                                            "LegalEntity": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LegalEntityId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LoadSummaryReport": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LoadSummaryReportFrequency": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LoadSummaryReportFrequencyMonthlyDate": {},
+                                            "LoadSummaryReportFrequencyWeekDay": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LoadSummaryReportRecipients": {
+                                                "type": "array"
+                                            },
+                                            "MaterialApprovalNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "PO": {},
+                                            "RigNumber": {},
+                                            "ScaleOperatorNotes": {},
+                                            "SecureRepresentative": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SecureRepresentativeId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ServiceTypeId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SignatureDate": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SiteId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceLocation": {},
+                                            "SourceLocationFormattedIdentifier": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceLocationId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceLocationUnformattedIdentifier": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceRegion": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Stream": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SubstanceId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SubstanceName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SupportingDocLink": {},
+                                            "TenormWasteHaulerPermitNumber": {},
+                                            "ThirdPartyAnalyticalCompanyContact": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ThirdPartyAnalyticalCompanyContactId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ThirdPartyAnalyticalCompanyId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ThirdPartyAnalyticalCompanyName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ThirdPartyAnalyticalContactReceiveLoadSummary": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckingCompanyContact": {},
+                                            "TruckingCompanyContactId": {},
+                                            "TruckingCompanyContactReceiveLoadSummary": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckingCompanyId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckingCompanyName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "UpdatedAt": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "UpdatedBy": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "UpdatedById": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "WLAFNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "WasteCodeName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "WellClassification": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "id": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "Source": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SourceId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "contentType": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "deliveryCount": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "enqueuedSequenceNumber": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "enqueuedTimeUtc": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "lockToken": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "lockedUntilUtc": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "messageId": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "scheduledEnqueueTimeUtc": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "sequenceNumber": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "sessionId": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "timeToLive": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "userProperties": {
+                                "properties": {
+                                    "messageType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "source": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Send_message_to_Integration_Log": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Parse_JSON_auth_token": {
+                "inputs": {
+                    "content": "@body('HTTP_Get_Auth_token')",
+                    "schema": {
+                        "properties": {
+                            "email": {
+                                "type": "string"
+                            },
+                            "password": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "HTTP_Get_Auth_token": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Send_message_to_Integration_Log": {
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "@{triggerBody()?['contentData']}",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "WLAFNumber:@{triggerBody()?['contentData']?['Payload']?['WLAFNumber']}",
+                                        "status": "Received"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "Source": "@{workflow().name}"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {},
+                "type": "ServiceProvider"
+            },
+            "Send_message_to_Integration_Log_-_Success": {
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "Posted",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "WLAFNumber:@{triggerBody()?['contentData']?['Payload']?['WLAFNumber']}",
+                                        "status": "Success"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "MessageType": "Log",
+                                "Operation": "Error",
+                                "Source": "@{workflow().name}"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "HTTP__Post_to_WIQ": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ServiceProvider"
+            },
+            "Send_message_to_Integration_Log_-_failed": {
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Error",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "Error processing 'post to WIQ'",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "WLAFNumber:@{triggerBody()?['contentData']?['Payload']?['WLAFNumber']}",
+                                        "status": "Fail"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "MessageType": "Log",
+                                "Operation": "Error",
+                                "Source": "@{workflow().name}"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "HTTP__Post_to_WIQ": [
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                },
+                "type": "ServiceProvider"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "inputs": {
+                    "parameters": {
+                        "isSessionsEnabled": false,
+                        "subscriptionName": "MaterialApproval",
+                        "topicName": "enterprise-entity-updates"
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']",
+                "type": "ServiceProvider"
+            }
+        }
+    },
+    "kind": "Stateful"
+}

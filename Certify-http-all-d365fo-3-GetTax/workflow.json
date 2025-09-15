@@ -1,0 +1,223 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_'TaxComponent'_(String)": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "TaxComponent",
+                            "type": "string",
+                            "value": "@if(empty(triggerBody()?['TaxComponent']), 'GST', triggerBody()?['TaxComponent'])"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_'ExpenseCategory'_(String)": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ExpenseCategory",
+                            "type": "string",
+                            "value": "@if(empty(triggerBody()?['ExpenseCategory']), '', triggerBody()?['ExpenseCategory'])"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_'TaxComponent'_(String)": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "If_'Tax_Component'_is_not_EXEMPT": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "not": {
+                                "contains": [
+                                    "@variables('TaxComponent')",
+                                    "EXEMPT"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "actions": {
+                    "Get_tax_components": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_auditLogging"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[CertifyTax_CustomTaxRates]'))}/items",
+                            "queries": {
+                                "$filter": "contains(Linked_Category,'@{variables('ExpenseCategory')}') AND Auth_Code eq '@{variables('TaxComponent')}'"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "If_no_taxes_were_found": {
+                        "type": "If",
+                        "expression": {
+                            "or": [
+                                {
+                                    "equals": [
+                                        "@empty(body('Get_tax_components'))",
+                                        true
+                                    ]
+                                },
+                                {
+                                    "equals": [
+                                        "@length(body('Get_tax_components')?['value'])",
+                                        0
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Get_tax_components_for_empty_category": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "sql_auditLogging"
+                                        }
+                                    },
+                                    "method": "get",
+                                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[CertifyTax_CustomTaxRates]'))}/items",
+                                    "queries": {
+                                        "$filter": "Linked_Category eq '' AND Auth_code eq '@{variables('TaxComponent')}'"
+                                    }
+                                },
+                                "runAfter": {}
+                            },
+                            "Return_taxes_for_empty_category": {
+                                "type": "Response",
+                                "kind": "http",
+                                "inputs": {
+                                    "statusCode": 200,
+                                    "headers": {
+                                        "Content-Type": "application/json"
+                                    },
+                                    "body": {
+                                        "ExpenseCategory": "",
+                                        "TaxComponent": "@{variables('TaxComponent')}",
+                                        "Tax1Rate": "@float(body('Get_tax_components_for_empty_category')['value'][0]['Tax_1_Rate'])",
+                                        "Tax1GLCode": "@{body('Get_tax_components_for_empty_category')['value'][0]['Tax_1_GL_Code']}",
+                                        "Tax2Rate": "@float(body('Get_tax_components_for_empty_category')['value'][0]['Tax_2_Rate'])",
+                                        "Tax2GLCode": "@{body('Get_tax_components_for_empty_category')['value'][0]['Tax_2_GL_Code']}",
+                                        "PreTaxAmount": "@float(sub(sub(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components_for_empty_category')['value'][0]['Tax_1_Rate']), 'F2'))), float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components_for_empty_category')['value'][0]['Tax_2_Rate']), 'F2'))))",
+                                        "Tax1Amount": "@float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components_for_empty_category')['value'][0]['Tax_1_Rate']), 'F2'))",
+                                        "Tax2Amount": "@float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components_for_empty_category')['value'][0]['Tax_2_Rate']), 'F2'))",
+                                        "TotalAmount": "@float(formatNumber(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), 'F2'))"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Get_tax_components_for_empty_category": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Get_tax_components": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Return_taxes_for_provided_category": {
+                                    "type": "Response",
+                                    "kind": "http",
+                                    "inputs": {
+                                        "statusCode": 200,
+                                        "headers": {
+                                            "Content-Type": "application/json"
+                                        },
+                                        "body": {
+                                            "ExpenseCategory": "@{variables('ExpenseCategory')}",
+                                            "TaxComponent": "@{variables('TaxComponent')}",
+                                            "Tax1Rate": "@float(body('Get_tax_components')['value'][0]['Tax_1_Rate'])",
+                                            "Tax1GLCode": "@{body('Get_tax_components')['value'][0]['Tax_1_GL_Code']}",
+                                            "Tax2Rate": "@float(body('Get_tax_components')['value'][0]['Tax_2_Rate'])",
+                                            "Tax2GLCode": "@{body('Get_tax_components')['value'][0]['Tax_2_GL_Code']}",
+                                            "PreTaxAmount": "@float(sub(sub(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components')['value'][0]['Tax_1_Rate']), 'F2'))), float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components')['value'][0]['Tax_2_Rate']), 'F2'))))",
+                                            "Tax1Amount": "@float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components')['value'][0]['Tax_1_Rate']), 'F2'))",
+                                            "Tax2Amount": "@float(formatNumber(mul(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), body('Get_tax_components')['value'][0]['Tax_2_Rate']), 'F2'))",
+                                            "TotalAmount": "@float(formatNumber(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']), 'F2'))"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_'ExpenseCategory'_(String)": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Return_taxes_for_exempt_component": {
+                            "type": "Response",
+                            "kind": "http",
+                            "inputs": {
+                                "statusCode": 200,
+                                "headers": {
+                                    "Content-Type": "application/json"
+                                },
+                                "body": {
+                                    "ExpenseCategory": "@{variables('ExpenseCategory')}",
+                                    "TaxComponent": "@{variables('TaxComponent')}",
+                                    "Tax1Rate": "@float(0)",
+                                    "Tax1GLCode": "",
+                                    "Tax2Rate": "@float(0)",
+                                    "Tax2GLCode": "",
+                                    "PreTaxAmount": "@float(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']))",
+                                    "Tax1Amount": "@float(0)",
+                                    "Tax2Amount": "@float(0)",
+                                    "TotalAmount": "@float(if(equals(triggerBody()?['Amount'], null), 0, triggerBody()?['Amount']))"
+                                }
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "ExpenseCategory": {
+                                "type": "string"
+                            },
+                            "TaxComponent": {
+                                "type": "string"
+                            },
+                            "Amount": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

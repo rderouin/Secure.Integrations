@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsSecretStorageType": "Files",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "APP_KIND": "workflowapp",
+    "ProjectDirectoryPath": "c:\\Work\\secure-energy-services\\D365FO\\D365FO-Azure\\Secure.Integrations\\workflow-designtime\\workflow-designtime\\"
+  }
+}

@@ -1,0 +1,709 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Are_required_inputs_missing": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@triggerBody()?['ProformaInvoiceNumber']",
+                                null
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Return_HTTP_400": {
+                        "type": "Response",
+                        "kind": "http",
+                        "inputs": {
+                            "statusCode": 400,
+                            "body": "A ProformaInvoiceId is required."
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Initialize_Sales_Order_Id": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Return_HTTP_201": {
+                            "type": "Response",
+                            "kind": "http",
+                            "inputs": {
+                                "statusCode": 201
+                            },
+                            "runAfter": {
+                                "Send_Messages": [
+                                    "Succeeded"
+                                ]
+                            }
+                        },
+                        "Filter_error_messages": {
+                            "type": "Query",
+                            "inputs": {
+                                "from": "@result('Send_Messages')",
+                                "where": "@equals(item()['status'], 'Failed')"
+                            },
+                            "runAfter": {
+                                "Send_Messages": [
+                                    "FAILED"
+                                ]
+                            }
+                        },
+                        "Return_HTTP_500": {
+                            "type": "Response",
+                            "kind": "http",
+                            "inputs": {
+                                "statusCode": 500,
+                                "body": "@body('Filter_error_messages')"
+                            },
+                            "runAfter": {
+                                "Filter_error_messages": [
+                                    "Succeeded"
+                                ]
+                            }
+                        },
+                        "Send_Messages": {
+                            "type": "Scope",
+                            "actions": {
+                                "Compose_Sales_Order_Header": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                        "Source": "TT",
+                                        "SourceId": "@{variables('Sales Order Id')}",
+                                        "MessageType": "SalesOrder",
+                                        "Operation": "Insert",
+                                        "CorrelationId": "@{variables('Correlation Id')}",
+                                        "MessageDate": "@{utcNow()}",
+                                        "Blobs": null,
+                                        "Payload": {
+                                            "ProformaInvoiceNumber": "@{triggerBody()?['ProformaInvoiceNumber']}",
+                                            "GlInvoiceNumber": null,
+                                            "LegalEntity": "sesc",
+                                            "CustomerId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                            "CustomerName": "Test Account Mar 7",
+                                            "FacilityId": "ded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                            "FacilityName": "Drayton Valley FST",
+                                            "SiteId": "DVFST",
+                                            "InvoicePermutationId": "SLcb461d32-a3db-434d-bacf-058341b5ad63|ST00000000-0000-0000-0000-000000000000|WCCompletions|SB00000000-0000-0000-0000-000000000000|FCded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                            "Status": "UnPosted",
+                                            "IsReversed": false,
+                                            "IsReversal": false,
+                                            "OriginalGlInvoiceNumber": null,
+                                            "OriginalProformaInvoiceNumber": null,
+                                            "ReversedInvoiceId": null,
+                                            "ReversalInvoiceId": null,
+                                            "TicketDateRangeStart": "2023-03-22T00:00:01-07:00",
+                                            "TicketDateRangeEnd": "2023-03-22T00:00:01-07:00",
+                                            "InvoiceStartDate": "2023-03-01T00:00:00+00:00",
+                                            "InvoiceEndDate": "2023-03-31T00:00:00+00:00",
+                                            "LastDistributionDate": null,
+                                            "LastSentById": "00000000-0000-0000-0000-000000000000",
+                                            "LastSentByName": null,
+                                            "Paid": false,
+                                            "SalesLineCount": 4,
+                                            "InvoiceAmount": 16195,
+                                            "Attachments": [],
+                                            "Currency": "CAD",
+                                            "Generators": {
+                                                "Key": "d10db974-d423-4140-a332-1669065b3045",
+                                                "Raw": "Test Account Mar 7",
+                                                "List": [
+                                                    "Test Account Mar 7"
+                                                ]
+                                            },
+                                            "GeneratorNames": null,
+                                            "LoadConfirmationId": "00000000-0000-0000-0000-000000000000",
+                                            "LoadConfirmationNumber": null,
+                                            "CustomerNumber": "C4706",
+                                            "ManifestNumber": null,
+                                            "BillofLading": null,
+                                            "EDIFieldValues": [],
+                                            "EDIFieldsValueString": null,
+                                            "SourceLocationTypeId": "00000000-0000-0000-0000-000000000000",
+                                            "SourceLocationTypeName": null,
+                                            "SourceLocationId": "00000000-0000-0000-0000-000000000000",
+                                            "SourceLocationIdentifier": null,
+                                            "SourceLocationFormattedIdentifier": null,
+                                            "DowNonDow": "Undefined",
+                                            "AttachmentIndicatorType": "None",
+                                            "DistributionMethod": "Unknown",
+                                            "InvoiceReversalReason": "Unspecified",
+                                            "InvoiceReversalDescription": null,
+                                            "CollectionOwner": "Unknown",
+                                            "CollectionReason": "None",
+                                            "TransactionComplete": false,
+                                            "RequiresPdfRegeneration": true,
+                                            "CustomerCreditStatus": "Approved",
+                                            "CustomerWatchListStatus": "Yellow",
+                                            "HasAttachments": "None",
+                                            "InvoiceConfigurationId": "883ef8aa-025d-461e-a54a-39ccb80a009d",
+                                            "BillingConfigurationId": "ff3e2b7f-9ec8-4b1d-86cf-196226afa267",
+                                            "BusinessUnit": "FSTPC",
+                                            "Division": "MI Div",
+                                            "AccountNumber": "A10000539",
+                                            "CollectionNotes": null,
+                                            "BillingContactId": "99e37765-a078-4471-8a62-ca394da5540e",
+                                            "IsDeliveredToErp": null,
+                                            "CreatedBy": "Jim Maden",
+                                            "CreatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                            "CreatedAt": "2023-03-22T18:04:34.5424953+00:00",
+                                            "UpdatedAt": "2023-03-22T18:04:34.5424953+00:00",
+                                            "UpdatedBy": "Jim Maden",
+                                            "UpdatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                            "DocumentType": "Invoice",
+                                            "EntityType": "Invoice",
+                                            "Id": "@{variables('Sales Order Id')}"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                },
+                                "Compose_Sales_Order_Lines_Insert": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                        "Source": "TT",
+                                        "SourceId": "00000000-0000-0000-0000-000000000000",
+                                        "MessageType": "SalesLine",
+                                        "Operation": "Update",
+                                        "CorrelationId": "@{variables('Correlation Id')}",
+                                        "MessageDate": "@{utcNow()}",
+                                        "Blobs": null,
+                                        "Payload": [
+                                            {
+                                                "SalesLineNumber": "DVFST10000092-SL",
+                                                "TruckTicketId": "e71dbcf1-4b79-4aee-85ee-03cfc02f10f2",
+                                                "TruckTicketNumber": "DVFST10000034-WT",
+                                                "ProductId": "224742fe-8066-4ef4-a643-7747f82ccefc",
+                                                "ProductName": "Waste - Processing",
+                                                "ProductNumber": "706060",
+                                                "Quantity": 100,
+                                                "QuantityPercent": 100,
+                                                "TareWeight": 0,
+                                                "GrossWeight": 0,
+                                                "UnitOfMeasure": "M3",
+                                                "OriginalRate": null,
+                                                "Rate": 75,
+                                                "TotalValue": 7500,
+                                                "IsRateOverridden": false,
+                                                "LoadConfirmationId": "efcc09ac-4578-4dd1-9f0f-d1a8efe4060a",
+                                                "LoadConfirmationNumber": "DVFST10000027-LC",
+                                                "InvoiceId": "e32db06b-a0b9-4425-8b58-e03376421dd2",
+                                                "ProformaInvoiceNumber": "@{triggerBody()?['ProformaInvoiceNumber']}",
+                                                "IsReversed": false,
+                                                "IsReversal": false,
+                                                "ReversedSalesLineId": null,
+                                                "ReversalSalesLineId": null,
+                                                "SourceLocationId": "cb461d32-a3db-434d-bacf-058341b5ad63",
+                                                "SourceLocationIdentifier": "46TT766G787H8999",
+                                                "SourceLocationFormattedIdentifier": "46T/T-766-G/787-H-89/99",
+                                                "SourceLocationTypeId": "00000000-0000-0000-0000-000000000000",
+                                                "SourceLocationTypeName": "UWI-NTS",
+                                                "WellClassification": "Completions",
+                                                "CustomerId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "CustomerName": "Test Account Mar 7",
+                                                "GeneratorId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "GeneratorName": "Test Account Mar 7",
+                                                "FacilityId": "ded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                                "FacilitySiteId": "DVFST",
+                                                "IsAdditionalService": false,
+                                                "IsCutLine": false,
+                                                "CutType": "Total",
+                                                "MaterialApprovalId": "00000000-0000-0000-0000-000000000000",
+                                                "MaterialApprovalNumber": null,
+                                                "ServiceTypeId": "d1fc0b17-511e-44e0-bb09-b92199f581a5",
+                                                "ServiceTypeName": "Waste Processing",
+                                                "TruckingCompanyId": "ca5269a0-d91b-4d78-b893-06d01aa2bde3",
+                                                "TruckingCompanyName": "Royal Oilfield Rentals",
+                                                "UserName": null,
+                                                "PriceChangeUserName": null,
+                                                "PriceChangeDate": null,
+                                                "ChangeReason": "Undefined",
+                                                "ChangeComments": null,
+                                                "Status": "Approved",
+                                                "ManifestNumber": null,
+                                                "BillOfLading": "test",
+                                                "DowNonDow": "Dow",
+                                                "TruckTicketDate": "2023-03-22T00:00:01-07:00",
+                                                "IsEdiValid": true,
+                                                "EdiFieldValues": [],
+                                                "Attachments": [],
+                                                "EDIFieldsValueString": "",
+                                                "AttachmentIndicatorType": "None",
+                                                "HasAttachments": "None",
+                                                "Substance": "Chemicals (inorganic)",
+                                                "Division": "MI Div",
+                                                "BusinessUnit": "FSTPC",
+                                                "LegalEntity": "sesc",
+                                                "AccountNumber": "A10000539",
+                                                "CustomerNumber": "C4706",
+                                                "CreatedBy": "Jim Maden",
+                                                "CreatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "CreatedAt": "2023-03-22T18:04:35.1220199+00:00",
+                                                "UpdatedAt": "2023-03-22T18:04:35.1220199+00:00",
+                                                "UpdatedBy": "Jim Maden",
+                                                "UpdatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "DocumentType": "SalesLine",
+                                                "EntityType": "SalesLine",
+                                                "Id": "@guid()"
+                                            },
+                                            {
+                                                "SalesLineNumber": "DVFST10000091-SL",
+                                                "TruckTicketId": "e71dbcf1-4b79-4aee-85ee-03cfc02f10f2",
+                                                "TruckTicketNumber": "DVFST10000034-WT",
+                                                "ProductId": "79434c47-227e-4411-9770-54258e888af3",
+                                                "ProductName": "Waste - Oil Credit",
+                                                "ProductNumber": "902406",
+                                                "Quantity": -20,
+                                                "QuantityPercent": 20,
+                                                "TareWeight": 0,
+                                                "GrossWeight": 0,
+                                                "UnitOfMeasure": "M3",
+                                                "OriginalRate": null,
+                                                "Rate": 145.95,
+                                                "TotalValue": -2919,
+                                                "IsRateOverridden": false,
+                                                "LoadConfirmationId": "efcc09ac-4578-4dd1-9f0f-d1a8efe4060a",
+                                                "LoadConfirmationNumber": "DVFST10000027-LC",
+                                                "InvoiceId": "e32db06b-a0b9-4425-8b58-e03376421dd2",
+                                                "ProformaInvoiceNumber": "@{triggerBody()?['ProformaInvoiceNumber']}",
+                                                "IsReversed": false,
+                                                "IsReversal": false,
+                                                "ReversedSalesLineId": null,
+                                                "ReversalSalesLineId": null,
+                                                "SourceLocationId": "cb461d32-a3db-434d-bacf-058341b5ad63",
+                                                "SourceLocationIdentifier": "46TT766G787H8999",
+                                                "SourceLocationFormattedIdentifier": "46T/T-766-G/787-H-89/99",
+                                                "SourceLocationTypeId": "00000000-0000-0000-0000-000000000000",
+                                                "SourceLocationTypeName": "UWI-NTS",
+                                                "WellClassification": "Completions",
+                                                "CustomerId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "CustomerName": "Test Account Mar 7",
+                                                "GeneratorId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "GeneratorName": "Test Account Mar 7",
+                                                "FacilityId": "ded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                                "FacilitySiteId": "DVFST",
+                                                "IsAdditionalService": false,
+                                                "IsCutLine": true,
+                                                "CutType": "Oil",
+                                                "MaterialApprovalId": "00000000-0000-0000-0000-000000000000",
+                                                "MaterialApprovalNumber": null,
+                                                "ServiceTypeId": "d1fc0b17-511e-44e0-bb09-b92199f581a5",
+                                                "ServiceTypeName": "Waste Processing",
+                                                "TruckingCompanyId": "ca5269a0-d91b-4d78-b893-06d01aa2bde3",
+                                                "TruckingCompanyName": "Royal Oilfield Rentals",
+                                                "UserName": null,
+                                                "PriceChangeUserName": null,
+                                                "PriceChangeDate": null,
+                                                "ChangeReason": "Undefined",
+                                                "ChangeComments": null,
+                                                "Status": "Approved",
+                                                "ManifestNumber": null,
+                                                "BillOfLading": "test",
+                                                "DowNonDow": "Dow",
+                                                "TruckTicketDate": "2023-03-22T00:00:01-07:00",
+                                                "IsEdiValid": true,
+                                                "EdiFieldValues": [],
+                                                "Attachments": [],
+                                                "EDIFieldsValueString": "",
+                                                "AttachmentIndicatorType": "None",
+                                                "HasAttachments": "None",
+                                                "Substance": "Chemicals (inorganic)",
+                                                "Division": "MI Div",
+                                                "BusinessUnit": "FSTPC",
+                                                "LegalEntity": "sesc",
+                                                "AccountNumber": "A10000539",
+                                                "CustomerNumber": "C4706",
+                                                "CreatedBy": "Jim Maden",
+                                                "CreatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "CreatedAt": "2023-03-22T18:04:35.0508378+00:00",
+                                                "UpdatedAt": "2023-03-22T18:04:35.0508378+00:00",
+                                                "UpdatedBy": "Jim Maden",
+                                                "UpdatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "DocumentType": "SalesLine",
+                                                "EntityType": "SalesLine",
+                                                "Id": "@guid()"
+                                            },
+                                            {
+                                                "SalesLineNumber": "DVFST10000090-SL",
+                                                "TruckTicketId": "e71dbcf1-4b79-4aee-85ee-03cfc02f10f2",
+                                                "TruckTicketNumber": "DVFST10000034-WT",
+                                                "ProductId": "881088f0-597c-4f33-9a7a-0f7398909c15",
+                                                "ProductName": "Waste - Water Disposal",
+                                                "ProductNumber": "706061",
+                                                "Quantity": 20,
+                                                "QuantityPercent": 20,
+                                                "TareWeight": 0,
+                                                "GrossWeight": 0,
+                                                "UnitOfMeasure": "M3",
+                                                "OriginalRate": null,
+                                                "Rate": 144.95,
+                                                "TotalValue": 2899,
+                                                "IsRateOverridden": false,
+                                                "LoadConfirmationId": "efcc09ac-4578-4dd1-9f0f-d1a8efe4060a",
+                                                "LoadConfirmationNumber": "DVFST10000027-LC",
+                                                "InvoiceId": "e32db06b-a0b9-4425-8b58-e03376421dd2",
+                                                "ProformaInvoiceNumber": "@{triggerBody()?['ProformaInvoiceNumber']}",
+                                                "IsReversed": false,
+                                                "IsReversal": false,
+                                                "ReversedSalesLineId": null,
+                                                "ReversalSalesLineId": null,
+                                                "SourceLocationId": "cb461d32-a3db-434d-bacf-058341b5ad63",
+                                                "SourceLocationIdentifier": "46TT766G787H8999",
+                                                "SourceLocationFormattedIdentifier": "46T/T-766-G/787-H-89/99",
+                                                "SourceLocationTypeId": "00000000-0000-0000-0000-000000000000",
+                                                "SourceLocationTypeName": "UWI-NTS",
+                                                "WellClassification": "Completions",
+                                                "CustomerId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "CustomerName": "Test Account Mar 7",
+                                                "GeneratorId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "GeneratorName": "Test Account Mar 7",
+                                                "FacilityId": "ded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                                "FacilitySiteId": "DVFST",
+                                                "IsAdditionalService": false,
+                                                "IsCutLine": true,
+                                                "CutType": "Water",
+                                                "MaterialApprovalId": "00000000-0000-0000-0000-000000000000",
+                                                "MaterialApprovalNumber": null,
+                                                "ServiceTypeId": "d1fc0b17-511e-44e0-bb09-b92199f581a5",
+                                                "ServiceTypeName": "Waste Processing",
+                                                "TruckingCompanyId": "ca5269a0-d91b-4d78-b893-06d01aa2bde3",
+                                                "TruckingCompanyName": "Royal Oilfield Rentals",
+                                                "UserName": null,
+                                                "PriceChangeUserName": null,
+                                                "PriceChangeDate": null,
+                                                "ChangeReason": "Undefined",
+                                                "ChangeComments": null,
+                                                "Status": "Approved",
+                                                "ManifestNumber": null,
+                                                "BillOfLading": "test",
+                                                "DowNonDow": "Dow",
+                                                "TruckTicketDate": "2023-03-22T00:00:01-07:00",
+                                                "IsEdiValid": true,
+                                                "EdiFieldValues": [],
+                                                "Attachments": [],
+                                                "EDIFieldsValueString": "",
+                                                "AttachmentIndicatorType": "None",
+                                                "HasAttachments": "None",
+                                                "Substance": "Chemicals (inorganic)",
+                                                "Division": "MI Div",
+                                                "BusinessUnit": "FSTPC",
+                                                "LegalEntity": "sesc",
+                                                "AccountNumber": "A10000539",
+                                                "CustomerNumber": "C4706",
+                                                "CreatedBy": "Jim Maden",
+                                                "CreatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "CreatedAt": "2023-03-22T18:04:34.9831513+00:00",
+                                                "UpdatedAt": "2023-03-22T18:04:34.9831513+00:00",
+                                                "UpdatedBy": "Jim Maden",
+                                                "UpdatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "DocumentType": "SalesLine",
+                                                "EntityType": "SalesLine",
+                                                "Id": "@guid()"
+                                            },
+                                            {
+                                                "SalesLineNumber": "DVFST10000089-SL",
+                                                "TruckTicketId": "e71dbcf1-4b79-4aee-85ee-03cfc02f10f2",
+                                                "TruckTicketNumber": "DVFST10000034-WT",
+                                                "ProductId": "aaa7bb05-1b27-4e89-b055-e113038bd8b6",
+                                                "ProductName": "Waste - Solids Disposal",
+                                                "ProductNumber": "706062",
+                                                "Quantity": 60,
+                                                "QuantityPercent": 60,
+                                                "TareWeight": 0,
+                                                "GrossWeight": 0,
+                                                "UnitOfMeasure": "M3",
+                                                "OriginalRate": null,
+                                                "Rate": 145.25,
+                                                "TotalValue": 8715,
+                                                "IsRateOverridden": false,
+                                                "LoadConfirmationId": "efcc09ac-4578-4dd1-9f0f-d1a8efe4060a",
+                                                "LoadConfirmationNumber": "DVFST10000027-LC",
+                                                "InvoiceId": "e32db06b-a0b9-4425-8b58-e03376421dd2",
+                                                "ProformaInvoiceNumber": "@{triggerBody()?['ProformaInvoiceNumber']}",
+                                                "IsReversed": false,
+                                                "IsReversal": false,
+                                                "ReversedSalesLineId": null,
+                                                "ReversalSalesLineId": null,
+                                                "SourceLocationId": "cb461d32-a3db-434d-bacf-058341b5ad63",
+                                                "SourceLocationIdentifier": "46TT766G787H8999",
+                                                "SourceLocationFormattedIdentifier": "46T/T-766-G/787-H-89/99",
+                                                "SourceLocationTypeId": "00000000-0000-0000-0000-000000000000",
+                                                "SourceLocationTypeName": "UWI-NTS",
+                                                "WellClassification": "Completions",
+                                                "CustomerId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "CustomerName": "Test Account Mar 7",
+                                                "GeneratorId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                                "GeneratorName": "Test Account Mar 7",
+                                                "FacilityId": "ded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                                "FacilitySiteId": "DVFST",
+                                                "IsAdditionalService": false,
+                                                "IsCutLine": true,
+                                                "CutType": "Solid",
+                                                "MaterialApprovalId": "00000000-0000-0000-0000-000000000000",
+                                                "MaterialApprovalNumber": null,
+                                                "ServiceTypeId": "d1fc0b17-511e-44e0-bb09-b92199f581a5",
+                                                "ServiceTypeName": "Waste Processing",
+                                                "TruckingCompanyId": "ca5269a0-d91b-4d78-b893-06d01aa2bde3",
+                                                "TruckingCompanyName": "Royal Oilfield Rentals",
+                                                "UserName": null,
+                                                "PriceChangeUserName": null,
+                                                "PriceChangeDate": null,
+                                                "ChangeReason": "Undefined",
+                                                "ChangeComments": null,
+                                                "Status": "Approved",
+                                                "ManifestNumber": null,
+                                                "BillOfLading": "test",
+                                                "DowNonDow": "Dow",
+                                                "TruckTicketDate": "2023-03-22T00:00:01-07:00",
+                                                "IsEdiValid": true,
+                                                "EdiFieldValues": [],
+                                                "Attachments": [],
+                                                "EDIFieldsValueString": "",
+                                                "AttachmentIndicatorType": "None",
+                                                "HasAttachments": "None",
+                                                "Substance": "Chemicals (inorganic)",
+                                                "Division": "MI Div",
+                                                "BusinessUnit": "FSTPC",
+                                                "LegalEntity": "sesc",
+                                                "AccountNumber": "A10000539",
+                                                "CustomerNumber": "C4706",
+                                                "CreatedBy": "Jim Maden",
+                                                "CreatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "CreatedAt": "2023-03-22T18:04:34.7959185+00:00",
+                                                "UpdatedAt": "2023-03-22T18:04:34.7959185+00:00",
+                                                "UpdatedBy": "Jim Maden",
+                                                "UpdatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                                "DocumentType": "SalesLine",
+                                                "EntityType": "SalesLine",
+                                                "Id": "@guid()"
+                                            }
+                                        ]
+                                    },
+                                    "runAfter": {
+                                        "Compose_Sales_Order_Header": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Compose_Invoice_Update": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                        "Source": "TT",
+                                        "SourceId": "@{variables('Sales Order Id')}",
+                                        "MessageType": "Invoice",
+                                        "Operation": "Update",
+                                        "CorrelationId": "@{variables('Correlation Id')}",
+                                        "MessageDate": "@{utcNow()}",
+                                        "Blobs": null,
+                                        "Payload": {
+                                            "ProformaInvoiceNumber": "@{triggerBody()?['ProformaInvoiceNumber']}",
+                                            "GlInvoiceNumber": null,
+                                            "LegalEntity": "sesc",
+                                            "CustomerId": "22d1c50a-c821-4f58-a1be-40b51578760b",
+                                            "CustomerName": "Test Account Mar 7",
+                                            "FacilityId": "ded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                            "FacilityName": "Drayton Valley FST",
+                                            "SiteId": "DVFST",
+                                            "InvoicePermutationId": "SLcb461d32-a3db-434d-bacf-058341b5ad63|ST00000000-0000-0000-0000-000000000000|WCCompletions|SB00000000-0000-0000-0000-000000000000|FCded88f1a-71a2-42d2-89c6-102ebe6ccf3a",
+                                            "Status": "AgingUnSent",
+                                            "IsReversed": false,
+                                            "IsReversal": false,
+                                            "OriginalGlInvoiceNumber": null,
+                                            "OriginalProformaInvoiceNumber": null,
+                                            "ReversedInvoiceId": null,
+                                            "ReversalInvoiceId": null,
+                                            "TicketDateRangeStart": "2023-03-22T00:00:01-07:00",
+                                            "TicketDateRangeEnd": "2023-03-22T00:00:01-07:00",
+                                            "InvoiceStartDate": "2023-03-01T00:00:00+00:00",
+                                            "InvoiceEndDate": "2023-03-31T00:00:00+00:00",
+                                            "LastDistributionDate": null,
+                                            "LastSentById": "00000000-0000-0000-0000-000000000000",
+                                            "LastSentByName": null,
+                                            "Paid": false,
+                                            "SalesLineCount": 4,
+                                            "InvoiceAmount": 16195,
+                                            "Attachments": [],
+                                            "Currency": "CAD",
+                                            "Generators": {
+                                                "Key": "d10db974-d423-4140-a332-1669065b3045",
+                                                "Raw": "Test Account Mar 7",
+                                                "List": [
+                                                    "Test Account Mar 7"
+                                                ]
+                                            },
+                                            "GeneratorNames": null,
+                                            "LoadConfirmationId": "00000000-0000-0000-0000-000000000000",
+                                            "LoadConfirmationNumber": null,
+                                            "CustomerNumber": "C4706",
+                                            "ManifestNumber": null,
+                                            "BillofLading": null,
+                                            "EDIFieldValues": [],
+                                            "EDIFieldsValueString": null,
+                                            "SourceLocationTypeId": "00000000-0000-0000-0000-000000000000",
+                                            "SourceLocationTypeName": null,
+                                            "SourceLocationId": "00000000-0000-0000-0000-000000000000",
+                                            "SourceLocationIdentifier": null,
+                                            "SourceLocationFormattedIdentifier": null,
+                                            "DowNonDow": "Undefined",
+                                            "AttachmentIndicatorType": "None",
+                                            "DistributionMethod": "Unknown",
+                                            "InvoiceReversalReason": "Unspecified",
+                                            "InvoiceReversalDescription": null,
+                                            "CollectionOwner": "Unknown",
+                                            "CollectionReason": "None",
+                                            "TransactionComplete": false,
+                                            "RequiresPdfRegeneration": true,
+                                            "CustomerCreditStatus": "Approved",
+                                            "CustomerWatchListStatus": "Yellow",
+                                            "HasAttachments": "None",
+                                            "InvoiceConfigurationId": "883ef8aa-025d-461e-a54a-39ccb80a009d",
+                                            "BillingConfigurationId": "ff3e2b7f-9ec8-4b1d-86cf-196226afa267",
+                                            "BusinessUnit": "FSTPC",
+                                            "Division": "MI Div",
+                                            "AccountNumber": "A10000539",
+                                            "CollectionNotes": null,
+                                            "BillingContactId": "99e37765-a078-4471-8a62-ca394da5540e",
+                                            "IsDeliveredToErp": true,
+                                            "CreatedBy": "Jim Maden",
+                                            "CreatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                            "CreatedAt": "2023-03-22T18:04:34.5424953+00:00",
+                                            "UpdatedAt": "2023-03-22T18:05:48.5056097+00:00",
+                                            "UpdatedBy": "Jim Maden",
+                                            "UpdatedById": "08643362-91b6-4f34-b8eb-423455970a40",
+                                            "DocumentType": "Invoice",
+                                            "EntityType": "Invoice",
+                                            "Id": "@{variables('Sales Order Id')}"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Compose_Sales_Order_Lines_Insert": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Send_multiple_messages": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "enterprise-entity-updates",
+                                            "messages": [
+                                                {
+                                                    "contentData": "@outputs('Compose_Sales_Order_Header')",
+                                                    "contentType": "application/json",
+                                                    "sessionId": "@variables('Correlation Id')",
+                                                    "correlationId": "@variables('Correlation Id')",
+                                                    "userProperties": {
+                                                        "source": "TT",
+                                                        "messageType": "SalesOrder"
+                                                    },
+                                                    "messageId": "@guid()",
+                                                    "timeToLive": 288000000000
+                                                },
+                                                {
+                                                    "contentData": "@outputs('Compose_Sales_Order_Lines_Insert')",
+                                                    "contentType": "application/json",
+                                                    "sessionId": "@variables('Correlation Id')",
+                                                    "correlationId": "@variables('Correlation Id')",
+                                                    "userProperties": {
+                                                        "source": "TT",
+                                                        "messageType": "SalesLine"
+                                                    },
+                                                    "messageId": "@guid()",
+                                                    "timeToLive": 288000000000
+                                                },
+                                                {
+                                                    "contentData": "@outputs('Compose_Invoice_Update')",
+                                                    "contentType": "application/json",
+                                                    "sessionId": "@variables('Correlation Id')",
+                                                    "correlationId": "@variables('Correlation Id')",
+                                                    "userProperties": {
+                                                        "source": "TT",
+                                                        "messageType": "Invoice"
+                                                    },
+                                                    "messageId": "@guid()",
+                                                    "timeToLive": 288000000000
+                                                }
+                                            ]
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessages",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Compose_Invoice_Update": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                }
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "Initialize_Correlation_Id": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Correlation Id",
+                            "type": "string",
+                            "value": "@if(equals(triggerBody()?['CorrelationId'], null), guid(), triggerBody()?['CorrelationId'])"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_Sales_Order_Id": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Sales Order Id",
+                            "type": "string",
+                            "value": "@if(equals(triggerBody()?['SalesOrderId'], null), guid(), triggerBody()?['SalesOrderId'])"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Correlation_Id": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "ProformaInvoiceNumber": {
+                                "type": "string"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "SalesOrderId": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

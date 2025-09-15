@@ -1,0 +1,564 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "invoice-delivery",
+                        "message": {
+                            "contentData": "@outputs('Compose')",
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "Source": "@body('Parse_JSON')?['Source']",
+                                "MessageType": "@body('Parse_JSON')?['MessageType']"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "BusinessEventId": {
+                                "type": "string"
+                            },
+                            "BusinessEventLegalEntity": {
+                                "type": "string"
+                            },
+                            "ContextRecordSubject": {
+                                "type": "string"
+                            },
+                            "ControlNumber": {
+                                "type": "integer"
+                            },
+                            "MajorVersion": {
+                                "type": "integer"
+                            },
+                            "MinorVersion": {
+                                "type": "integer"
+                            },
+                            "ParentContextRecordSubjects": {
+                                "type": "array"
+                            },
+                            "EventId": {
+                                "type": "string"
+                            },
+                            "EventTime": {
+                                "type": "string"
+                            },
+                            "EventTimeIso8601": {
+                                "type": "string"
+                            },
+                            "InitiatingUserAADObjectId": {
+                                "type": "string"
+                            },
+                            "InvoiceAccount": {
+                                "type": "string"
+                            },
+                            "InvoiceDate": {
+                                "type": "string"
+                            },
+                            "InvoiceId": {
+                                "type": "string"
+                            },
+                            "InvoiceTotal": {
+                                "type": "number"
+                            },
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "CurrencyCode": {
+                                "type": "string"
+                            },
+                            "TotalLineItems": {
+                                "type": "integer"
+                            },
+                            "Platform": {
+                                "type": "string"
+                            },
+                            "SummaryIndicator": {
+                                "type": "integer"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "ServicePeriodStartHeader": {
+                                "type": "string"
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "EdiDate": {
+                                "type": "string"
+                            },
+                            "BillingCustomerId": {
+                                "type": "string"
+                            },
+                            "BillToDuns": {
+                                "type": "string"
+                            },
+                            "RemitToDuns": {
+                                "type": "string"
+                            },
+                            "Comments": {
+                                "type": "string"
+                            },
+                            "DefaultBuyerDepartment": {
+                                "type": "string"
+                            },
+                            "Email": {
+                                "type": "string"
+                            },
+                            "InvoiceTypeCode": {
+                                "type": "string"
+                            },
+                            "HeaderCountryCode": {
+                                "type": "string"
+                            },
+                            "EmailDelivery": {
+                                "properties": {
+                                    "BCC": {
+                                        "type": "string"
+                                    },
+                                    "Body": {
+                                        "type": "string"
+                                    },
+                                    "CC": {
+                                        "type": "string"
+                                    },
+                                    "ReplyTo": {
+                                        "type": "string"
+                                    },
+                                    "Subject": {
+                                        "type": "string"
+                                    },
+                                    "To": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": [
+                                    "object",
+                                    "null"
+                                ]
+                            },
+                            "FirstDescription": {
+                                "type": "string"
+                            },
+                            "FirstWell": {
+                                "type": "string"
+                            },
+                            "Attachments": {
+                                "files": [
+                                    {
+                                        "properties": {
+                                            "BlobPath": {
+                                                "type": "string"
+                                            },
+                                            "ContainerName": {
+                                                "type": "string"
+                                            },
+                                            "ContentType": {
+                                                "type": "string"
+                                            },
+                                            "FileName": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ],
+                                "type": [
+                                    "array",
+                                    "null"
+                                ]
+                            },
+                            "LineItems": {
+                                "items": {
+                                    "properties": {
+                                        "ApproverRequestor": {
+                                            "type": "string"
+                                        },
+                                        "TotalAmount": {
+                                            "type": "number"
+                                        },
+                                        "DiscountAmount": {
+                                            "type": "number"
+                                        },
+                                        "TaxAmount": {
+                                            "type": "number"
+                                        },
+                                        "LineNumber": {
+                                            "type": "number"
+                                        },
+                                        "Tax": {
+                                            "lines": [
+                                                {
+                                                    "properties": {
+                                                        "Amount": {
+                                                            "type": "number"
+                                                        },
+                                                        "Country": {
+                                                            "type": "string"
+                                                        },
+                                                        "Description": {
+                                                            "type": "string"
+                                                        },
+                                                        "Province": {
+                                                            "type": "string"
+                                                        },
+                                                        "Rate": {
+                                                            "type": "number"
+                                                        },
+                                                        "TaxType": {
+                                                            "type": "string"
+                                                        },
+                                                        "TypeCode": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            ],
+                                            "type": [
+                                                "array",
+                                                "null"
+                                            ]
+                                        },
+                                        "InventSite": {
+                                            "type": "string"
+                                        },
+                                        "ItemNumber": {
+                                            "type": "string"
+                                        },
+                                        "DiscountPercent": {
+                                            "type": "number"
+                                        },
+                                        "Description": {
+                                            "type": "string"
+                                        },
+                                        "Rate": {
+                                            "type": "number"
+                                        },
+                                        "UnitsOfMeasure": {
+                                            "type": "string"
+                                        },
+                                        "PackingGroup": {
+                                            "type": "string"
+                                        },
+                                        "Quantity": {
+                                            "type": "number"
+                                        },
+                                        "ServicePeriodStartLine": {
+                                            "type": "string"
+                                        },
+                                        "ServicePeriodEndLine": {
+                                            "type": "string"
+                                        },
+                                        "SourceLocation": {
+                                            "type": "string"
+                                        },
+                                        "SourceLocationType": {
+                                            "type": "string"
+                                        },
+                                        "TicketDate": {
+                                            "type": "string"
+                                        },
+                                        "BOLNumber": {
+                                            "type": "string"
+                                        },
+                                        "TicketNumber": {
+                                            "type": "string"
+                                        },
+                                        "CurrencyCode": {
+                                            "type": "string"
+                                        },
+                                        "Edi": {
+                                            "properties": {
+                                                "Account": {
+                                                    "type": "string"
+                                                },
+                                                "AccountQty": {
+                                                    "type": "string"
+                                                },
+                                                "AFE": {
+                                                    "type": "string"
+                                                },
+                                                "AFEOwner": {
+                                                    "type": "string"
+                                                },
+                                                "Alpha": {
+                                                    "type": "string"
+                                                },
+                                                "ApproverCoding": {
+                                                    "type": "string"
+                                                },
+                                                "AssetNumber": {
+                                                    "type": "string"
+                                                },
+                                                "Attnto": {
+                                                    "type": "string"
+                                                },
+                                                "AttnToName": {
+                                                    "type": "string"
+                                                },
+                                                "BuyerCode": {
+                                                    "type": "string"
+                                                },
+                                                "BuyerDepartment": {
+                                                    "type": "string"
+                                                },
+                                                "CatalogSerialNo": {
+                                                    "type": "string"
+                                                },
+                                                "CCType": {
+                                                    "type": "string"
+                                                },
+                                                "ChargeTo": {
+                                                    "type": "string"
+                                                },
+                                                "ChargeToName": {
+                                                    "type": "string"
+                                                },
+                                                "Company": {
+                                                    "type": "string"
+                                                },
+                                                "CompanyRep": {
+                                                    "type": "string"
+                                                },
+                                                "Contract": {
+                                                    "type": "string"
+                                                },
+                                                "ContractLineNumber": {
+                                                    "type": "string"
+                                                },
+                                                "CostCenter": {
+                                                    "type": "string"
+                                                },
+                                                "CostCenterName": {
+                                                    "type": "string"
+                                                },
+                                                "EDIZip4": {
+                                                    "type": "string"
+                                                },
+                                                "FieldLocation": {
+                                                    "type": "string"
+                                                },
+                                                "GLAccount": {
+                                                    "type": "string"
+                                                },
+                                                "Joints": {
+                                                    "type": "string"
+                                                },
+                                                "Location": {
+                                                    "type": "string"
+                                                },
+                                                "LocationComments": {
+                                                    "type": "string"
+                                                },
+                                                "MajorCode": {
+                                                    "type": "string"
+                                                },
+                                                "MaterialCode": {
+                                                    "type": "string"
+                                                },
+                                                "MatGrp": {
+                                                    "type": "string"
+                                                },
+                                                "MGDesc": {
+                                                    "type": "string"
+                                                },
+                                                "MinorCode": {
+                                                    "type": "string"
+                                                },
+                                                "NetworkActivity": {
+                                                    "type": "string"
+                                                },
+                                                "ObjSubna": {
+                                                    "type": "string"
+                                                },
+                                                "OperationCat": {
+                                                    "type": "string"
+                                                },
+                                                "OperatorCoding": {
+                                                    "type": "string"
+                                                },
+                                                "OPNumber": {
+                                                    "type": "string"
+                                                },
+                                                "OrderNumber": {
+                                                    "type": "string"
+                                                },
+                                                "POApprover": {
+                                                    "type": "string"
+                                                },
+                                                "POLine": {
+                                                    "type": "string"
+                                                },
+                                                "PONumber": {
+                                                    "type": "string"
+                                                },
+                                                "ProfitCentre": {
+                                                    "type": "string"
+                                                },
+                                                "Project": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectPONo": {
+                                                    "type": "string"
+                                                },
+                                                "ReportCentre": {
+                                                    "type": "string"
+                                                },
+                                                "Requisitioner": {
+                                                    "type": "string"
+                                                },
+                                                "SerialNumber": {
+                                                    "type": "string"
+                                                },
+                                                "Signatory": {
+                                                    "type": "string"
+                                                },
+                                                "SOLine": {
+                                                    "type": "string"
+                                                },
+                                                "SONumber": {
+                                                    "type": "string"
+                                                },
+                                                "StkCond": {
+                                                    "type": "string"
+                                                },
+                                                "Sub": {
+                                                    "type": "string"
+                                                },
+                                                "SubCode": {
+                                                    "type": "string"
+                                                },
+                                                "Subfeature": {
+                                                    "type": "string"
+                                                },
+                                                "WBS": {
+                                                    "type": "string"
+                                                },
+                                                "WellFacility": {
+                                                    "type": "string"
+                                                },
+                                                "WONumber": {
+                                                    "type": "string"
+                                                },
+                                                "WorkOrderedBy": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": [
+                                        "ItemNumber"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {},
+                "trackedProperties": {
+                    "InvoiceId": "@{body('Parse_JSON')?['InvoiceId']}"
+                }
+            },
+            "Compose": {
+                "type": "Compose",
+                "inputs": {
+                    "Blobs": "@body('Parse_JSON')?['Attachments']",
+                    "CorrelationId": "@body('Parse_JSON')?['CorrelationId']",
+                    "Identifiers": "",
+                    "MessageDate": "@body('Parse_JSON')?['MessageDate']",
+                    "MessageType": "@body('Parse_JSON')?['MessageType']",
+                    "Operation": "@body('Parse_JSON')?['Operation']",
+                    "Payload": {
+                        "Platform": "@body('Parse_JSON')?['Platform']",
+                        "InvoiceAccount": "@body('Parse_JSON')?['InvoiceAccount']",
+                        "InvoiceId": "@body('Parse_JSON')?['InvoiceId']",
+                        "InvoiceDate": "@body('Parse_JSON')?['InvoiceDate']",
+                        "BillingCustomerId": "@body('Parse_JSON')?['BillingCustomerId']",
+                        "DataAreaId": "@body('Parse_JSON')?['DataAreaId']",
+                        "EdiDate": "@body('Parse_JSON')?['EdiDate']",
+                        "Email": "@body('Parse_JSON')?['Email']",
+                        "EmailDelivery": "@body('Parse_JSON')?['EmailDelivery']",
+                        "CurrencyCode": "@body('Parse_JSON')?['CurrencyCode']",
+                        "InvoiceTotal": "@body('Parse_JSON')?['InvoiceTotal']",
+                        "TotalLineItems": "@body('Parse_JSON')?['TotalLineItems']",
+                        "BillToDuns": "@body('Parse_JSON')?['BillToDuns']",
+                        "RemitToDuns": "@body('Parse_JSON')?['RemitToDuns']",
+                        "SummaryIndicator": "@body('Parse_JSON')?['SummaryIndicator']",
+                        "ServicePeriodStartHeader": "@body('Parse_JSON')?['ServicePeriodStartHeader']",
+                        "Comments": "@body('Parse_JSON')?['Comments']",
+                        "FirstDescription": "@body('Parse_JSON')?['FirstDescription']",
+                        "FirstWell": "@body('Parse_JSON')?['FirstWell']",
+                        "HeaderCountryCode": "@body('Parse_JSON')?['HeaderCountryCode']",
+                        "InvoiceTypeCode": "@body('Parse_JSON')?['InvoiceTypeCode']",
+                        "DefaultBuyerDepartment": "@body('Parse_JSON')?['DefaultBuyerDepartment']",
+                        "LineItems": "@body('Parse_JSON')?['LineItems']"
+                    },
+                    "Source": "@body('Parse_JSON')?['Source']",
+                    "SourceId": "@body('Parse_JSON')?['SourceId']"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "posted-invoice",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

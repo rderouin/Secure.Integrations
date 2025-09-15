@@ -1,0 +1,180 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_Certify_Log_Message": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "Payload": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "InvoiceNumber": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "Description": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "TotalAmount": {
+                                            "type": [
+                                                "number",
+                                                "null"
+                                            ]
+                                        },
+                                        "DefaultTaxComponent": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "Currency": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "ProcessedDate": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "LastName": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "FirstName": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "EmployeeId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "DataAreaId": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "FinancialDimensions": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "JournalNumber": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        },
+                                        "MessageBody": {
+                                            "type": [
+                                                "string",
+                                                "null"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "For_each": {
+                "type": "Foreach",
+                "foreach": "@body('Parse_Certify_Log_Message')?['Payload']",
+                "actions": {
+                    "Insert_record_into_D365APCertifyAudit_table": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_auditLogging"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "InvoiceNumber": "@{item()['InvoiceNumber']}",
+                                "Description": "@{item()['Description']}",
+                                "TotalAmount": "@item()['TotalAmount']",
+                                "DefaultTaxComponent": "@{item()['DefaultTaxComponent']}",
+                                "Currency": "@{item()['Currency']}",
+                                "ProcessedDate": "@{item()['ProcessedDate']}",
+                                "LastName": "@{item()['LastName']}",
+                                "FirstName": "@{item()['FirstName']}",
+                                "EmployeeId": "@{item()['EmployeeId']}",
+                                "DataAreaId": "@{item()['DataAreaId']}",
+                                "FinancialDimensions": "@{item()['FinancialDimensions']}",
+                                "D365JENumber": "@{item()['JournalNumber']}",
+                                "MessageBody": "@{item()['MessageBody']}"
+                            },
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365APCertifyAudit]'))}/items"
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Parse_Certify_Log_Message": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "integration-logs",
+                        "subscriptionName": "certify-logs",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

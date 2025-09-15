@@ -1,0 +1,106 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Return_HTTP_201": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 201
+                },
+                "runAfter": {
+                    "Send_Message": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Return_HTTP_500": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 500,
+                    "body": "@body('Filter_error_messages')"
+                },
+                "runAfter": {
+                    "Filter_error_messages": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Filter_error_messages": {
+                "type": "Query",
+                "inputs": {
+                    "from": "@result('Send_Message')",
+                    "where": "@equals(item()['status'], 'Failed')"
+                },
+                "runAfter": {
+                    "Send_Message": [
+                        "FAILED"
+                    ]
+                }
+            },
+            "Send_Message": {
+                "type": "Scope",
+                "actions": {
+                    "Send_custom_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "enterprise-entity-updates",
+                                "message": {
+                                    "contentData": "@triggerBody()?['ServiceBusMessage']",
+                                    "contentType": "application/json",
+                                    "sessionId": "@if(equals(triggerBody()?['SessionId'], null), guid(), triggerBody()?['SessionId'])",
+                                    "userProperties": {
+                                        "source": "@triggerBody()?['Source']",
+                                        "messageType": "@triggerBody()?['MessageType']"
+                                    },
+                                    "messageId": "@guid()",
+                                    "timeToLive": "@int(if(equals(triggerBody()?['TTL'], null), 288000000000, triggerBody()?['TTL']))"
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "Source": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "SessionId": {
+                                "type": "string"
+                            },
+                            "TTL": {
+                                "type": "number"
+                            },
+                            "ServiceBusMessage": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

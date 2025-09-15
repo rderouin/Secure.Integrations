@@ -1,0 +1,730 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Failed_(2)": {
+        "inputs": {
+          "runStatus": "Failed"
+        },
+        "runAfter": {
+          "Return_HTTP_500_(2)": [
+            "Succeeded"
+          ]
+        },
+        "type": "Terminate"
+      },
+      "On_Failure": {
+        "actions": {
+          "Create_SalesOrderAck_failure_message": {
+            "inputs": {
+              "Blobs": null,
+              "CorrelationId": "@{body('SalesOrder')['CorrelationId']}",
+              "MessageDate": "@{body('SalesOrder')['MessageDate']}",
+              "MessageType": "SalesOrderAck",
+              "Operation": "@{body('SalesOrder')['Operation']}",
+              "Payload": {
+                "Id": "@{body('SalesOrder')['Payload']['Id']}",
+                "IsSuccessful": false,
+                "Message": "@coalesce(body('Filter_error_messages')[0]?['outputs']?['body']?['message'], body('Filter_error_messages')[0]?['error']?['message'], body('Filter_error_messages')[0]?['code'])",
+                "ProformaInvoiceNumber": "@{body('SalesOrder')['Payload']['ProformaInvoiceNumber']}"
+              },
+              "Source": "D365FO",
+              "SourceId": "@{body('SalesOrder')['SourceId']}"
+            },
+            "runAfter": {
+              "Filter_error_messages": [
+                "Succeeded"
+              ]
+            },
+            "type": "Compose"
+          },
+          "Failed_(1)": {
+            "inputs": {
+              "runError": {
+                "message": "@{outputs('Create_SalesOrderAck_failure_message')}"
+              },
+              "runStatus": "Failed"
+            },
+            "runAfter": {
+              "Send_message_errorlog": [
+                "Succeeded"
+              ]
+            },
+            "type": "Terminate"
+          },
+          "Filter_error_messages": {
+            "inputs": {
+              "from": "@union(result('SalesOrderExists'), result('Try'))",
+              "where": "@equals(item()['status'], 'Failed')"
+            },
+            "type": "Query"
+          },
+          "Return_HTTP_500_(1)": {
+            "inputs": {
+              "body": "@outputs('Create_SalesOrderAck_failure_message')",
+              "statusCode": 500
+            },
+            "kind": "http",
+            "runAfter": {
+              "Send_SalesOrderAck_failure_message": [
+                "Succeeded"
+              ]
+            },
+            "type": "Response"
+          },
+          "Send_SalesOrderAck_failure_message": {
+            "inputs": {
+              "parameters": {
+                "entityName": "enterprise-entity-updates",
+                "message": {
+                  "contentData": "@outputs('Create_SalesOrderAck_failure_message')",
+                  "contentType": "application/json",
+                  "messageId": "@guid()",
+                  "sessionId": "@guid()",
+                  "userProperties": {
+                    "messageType": "SalesOrderAck",
+                    "source": "D365FO"
+                  }
+                }
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "PrivateServiceBus",
+                "operationId": "sendMessage",
+                "serviceProviderId": "/serviceProviders/serviceBus"
+              }
+            },
+            "runAfter": {
+              "Create_SalesOrderAck_failure_message": [
+                "Succeeded"
+              ]
+            },
+            "type": "ServiceProvider"
+          },
+          "Send_message_errorlog": {
+            "inputs": {
+              "parameters": {
+                "entityName": "integration-logs",
+                "message": {
+                  "contentData": {
+                    "CorrelationId": "",
+                    "MessageDate": "@utcNow()",
+                    "MessageType": "Log",
+                    "Operation": "Information",
+                    "Payload": [
+                      {
+                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                        "Identifier": "@workflow()['run']['name']",
+                        "MessageBody": "@{coalesce(body('Filter_error_messages')[0]?['outputs']?['body']?['message'], body('Filter_error_messages')[0]?['error']?['message'], body('Filter_error_messages')[0]?['code'])}",
+                        "Workflow": "@workflow()['name']",
+                        "keyfield": "@{body('SalesOrder')?['Payload']?['ProformaInvoiceNumber']}",
+                        "status": "Fail"
+                      }
+                    ],
+                    "Source": "@workflow().name",
+                    "SourceId": "@workflow().run.name"
+                  },
+                  "userProperties": {
+                    "Source": "@workflow().name"
+                  }
+                }
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "PrivateServiceBus",
+                "operationId": "sendMessage",
+                "serviceProviderId": "/serviceProviders/serviceBus"
+              }
+            },
+            "runAfter": {
+              "Return_HTTP_500_(1)": [
+                "Succeeded"
+              ]
+            },
+            "type": "ServiceProvider"
+          }
+        },
+        "runAfter": {
+          "Try": [
+            "FAILED"
+          ]
+        },
+        "type": "Scope"
+      },
+      "On_Success": {
+        "actions": {
+          "Create_SalesOrderAck_success_message": {
+            "inputs": {
+              "Blobs": null,
+              "CorrelationId": "@{body('SalesOrder')['CorrelationId']}",
+              "MessageDate": "@{body('SalesOrder')['MessageDate']}",
+              "MessageType": "SalesOrderAck",
+              "Operation": "@{body('SalesOrder')['Operation']}",
+              "Payload": {
+                "Id": "@{body('SalesOrder')['Payload']['Id']}",
+                "IsSuccessful": true,
+                "Message": "",
+                "ProformaInvoiceNumber": "@{body('SalesOrder')['Payload']['ProformaInvoiceNumber']}"
+              },
+              "Source": "D365FO",
+              "SourceId": "@{body('SalesOrder')['SourceId']}"
+            },
+            "type": "Compose"
+          },
+          "Return_HTTP_200": {
+            "inputs": {
+              "body": "@outputs('Create_SalesOrderAck_success_message')",
+              "statusCode": 200
+            },
+            "kind": "http",
+            "runAfter": {
+              "Send_SalesOrderAck_success_message": [
+                "Succeeded"
+              ]
+            },
+            "type": "Response"
+          },
+          "Send_SalesOrderAck_success_message": {
+            "inputs": {
+              "parameters": {
+                "entityName": "enterprise-entity-updates",
+                "message": {
+                  "contentData": "@outputs('Create_SalesOrderAck_success_message')",
+                  "contentType": "application/json",
+                  "messageId": "@guid()",
+                  "sessionId": "@guid()",
+                  "userProperties": {
+                    "messageType": "SalesOrderAck",
+                    "source": "D365FO"
+                  }
+                }
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "PrivateServiceBus",
+                "operationId": "sendMessage",
+                "serviceProviderId": "/serviceProviders/serviceBus"
+              }
+            },
+            "runAfter": {
+              "Create_SalesOrderAck_success_message": [
+                "Succeeded"
+              ]
+            },
+            "type": "ServiceProvider"
+          },
+          "Send_message_success": {
+            "inputs": {
+              "parameters": {
+                "entityName": "integration-logs",
+                "message": {
+                  "contentData": {
+                    "CorrelationId": "",
+                    "MessageDate": "@utcNow()",
+                    "MessageType": "Log",
+                    "Operation": "Information",
+                    "Payload": [
+                      {
+                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                        "Identifier": "@workflow()['run']['name']",
+                        "MessageBody": "",
+                        "Workflow": "@workflow()['name']",
+                        "keyfield": "@{body('SalesOrder')?['Payload']?['ProformaInvoiceNumber']}",
+                        "status": "Success"
+                      }
+                    ],
+                    "Source": "@workflow().name",
+                    "SourceId": "@workflow().run.name"
+                  },
+                  "userProperties": {
+                    "Source": "@workflow().name"
+                  }
+                }
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "PrivateServiceBus",
+                "operationId": "sendMessage",
+                "serviceProviderId": "/serviceProviders/serviceBus"
+              }
+            },
+            "runAfter": {
+              "Return_HTTP_200": [
+                "Succeeded"
+              ]
+            },
+            "type": "ServiceProvider"
+          }
+        },
+        "runAfter": {
+          "Try": [
+            "Succeeded"
+          ]
+        },
+        "type": "Scope"
+      },
+      "Return_HTTP_500_(2)": {
+        "description": "This path is necessary if the input data was so bad that we couldn't compose a proper error response.",
+        "inputs": {
+          "body": "@body('Filter_error_messages')[0]",
+          "statusCode": 500
+        },
+        "kind": "http",
+        "runAfter": {
+          "On_Failure": [
+            "FAILED"
+          ]
+        },
+        "type": "Response"
+      },
+      "Try": {
+        "actions": {
+          "Condition_check_if_void_sales_header": {
+            "actions": {
+              "GetSalesOrders": {
+                "inputs": {
+                  "body": {
+                    "_correlationId": "@{body('SalesOrder')['Payload'].Id}",
+                    "_legalEntity": "@{body('SalesOrder')['Payload'].LegalEntity}",
+                    "_salesId": "@{body('SalesOrder')['Payload']['ProformaInvoiceNumber']}"
+                  },
+                  "host": {
+                    "connection": {
+                      "referenceName": "dynamicsax-3"
+                    }
+                  },
+                  "method": "post",
+                  "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSSalesOrdersHeaderV2/Microsoft.Dynamics.DataEntities.findSalesOrder'))}"
+                },
+                "type": "ApiConnection"
+              },
+              "SalesOrderExists": {
+                "actions": {
+                  "UpdateSalesOrder": {
+                    "inputs": {
+                      "body": {
+                        "_comment": "@{if(equals(body('SalesOrder')['Payload']?['Signatories']?['List'], null), null, join(body('SalesOrder')['Payload']?['Signatories']?['List'], '\r\n'))}",
+                        "_contactPersonId": "@{body('SalesOrder')['Payload'].BillingContactId}",
+                        "_currency": "@{body('SalesOrder')['Payload'].Currency}",
+                        "_custAccount": "@{body('SalesOrder')['Payload'].CustomerNumber}",
+                        "_defaultDimensionValue": "@concat(body('SalesOrder')['Payload'].LegalEntity,'-',body('SalesOrder')['Payload'].Division,'-',body('SalesOrder')['Payload'].BusinessUnit,'-',body('SalesOrder')['Payload'].SiteId)",
+                        "_invAccount": "@{body('SalesOrder')['Payload'].CustomerNumber}",
+                        "_langauge": "en-CA",
+                        "_legalEntity": "@{body('SalesOrder')['Payload'].LegalEntity}",
+                        "_numberSequenceGroup": "@{body('SalesOrder')['Payload'].SiteId}",
+                        "_salesOrderNumber": "@{body('SalesOrder')['Payload'].ProformaInvoiceNumber}",
+                        "_site": "@{body('SalesOrder')['Payload'].SiteId}",
+                        "_sourceID": "@{body('SalesOrder')['Payload'].Id}",
+                        "_warehouse": "@{body('SalesOrder')['Payload'].SiteId}"
+                      },
+                      "host": {
+                        "connection": {
+                          "referenceName": "dynamicsax-8"
+                        }
+                      },
+                      "method": "post",
+                      "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSSalesOrdersHeaderV2/Microsoft.Dynamics.DataEntities.updateOrder'))}"
+                    },
+                    "type": "ApiConnection"
+                  }
+                },
+                "else": {
+                  "actions": {
+                    "CreateSalesOrderHeader": {
+                      "inputs": {
+                        "body": {
+                          "CurrencyCode": "@{body('SalesOrder')['Payload'].Currency}",
+                          "DefaultLedgerDimensionDisplayValue": "@concat(body('SalesOrder')['Payload'].LegalEntity,'-',body('SalesOrder')['Payload'].Division,'-',body('SalesOrder')['Payload'].BusinessUnit,'-',body('SalesOrder')['Payload'].SiteId)",
+                          "DefaultShippingSiteId": "@{body('SalesOrder')['Payload'].SiteId}",
+                          "DefaultShippingWarehouseId": "@{body('SalesOrder')['Payload'].SiteId}",
+                          "HSComment": "@{if(equals(body('SalesOrder')['Payload']?['Signatories']?['List'], null), null, join(body('SalesOrder')['Payload']?['Signatories']?['List'], '\r\n'))}",
+                          "HSCorrelationId": "@{body('SalesOrder')['Payload'].Id}",
+                          "InvoiceCustomerAccountNumber": "@{body('SalesOrder')['Payload'].CustomerNumber}",
+                          "NumberSequenceGroupId": "@{body('SalesOrder')['Payload'].SiteId}",
+                          "OrderingCustomerAccountNumber": "@{body('SalesOrder')['Payload'].CustomerNumber}",
+                          "SalesOrderNumber": "@{body('SalesOrder')['Payload'].ProformaInvoiceNumber}",
+                          "dataAreaId": "@{body('SalesOrder')['Payload'].LegalEntity}"
+                        },
+                        "host": {
+                          "connection": {
+                            "referenceName": "dynamicsax-8"
+                          }
+                        },
+                        "method": "post",
+                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSSalesOrdersHeaderV2'))}/items"
+                      },
+                      "type": "ApiConnection"
+                    },
+                    "Update_delivery_address": {
+                      "actions": {
+                        "ContactPersonExists": {
+                          "actions": {
+                            "UpdateDeliveryAddress": {
+                              "inputs": {
+                                "body": {
+                                  "_contactPersonId": "@{body('SalesOrder')['Payload'].BillingContactId}",
+                                  "_legalEntity": "@{body('SalesOrder')['Payload'].LegalEntity}",
+                                  "_sourceID": "@{body('SalesOrder')['Payload'].Id}"
+                                },
+                                "host": {
+                                  "connection": {
+                                    "referenceName": "dynamicsax-8"
+                                  }
+                                },
+                                "method": "post",
+                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSSalesOrdersHeaderV2/Microsoft.Dynamics.DataEntities.updateDeliveryAddress'))}"
+                              },
+                              "type": "ApiConnection"
+                            }
+                          },
+                          "else": {
+                            "actions": {}
+                          },
+                          "expression": {
+                            "and": [
+                              {
+                                "equals": [
+                                  "@body('GetContactPerson')?['value']",
+                                  "True"
+                                ]
+                              }
+                            ]
+                          },
+                          "runAfter": {
+                            "GetContactPerson": [
+                              "Succeeded"
+                            ]
+                          },
+                          "type": "If"
+                        },
+                        "GetContactPerson": {
+                          "inputs": {
+                            "body": {
+                              "_legalEntity": "@{body('SalesOrder')?['Payload'].LegalEntity}",
+                              "_sourceId": "@{body('SalesOrder')?['Payload'].BillingContactId}"
+                            },
+                            "host": {
+                              "connection": {
+                                "referenceName": "dynamicsax-3"
+                              }
+                            },
+                            "method": "post",
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSPeople/Microsoft.Dynamics.DataEntities.findContactPerson'))}"
+                          },
+                          "type": "ApiConnection"
+                        }
+                      },
+                      "else": {
+                        "actions": {}
+                      },
+                      "expression": {
+                        "and": [
+                          {
+                            "not": {
+                              "equals": [
+                                "@{body('SalesOrder')?['Payload'].BillingContactId}",
+                                "00000000-0000-0000-0000-000000000000"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "runAfter": {
+                        "CreateSalesOrderHeader": [
+                          "Succeeded"
+                        ]
+                      },
+                      "type": "If"
+                    }
+                  }
+                },
+                "expression": {
+                  "and": [
+                    {
+                      "equals": [
+                        "@body('GetSalesOrders')?['value']",
+                        "True"
+                      ]
+                    }
+                  ]
+                },
+                "runAfter": {
+                  "GetSalesOrders": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "If"
+              }
+            },
+            "else": {
+              "actions": {
+                "Response_200": {
+                  "inputs": {
+                    "statusCode": 200
+                  },
+                  "kind": "Http",
+                  "type": "Response"
+                },
+                "Terminate_with_Status_Succeeded": {
+                  "inputs": {
+                    "runStatus": "Succeeded"
+                  },
+                  "runAfter": {
+                    "Response_200": [
+                      "SUCCEEDED"
+                    ]
+                  },
+                  "type": "Terminate"
+                }
+              }
+            },
+            "expression": {
+              "and": [
+                {
+                  "not": {
+                    "equals": [
+                      "@body('SalesOrder')?['Payload']?['Status']",
+                      "Void"
+                    ]
+                  }
+                }
+              ]
+            },
+            "runAfter": {
+              "SalesOrder": [
+                "Succeeded"
+              ]
+            },
+            "type": "If"
+          },
+          "SalesOrder": {
+            "inputs": {
+              "content": "@triggerBody()",
+              "schema": {
+                "properties": {
+                  "Blobs": {},
+                  "CorrelationId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "MessageDate": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "MessageType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "Payload": {
+                    "properties": {
+                      "AccountNumber": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "Attachments": {
+                        "type": [
+                          "array",
+                          "null"
+                        ]
+                      },
+                      "BillingContactId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "BusinessUnit": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "Currency": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "CustomerId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "CustomerName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "CustomerNumber": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "Division": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "EDIFieldValues": {
+                        "items": {
+                          "properties": {
+                            "EDIFieldDefinitionId": {
+                              "type": "string"
+                            },
+                            "EDIFieldName": {
+                              "type": "string"
+                            },
+                            "EDIFieldValueContent": {
+                              "type": "string"
+                            },
+                            "Id": {
+                              "type": "string"
+                            },
+                            "IsValid": {
+                              "type": "boolean"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "type": [
+                          "array",
+                          "null"
+                        ]
+                      },
+                      "EDIFieldsValueString": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "FacilityId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "FacilityName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "GlInvoiceNumber": {},
+                      "Id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "InvoicePermutationId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "InvoiceReversalReason": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "IsReversal": {
+                        "type": "boolean"
+                      },
+                      "IsReversed": {
+                        "type": "boolean"
+                      },
+                      "LegalEntity": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "ProformaInvoiceNumber": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "RequiresPdfRegeneration": {
+                        "type": "boolean"
+                      },
+                      "ReversalInvoiceId": {},
+                      "ReversedInvoiceId": {},
+                      "Signatories": {
+                        "properties": {
+                          "List": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": [
+                          "object",
+                          "null"
+                        ]
+                      },
+                      "SiteId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "Status": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "TransactionComplete": {
+                        "type": "boolean"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "Source": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "SourceId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "ParseJson"
+          }
+        },
+        "runAfter": {},
+        "type": "Scope"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "manual": {
+        "correlation": {
+          "clientTrackingId": "@if(equals(triggerBody()?['Payload']?['ProformaInvoiceNumber'], null), guid(), triggerBody()?['Payload']?['ProformaInvoiceNumber'])"
+        },
+        "kind": "Http",
+        "type": "Request"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

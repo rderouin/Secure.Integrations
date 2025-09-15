@@ -1,0 +1,214 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "type": "Compose",
+                "inputs": {
+                    "Blobs": [],
+                    "CorrelationId": "@body('Parse_JSON')?['CorrelationId']",
+                    "Identifiers": "",
+                    "MessageDate": "@body('Parse_JSON')?['MessageDate']",
+                    "MessageType": "@body('Parse_JSON')?['MessageType']",
+                    "Operation": "@body('Parse_JSON')?['Operation']",
+                    "Payload": {
+                        "AdminEmail": "@body('Parse_JSON')?['HSAdminEmail']",
+                        "CalendarId": "@body('Parse_JSON')?['HSCalendarId']",
+                        "Country": "@body('Parse_JSON')?['Country']",
+                        "DataAreaId": "@body('Parse_JSON')?['DataAreaId']",
+                        "FacilityRegulatoryCodePipeline": "@body('Parse_JSON')?['HSFacilityRegulatoryCodePipeline']",
+                        "FacilityRegulatoryCodeTerminalling": "@body('Parse_JSON')?['HSFacilityRegulatoryCodeTerminalling']",
+                        "FacilityRegulatoryCodeTreating": "@body('Parse_JSON')?['HSFacilityRegulatoryCodeTreating']",
+                        "FacilityRegulatoryCodeWaste": "@body('Parse_JSON')?['HSFacilityRegulatoryCodeWaste']",
+                        "FacilityRegulatoryCodeWater": "@body('Parse_JSON')?['HSFacilityRegulatoryCodeWater']",
+                        "FacilityType": "@body('Parse_JSON')?['FacilityType']",
+                        "InvoiceContact": "@body('Parse_JSON')?['HSInvoiceContact']",
+                        "IsActive": "@body('Parse_JSON')?['IsActive']",
+                        "IsPipelineConnected": "@body('Parse_JSON')?['HSIsPipelineConnected']",
+                        "IsRailConnected": "@body('Parse_JSON')?['HSIsRailConnected']",
+                        "IsTareWeightSignRequired": "@body('Parse_JSON')?['HSIsTareWeightSignRequired']",
+                        "OvertonnageAnalyticalContract": "@body('Parse_JSON')?['HSOvertonnageAnalyticalContract']",
+                        "ProductionAccountantContact": "@body('Parse_JSON')?['HSProductionAccountantContact']",
+                        "Province": "@body('Parse_JSON')?['Province']",
+                        "SiteId": "@body('Parse_JSON')?['SiteId']",
+                        "SiteName": "@body('Parse_JSON')?['SiteName']",
+                        "TaxGroup": "@body('Parse_JSON')?['HSTaxGroup']",
+                        "UWI": "@body('Parse_JSON')?['HSUWI']",
+                        "id": "@body('Parse_JSON')?['SourceId']"
+                    },
+                    "Source": "@body('Parse_JSON')?['Source']",
+                    "SourceId": "@body('Parse_JSON')?['SourceId']"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "enterprise-entity-updates",
+                        "message": {
+                            "contentData": "@outputs('Compose')",
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "MessageType": "@body('Parse_JSON')?['MessageType']",
+                                "Source": "@body('Parse_JSON')?['Source']"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "BusinessEventId": {
+                                "type": "string"
+                            },
+                            "ControlNumber": {
+                                "type": "integer"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "Country": {
+                                "type": "string"
+                            },
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "EventId": {
+                                "type": "string"
+                            },
+                            "EventTime": {
+                                "type": "string"
+                            },
+                            "HSAdminEmail": {
+                                "type": "string"
+                            },
+                            "HSCalendarId": {
+                                "type": "string"
+                            },
+                            "HSFacilityRegulatoryCodePipeline": {
+                                "type": "string"
+                            },
+                            "HSFacilityRegulatoryCodeTerminalling": {
+                                "type": "string"
+                            },
+                            "HSFacilityRegulatoryCodeTreating": {
+                                "type": "string"
+                            },
+                            "HSFacilityRegulatoryCodeWaste": {
+                                "type": "string"
+                            },
+                            "HSFacilityRegulatoryCodeWater": {
+                                "type": "string"
+                            },
+                            "HSFacilityType": {
+                                "type": "string"
+                            },
+                            "HSInvoiceContact": {
+                                "type": "integer"
+                            },
+                            "HSIsPipelineConnected": {
+                                "type": "string"
+                            },
+                            "HSIsRailConnected": {
+                                "type": "string"
+                            },
+                            "HSIsTareWeightSignRequired": {
+                                "type": "string"
+                            },
+                            "HSOvertonnageAnalyticalContract": {
+                                "type": "integer"
+                            },
+                            "HSProductionAccountantContact": {
+                                "type": "integer"
+                            },
+                            "HSTaxGroup": {
+                                "type": "string"
+                            },
+                            "HSUWI": {
+                                "type": "string"
+                            },
+                            "IsActive": {
+                                "type": "boolean"
+                            },
+                            "MajorVersion": {
+                                "type": "integer"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "MinorVersion": {
+                                "type": "integer"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "Province": {
+                                "type": "string"
+                            },
+                            "FacilityType": {
+                                "type": "string"
+                            },
+                            "SiteId": {
+                                "type": "string"
+                            },
+                            "SiteName": {
+                                "type": "string"
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "invent-site-updates",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

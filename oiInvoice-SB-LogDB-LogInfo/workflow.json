@@ -1,0 +1,175 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Insert_row_Logging": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql_auditLogging"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "WorkFlow": "@body('Parse_JSON')?['WorkFlow']",
+                        "Identifier": "@body('Parse_JSON')?['Identifier']",
+                        "MessageBody": "@{if(greater(length(body('Parse_JSON')?['MessageBody']),4000),substring(body('Parse_JSON')?['MessageBody'],0,3999),body('Parse_JSON')?['MessageBody'])}",
+                        "DateTime": "@body('Parse_JSON')?['DateTime']",
+                        "keyfield": "@body('Parse_JSON')?['keyfield']",
+                        "status": "@body('Parse_JSON')?['status']"
+                    },
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[IntegrationLog]'))}/items"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Parse_JSON_2')?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "DateTime": {
+                                "type": "string"
+                            },
+                            "Identifier": {
+                                "type": "string"
+                            },
+                            "MessageBody": {
+                                "type": "string"
+                            },
+                            "WorkFlow": {
+                                "type": "string"
+                            },
+                            "keyfield": {
+                                "type": "string"
+                            },
+                            "status": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON_2": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON_2": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']",
+                    "schema": {
+                        "properties": {
+                            "contentData": {
+                                "type": "string"
+                            },
+                            "contentType": {
+                                "type": "string"
+                            },
+                            "deliveryCount": {
+                                "type": "integer"
+                            },
+                            "enqueuedSequenceNumber": {
+                                "type": "integer"
+                            },
+                            "enqueuedTimeUtc": {
+                                "type": "string"
+                            },
+                            "lockToken": {
+                                "type": "string"
+                            },
+                            "lockedUntilUtc": {
+                                "type": "string"
+                            },
+                            "messageId": {
+                                "type": "string"
+                            },
+                            "scheduledEnqueueTimeUtc": {
+                                "type": "string"
+                            },
+                            "sequenceNumber": {
+                                "type": "integer"
+                            },
+                            "timeToLive": {
+                                "type": "string"
+                            },
+                            "userProperties": {
+                                "properties": {
+                                    "diagnostic-Id": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {}
+            },
+            "Send_an_alert_email": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "office365"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "To": "rpayavula@secure-energy.com",
+                        "Subject": "OIInvoice_Integrations-Logging Error @{workflow()['run']['name']}",
+                        "Body": "<p>Hi,<br>\n<br>\nPlease find below error while logging to database<br>\n<br>\n@{body('Insert_row_Logging')}<br>\n<br>\nThanks,<br>\nOIInvoice_Integrations-Logging</p>",
+                        "Importance": "Normal"
+                    },
+                    "path": "/v2/Mail"
+                },
+                "runAfter": {
+                    "Insert_row_Logging": [
+                        "FAILED",
+                        "SKIPPED",
+                        "TIMEDOUT"
+                    ]
+                }
+            },
+            "Terminate": {
+                "type": "Terminate",
+                "inputs": {
+                    "runStatus": "Failed"
+                },
+                "runAfter": {
+                    "Send_an_alert_email": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "open-invoice-logging",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveQueueMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

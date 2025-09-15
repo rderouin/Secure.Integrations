@@ -1,0 +1,464 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "EnterpriseId": {
+                                "type": "string"
+                            },
+                            "Payload": {
+                                "type": "object",
+                                "properties": {
+                                    "Id": {
+                                        "type": "string"
+                                    },
+                                    "BillingAccountDunsNumber": {},
+                                    "BillingAccountId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "BillingAccountName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "BillingAccountNumber": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "BusinessStreamId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "BusinessStreamName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CreatedAt": {
+                                        "type": "string"
+                                    },
+                                    "CreatedBy": {},
+                                    "CreatedById": {},
+                                    "DocumentType": {
+                                        "type": "string"
+                                    },
+                                    "EntityType": {
+                                        "type": "string"
+                                    },
+                                    "IsCustomerDefault": {
+                                        "type": "boolean"
+                                    },
+                                    "IsDeleted": {
+                                        "type": "boolean"
+                                    },
+                                    "LegalEntityId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LegalEntityName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Namespace": {},
+                                    "PlatformCode": {
+                                        "type": "string"
+                                    },
+                                    "RootInvoiceExchangeId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SupportsFieldTickets": {
+                                        "type": "boolean"
+                                    },
+                                    "Type": {
+                                        "type": "string"
+                                    },
+                                    "UpdatedAt": {
+                                        "type": "string"
+                                    },
+                                    "UpdatedBy": {},
+                                    "UpdatedById": {},
+                                    "UseEmailDelivery": {
+                                        "type": "boolean"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "FieldTicketsDeliveryConfiguration": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Id": {
+                                                "type": "string"
+                                            },
+                                            "MessageAdapterType": {
+                                                "type": "string"
+                                            },
+                                            "MessageAdapterVersion": {
+                                                "type": "number"
+                                            },
+                                            "PollingStrategy": {
+                                                "type": "string"
+                                            },
+                                            "SupportsStatusPolling": {
+                                                "type": "boolean"
+                                            },
+                                            "AttachmentSettings": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Certificate": {},
+                                                    "ClientId": {},
+                                                    "ClientSecret": {},
+                                                    "DestinationEndpointUri": {},
+                                                    "HttpHeaders": {
+                                                        "type": "object",
+                                                        "properties": {}
+                                                    },
+                                                    "HttpVerb": {
+                                                        "type": "string"
+                                                    },
+                                                    "Id": {
+                                                        "type": "string"
+                                                    },
+                                                    "IsCustomPayload": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "PayloadTemplate": {},
+                                                    "TransportType": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "Mappings": {
+                                                "type": "array"
+                                            },
+                                            "MessageAdapterSettings": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "AcceptsAttachments": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "DestinationApiDefinitionUri": {},
+                                                    "EmbedAttachments": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "Id": {
+                                                        "type": "string"
+                                                    },
+                                                    "IncludeHeaderRow": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "MaxAttachmentSizeInMegabytes": {
+                                                        "type": "integer"
+                                                    },
+                                                    "SupportsSingleAttachmentOnly": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            },
+                                            "TransportSettings": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Certificate": {},
+                                                    "ClientId": {},
+                                                    "ClientSecret": {},
+                                                    "DestinationEndpointUri": {},
+                                                    "HttpHeaders": {
+                                                        "type": "object",
+                                                        "properties": {}
+                                                    },
+                                                    "HttpVerb": {
+                                                        "type": "string"
+                                                    },
+                                                    "Id": {
+                                                        "type": "string"
+                                                    },
+                                                    "IsCustomPayload": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "PayloadTemplate": {},
+                                                    "TransportType": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "InvoiceDeliveryConfiguration": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Id": {
+                                                "type": "string"
+                                            },
+                                            "MessageAdapterType": {
+                                                "type": "string"
+                                            },
+                                            "MessageAdapterVersion": {
+                                                "type": "number"
+                                            },
+                                            "PollingStrategy": {
+                                                "type": "string"
+                                            },
+                                            "SupportsStatusPolling": {
+                                                "type": "boolean"
+                                            },
+                                            "AttachmentSettings": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Certificate": {},
+                                                    "ClientId": {},
+                                                    "ClientSecret": {},
+                                                    "DestinationEndpointUri": {},
+                                                    "HttpHeaders": {
+                                                        "type": "object",
+                                                        "properties": {}
+                                                    },
+                                                    "HttpVerb": {
+                                                        "type": "string"
+                                                    },
+                                                    "Id": {
+                                                        "type": "string"
+                                                    },
+                                                    "IsCustomPayload": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "PayloadTemplate": {},
+                                                    "TransportType": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "Mappings": {
+                                                "type": "array"
+                                            },
+                                            "MessageAdapterSettings": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "AcceptsAttachments": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "DestinationApiDefinitionUri": {},
+                                                    "EmbedAttachments": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "Id": {
+                                                        "type": "string"
+                                                    },
+                                                    "IncludeHeaderRow": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "MaxAttachmentSizeInMegabytes": {
+                                                        "type": "integer"
+                                                    },
+                                                    "SupportsSingleAttachmentOnly": {
+                                                        "type": "boolean"
+                                                    }
+                                                }
+                                            },
+                                            "TransportSettings": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "Certificate": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "ClientId": {},
+                                                    "ClientSecret": {},
+                                                    "DestinationEndpointUri": {
+                                                        "type": "string"
+                                                    },
+                                                    "HttpHeaders": {
+                                                        "type": "object",
+                                                        "properties": {}
+                                                    },
+                                                    "HttpVerb": {
+                                                        "type": "string"
+                                                    },
+                                                    "Id": {
+                                                        "type": "string"
+                                                    },
+                                                    "IsCustomPayload": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "PayloadTemplate": {},
+                                                    "TransportType": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "Message_type": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('Parse_JSON')?['MessageType']",
+                                "InvoiceExchange"
+                            ]
+                        },
+                        {
+                            "equals": [
+                                "@body('Parse_JSON')?['Payload']?['Type']",
+                                "Customer"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Operation": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@body('Parse_JSON')?['Operation']",
+                                        "Delete"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Delete_Customer_EDI_master_config": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "dynamicsax"
+                                        }
+                                    },
+                                    "method": "post",
+                                    "body": {
+                                        "_legalEntityId": "@{body('Parse_JSON')?['Payload']?['LegalEntityId']}",
+                                        "_customerId": "@{body('Parse_JSON')?['Payload']?['BillingAccountNumber']}",
+                                        "_platform": "@body('Parse_JSON')?['Payload']?['PlatformCode']",
+                                        "_sendAttachment": "@body('Parse_JSON')?['Payload']?['InvoiceDeliveryConfiguration']?['MessageAdapterSettings']?['AcceptsAttachments']",
+                                        "_isFieldTicket": "@body('Parse_JSON')?['Payload']?['SupportsFieldTickets']",
+                                        "_isDeleted": true
+                                    },
+                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('CustomerConfigMasters/Microsoft.Dynamics.DataEntities.CreateUpdateEdiConfigMaster'))}"
+                                },
+                                "runAfter": {}
+                            }
+                        },
+                        "runAfter": {},
+                        "else": {
+                            "actions": {
+                                "Create_Update_Customer_EDI_master_config": {
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "referenceName": "dynamicsax"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "body": {
+                                            "_legalEntityId": "@{body('Parse_JSON')?['Payload']?['LegalEntityId']}",
+                                            "_customerId": "@{body('Parse_JSON')?['Payload']?['BillingAccountNumber']}",
+                                            "_platform": "@body('Parse_JSON')?['Payload']?['PlatformCode']",
+                                            "_sendAttachment": "@body('Parse_JSON')?['Payload']?['InvoiceDeliveryConfiguration']?['MessageAdapterSettings']?['AcceptsAttachments']",
+                                            "_isFieldTicket": "@body('Parse_JSON')?['Payload']?['SupportsFieldTickets']",
+                                            "_isDeleted": false
+                                        },
+                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('CustomerConfigMasters/Microsoft.Dynamics.DataEntities.CreateUpdateEdiConfigMaster'))}"
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Terminate": {
+                            "type": "Terminate",
+                            "inputs": {
+                                "runStatus": "Failed",
+                                "runError": {
+                                    "code": "400",
+                                    "message": "Invalid message type."
+                                }
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "enterprise-entity-updates",
+                        "subscriptionName": "d365fo-InvoiceExchange",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

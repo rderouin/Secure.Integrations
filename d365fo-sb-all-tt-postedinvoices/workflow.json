@@ -1,0 +1,502 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Scope": {
+                "type": "Scope",
+                "actions": {
+                    "Parse_JSON": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@triggerOutputs()?['body']?['contentData']",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "BusinessEventId": {
+                                        "type": "string"
+                                    },
+                                    "BusinessEventLegalEntity": {
+                                        "type": "string"
+                                    },
+                                    "ContextRecordSubject": {
+                                        "type": "string"
+                                    },
+                                    "ControlNumber": {
+                                        "type": "integer"
+                                    },
+                                    "EventId": {
+                                        "type": "string"
+                                    },
+                                    "EventTime": {
+                                        "type": "string"
+                                    },
+                                    "EventTimeIso8601": {
+                                        "type": "string"
+                                    },
+                                    "InitiatingUserAADObjectId": {
+                                        "type": "string"
+                                    },
+                                    "MajorVersion": {
+                                        "type": "integer"
+                                    },
+                                    "MinorVersion": {
+                                        "type": "integer"
+                                    },
+                                    "ParentContextRecordSubjects": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ]
+                                    },
+                                    "Source": {
+                                        "type": "string"
+                                    },
+                                    "SourceId": {
+                                        "type": "string"
+                                    },
+                                    "MessageType": {
+                                        "type": "string"
+                                    },
+                                    "Operation": {
+                                        "type": "string"
+                                    },
+                                    "CorrelationId": {
+                                        "type": "string"
+                                    },
+                                    "MessageDate": {
+                                        "type": "string"
+                                    },
+                                    "Blobs": {},
+                                    "Payload": {
+                                        "type": "object",
+                                        "properties": {
+                                            "ProformaInvoiceNumber": {
+                                                "type": "string"
+                                            },
+                                            "GlInvoiceNumber": {},
+                                            "LegalEntity": {
+                                                "type": "string"
+                                            },
+                                            "CustomerId": {
+                                                "type": "string"
+                                            },
+                                            "CustomerName": {
+                                                "type": "string"
+                                            },
+                                            "FacilityId": {
+                                                "type": "string"
+                                            },
+                                            "FacilityName": {
+                                                "type": "string"
+                                            },
+                                            "SiteId": {
+                                                "type": "string"
+                                            },
+                                            "InvoicePermutationId": {
+                                                "type": "string"
+                                            },
+                                            "Status": {
+                                                "type": "string"
+                                            },
+                                            "IsReversed": {
+                                                "type": "boolean"
+                                            },
+                                            "IsReversal": {
+                                                "type": "boolean"
+                                            },
+                                            "ReversedInvoiceId": {},
+                                            "ReversalInvoiceId": {},
+                                            "TicketDateRangeStart": {
+                                                "type": "string"
+                                            },
+                                            "TicketDateRangeEnd": {
+                                                "type": "string"
+                                            },
+                                            "InvoiceStartDate": {
+                                                "type": "string"
+                                            },
+                                            "InvoiceEndDate": {
+                                                "type": "string"
+                                            },
+                                            "LastDistributionDate": {},
+                                            "LastSentById": {
+                                                "type": "string"
+                                            },
+                                            "LastSentByName": {},
+                                            "Paid": {
+                                                "type": "boolean"
+                                            },
+                                            "SalesLineCount": {
+                                                "type": "integer"
+                                            },
+                                            "InvoiceAmount": {
+                                                "type": "integer"
+                                            },
+                                            "Attachments": {
+                                                "type": [
+                                                    "array",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Currency": {
+                                                "type": "string"
+                                            },
+                                            "Generators": {
+                                                "type": [
+                                                    "object",
+                                                    "null"
+                                                ],
+                                                "properties": {
+                                                    "Key": {
+                                                        "type": "string"
+                                                    },
+                                                    "Raw": {
+                                                        "type": "string"
+                                                    },
+                                                    "List": {
+                                                        "type": [
+                                                            "array",
+                                                            "null"
+                                                        ],
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "GeneratorNames": {},
+                                            "LoadConfirmationId": {
+                                                "type": "string"
+                                            },
+                                            "LoadConfirmationNumber": {},
+                                            "CustomerNumber": {
+                                                "type": "string"
+                                            },
+                                            "ManifestNumber": {},
+                                            "BillofLading": {},
+                                            "EDIFieldValues": {
+                                                "type": [
+                                                    "array",
+                                                    "null"
+                                                ]
+                                            },
+                                            "EDIFieldsValueString": {},
+                                            "SourceLocationTypeId": {
+                                                "type": "string"
+                                            },
+                                            "SourceLocationTypeName": {},
+                                            "SourceLocationId": {
+                                                "type": "string"
+                                            },
+                                            "SourceLocationIdentifier": {},
+                                            "SourceLocationFormattedIdentifier": {},
+                                            "DowNonDow": {
+                                                "type": "string"
+                                            },
+                                            "AttachmentIndicatorType": {
+                                                "type": "string"
+                                            },
+                                            "DistributionMethod": {
+                                                "type": "string"
+                                            },
+                                            "InvoiceReversalReason": {
+                                                "type": "string"
+                                            },
+                                            "InvoiceReversalDescription": {},
+                                            "CollectionOwner": {
+                                                "type": "string"
+                                            },
+                                            "CollectionReason": {
+                                                "type": "string"
+                                            },
+                                            "TransactionComplete": {
+                                                "type": "boolean"
+                                            },
+                                            "RequiresPdfRegeneration": {
+                                                "type": "boolean"
+                                            },
+                                            "CustomerCreditStatus": {
+                                                "type": "string"
+                                            },
+                                            "CustomerWatchListStatus": {
+                                                "type": "string"
+                                            },
+                                            "HasAttachments": {
+                                                "type": "string"
+                                            },
+                                            "InvoiceConfigurationId": {
+                                                "type": "string"
+                                            },
+                                            "BusinessUnit": {
+                                                "type": "string"
+                                            },
+                                            "Division": {
+                                                "type": "string"
+                                            },
+                                            "AccountNumber": {
+                                                "type": "string"
+                                            },
+                                            "CreatedBy": {},
+                                            "CreatedById": {},
+                                            "CreatedAt": {
+                                                "type": "string"
+                                            },
+                                            "UpdatedAt": {
+                                                "type": "string"
+                                            },
+                                            "UpdatedBy": {},
+                                            "UpdatedById": {},
+                                            "DocumentType": {
+                                                "type": "string"
+                                            },
+                                            "EntityType": {
+                                                "type": "string"
+                                            },
+                                            "Id": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {},
+                        "trackedProperties": {
+                            "GLInvoiceNumber": "@{body('Parse_JSON')?['Payload']?['GlInvoiceNumber']}"
+                        }
+                    },
+                    "Compose": {
+                        "type": "Compose",
+                        "inputs": {
+                            "Source": "@body('Parse_JSON')?['Source']",
+                            "SourceId": "@body('Parse_JSON')?['SourceId']",
+                            "MessageType": "@body('Parse_JSON')?['MessageType']",
+                            "Operation": "@body('Parse_JSON')?['Operation']",
+                            "CorrelationId": "@body('Parse_JSON')?['CorrelationId']",
+                            "MessageDate": "@body('Parse_JSON')?['MessageDate']",
+                            "Blobs": "@body('Parse_JSON')?['Blobs']",
+                            "Payload": {
+                                "ProformaInvoiceNumber": "@body('Parse_JSON')?['Payload']?['ProformaInvoiceNumber']",
+                                "GlInvoiceNumber": "@body('Parse_JSON')?['Payload']?['GlInvoiceNumber']",
+                                "LegalEntity": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                "CustomerId": "@body('Parse_JSON')?['Payload']?['CustomerId']",
+                                "Attachments": "@body('Parse_JSON')?['Blobs']",
+                                "CustomerNumber": "@body('Parse_JSON')?['Payload']?['CustomerNumber']",
+                                "AccountNumber": "@body('Parse_JSON')?['Payload']?['AccountNumber']",
+                                "DocumentType": "@body('Parse_JSON')?['Payload']?['DocumentType']",
+                                "EntityType": "@body('Parse_JSON')?['Payload']?['EntityType']",
+                                "Id": "@body('Parse_JSON')?['Payload']?['Id']"
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "enterprise-entity-updates",
+                                "message": {
+                                    "contentData": "@outputs('Compose')",
+                                    "contentType": "application/json",
+                                    "userProperties": {
+                                        "Source": "@body('Parse_JSON')?['Source']",
+                                        "MessageType": "@body('Parse_JSON')?['MessageType']"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Compose": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Parse_JSON_blobs": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('Parse_JSON')?['Blobs']",
+                            "schema": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "BlobPath": {
+                                            "type": "string"
+                                        },
+                                        "ContainerName": {
+                                            "type": "string"
+                                        },
+                                        "ContentType": {
+                                            "type": "string"
+                                        },
+                                        "FileName": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "BlobPath",
+                                        "ContainerName",
+                                        "ContentType",
+                                        "FileName"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Send_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "For_each": {
+                        "type": "Foreach",
+                        "foreach": "@body('Parse_JSON_blobs')",
+                        "actions": {
+                            "Append_to_string_variable": {
+                                "type": "AppendToStringVariable",
+                                "inputs": {
+                                    "name": "FileNames",
+                                    "value": "@{items('For_each')['FileName']} , "
+                                },
+                                "runAfter": {}
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON_blobs": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_FileNames": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_success_log": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "@{body('Parse_JSON')?['Payload']?['ProformaInvoiceNumber']} # @{body('Parse_JSON')?['Payload']?['GlInvoiceNumber']} # @{variables('FileNames')}",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['CorrelationId']}",
+                                        "status": "Success"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "Source": "@workflow().name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Scope": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_FileNames": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "FileNames",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Send_message_fail": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "@{body('Parse_JSON')?['Payload']?['ProformaInvoiceNumber']} # @{body('Parse_JSON')?['Payload']?['GlInvoiceNumber']} # @{variables('FileNames')}",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['CorrelationId']}",
+                                        "status": "fail"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Scope": [
+                        "FAILED",
+                        "SKIPPED",
+                        "TIMEDOUT"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "invoice",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

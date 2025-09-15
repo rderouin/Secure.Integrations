@@ -1,0 +1,637 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Get_files_(properties_only)": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sharepoint"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharePointURI')))}/tables/@{encodeURIComponent(encodeURIComponent(parameters('SPDocumentLibrary')))}/getfileitems",
+                    "queries": {
+                        "folderPath": "@parameters('InventoryInterfaceSPFolder')",
+                        "viewScopeOption": "RecursiveAll"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_-_File_name": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Filter_array_-_Text_files": {
+                "type": "Query",
+                "inputs": {
+                    "from": "@body('Get_files_(properties_only)')?['value']",
+                    "where": "@endswith(item()?['{FilenameWithExtension}'], '.txt')"
+                },
+                "runAfter": {
+                    "Get_files_(properties_only)": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_Folder_path_array": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "FilePathArray",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "For_each_text_files": {
+                "type": "Foreach",
+                "foreach": "@body('Filter_array_-_Text_files')",
+                "actions": {
+                    "Parse_JSON_-_File_properties": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@items('For_each_text_files')",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "@@odata.etag": {
+                                        "type": "string"
+                                    },
+                                    "ItemInternalId": {
+                                        "type": "string"
+                                    },
+                                    "ID": {
+                                        "type": "integer"
+                                    },
+                                    "Modified": {
+                                        "type": "string"
+                                    },
+                                    "Editor": {
+                                        "type": "object",
+                                        "properties": {
+                                            "@@odata.type": {
+                                                "type": "string"
+                                            },
+                                            "Claims": {
+                                                "type": "string"
+                                            },
+                                            "DisplayName": {
+                                                "type": "string"
+                                            },
+                                            "Email": {
+                                                "type": "string"
+                                            },
+                                            "Picture": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Department": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "JobTitle": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "Editor#Claims": {
+                                        "type": "string"
+                                    },
+                                    "SharedWithUsers": {
+                                        "type": "array"
+                                    },
+                                    "SharedWithUsers@odata.type": {
+                                        "type": "string"
+                                    },
+                                    "SharedWithUsers#Claims": {
+                                        "type": "array"
+                                    },
+                                    "SharedWithUsers#Claims@odata.type": {
+                                        "type": "string"
+                                    },
+                                    "Created": {
+                                        "type": "string"
+                                    },
+                                    "Author": {
+                                        "type": "object",
+                                        "properties": {
+                                            "@@odata.type": {
+                                                "type": "string"
+                                            },
+                                            "Claims": {
+                                                "type": "string"
+                                            },
+                                            "DisplayName": {
+                                                "type": "string"
+                                            },
+                                            "Email": {
+                                                "type": "string"
+                                            },
+                                            "Picture": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Department": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "JobTitle": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "Author#Claims": {
+                                        "type": "string"
+                                    },
+                                    "OData__DisplayName": {
+                                        "type": "string"
+                                    },
+                                    "{Identifier}": {
+                                        "type": "string"
+                                    },
+                                    "{IsFolder}": {
+                                        "type": "boolean"
+                                    },
+                                    "{Thumbnail}": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Large": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Medium": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Small": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "{Link}": {
+                                        "type": "string"
+                                    },
+                                    "{Name}": {
+                                        "type": "string"
+                                    },
+                                    "{FilenameWithExtension}": {
+                                        "type": "string"
+                                    },
+                                    "{Path}": {
+                                        "type": "string"
+                                    },
+                                    "{FullPath}": {
+                                        "type": "string"
+                                    },
+                                    "{IsCheckedOut}": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "{VersionNumber}": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Check_whether_blob_exists_-_Success": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "containerName": "@parameters('AzureContainer')",
+                                "blobName": "@concat(variables('CompanyID'),'/',parameters('SuccessFolder'),'/',body('Parse_JSON_-_File_properties')?['{FilenameWithExtension}'])"
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "integration_storage",
+                                "operationId": "blobExists",
+                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                            }
+                        },
+                        "runAfter": {
+                            "Set_variable_-_File_name": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Check_whether_blob_exists_-_Error": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "containerName": "@parameters('AzureContainer')",
+                                "blobName": "@concat(variables('CompanyID'),'/',parameters('Errorfolder'),'/',body('Parse_JSON_-_File_properties')?['{FilenameWithExtension}'])"
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "integration_storage",
+                                "operationId": "blobExists",
+                                "serviceProviderId": "/serviceProviders/AzureBlob"
+                            }
+                        },
+                        "runAfter": {
+                            "Check_whether_blob_exists_-_Success": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Get_file_content_using_path": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sharepoint"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharePointURI')))}/GetFileContentByPath",
+                            "queries": {
+                                "path": "@body('Parse_JSON_-_File_properties')?['{FullPath}']",
+                                "queryParametersSingleEncoded": true,
+                                "inferContentType": true
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON_-_File_properties": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_-_Folder_path_array": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FilePathArray",
+                            "value": "@split(body('Parse_JSON_-_File_properties')?['{Path}'],'/')"
+                        },
+                        "runAfter": {
+                            "Get_file_content_using_path": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FolderArrayRev",
+                            "value": "@reverse(variables('FilePathArray'))"
+                        },
+                        "runAfter": {
+                            "Set_variable_-_Folder_path_array": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_-_CompanyID": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "CompanyID",
+                            "value": "@{last(take(reverse(variables('FilePathArray')),2))}"
+                        },
+                        "runAfter": {
+                            "Set_variable": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_-_File_name": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FileName",
+                            "value": "@body('Parse_JSON_-_File_properties')?['{FilenameWithExtension}']"
+                        },
+                        "runAfter": {
+                            "Set_variable_-_CompanyID": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Condition_-_Is_file_already_processed": {
+                        "type": "If",
+                        "expression": {
+                            "or": [
+                                {
+                                    "equals": [
+                                        "@body('Check_whether_blob_exists_-_Error')?['isBlobExists']",
+                                        true
+                                    ]
+                                },
+                                {
+                                    "equals": [
+                                        "@body('Check_whether_blob_exists_-_Success')?['isBlobExists']",
+                                        true
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Send_an_email_-_Already_processed": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "office365"
+                                        }
+                                    },
+                                    "method": "post",
+                                    "body": {
+                                        "To": "@parameters('InventoryUploadEmailID')",
+                                        "Subject": "D365 FO - Inventory Interface - Error Logs",
+                                        "Body": "<p>The file @{variables('FileName')} was processed earlier.</p>",
+                                        "Attachments": [
+                                            {
+                                                "Name": "@body('Parse_JSON_-_File_properties')?['{FilenameWithExtension}']",
+                                                "ContentBytes": "@{base64(body('Get_file_content_using_path'))}"
+                                            }
+                                        ],
+                                        "Importance": "Normal"
+                                    },
+                                    "path": "/v2/Mail"
+                                },
+                                "runAfter": {}
+                            }
+                        },
+                        "runAfter": {
+                            "Check_whether_blob_exists_-_Error": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Trigger_D365_API": {
+                                    "type": "Http",
+                                    "inputs": {
+                                        "method": "POST",
+                                        "uri": "@{concat('https://',parameters('D365FO'), '/api/services/HSInventoryInterfaceServiceGroup/HSInventoryInterfaceService/CreateProductReceipt')}",
+                                        "body": {
+                                            "_contract": {
+                                                "company": "@{variables('CompanyID')}",
+                                                "fileContent": "@{body('Get_file_content_using_path')}",
+                                                "filePrefix": "@{body('Parse_JSON_-_File_properties')?['{FilenameWithExtension}']}",
+                                                "ticketType": "@{take(body('Parse_JSON_-_File_properties')?['{Name}'],2)}"
+                                            }
+                                        },
+                                        "authentication": {
+                                            "type": "ActiveDirectoryOAuth",
+                                            "tenant": "@parameters('TenantId')",
+                                            "audience": "@concat('https://',parameters('D365FO'))",
+                                            "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                            "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                        },
+                                        "retryPolicy": {
+                                            "type": "none"
+                                        }
+                                    },
+                                    "runAfter": {},
+                                    "operationOptions": "DisableAsyncPattern"
+                                },
+                                "Parse_JSON_-_API_Response": {
+                                    "type": "ParseJson",
+                                    "inputs": {
+                                        "content": "@body('Trigger_D365_API')",
+                                        "schema": {
+                                            "type": "object",
+                                            "properties": {
+                                                "$id": {
+                                                    "type": "string"
+                                                },
+                                                "ErrorMessage": {
+                                                    "type": "string"
+                                                },
+                                                "Success": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Trigger_D365_API": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Is_API_successful": {
+                                    "type": "If",
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "equals": [
+                                                    "@outputs('Trigger_D365_API')['statusCode']",
+                                                    200
+                                                ]
+                                            },
+                                            {
+                                                "equals": [
+                                                    "@body('Parse_JSON_-_API_Response')?['Success']",
+                                                    true
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "actions": {
+                                        "Upload_blob_to_storage_container_-_Success": {
+                                            "type": "ServiceProvider",
+                                            "inputs": {
+                                                "parameters": {
+                                                    "containerName": "@parameters('AzureContainer')",
+                                                    "blobName": "@concat(variables('CompanyID'),'/',parameters('SuccessFolder'),'/',body('Parse_JSON_-_File_properties')?['{FilenameWithExtension}'])",
+                                                    "content": "@body('Get_file_content_using_path')"
+                                                },
+                                                "serviceProviderConfiguration": {
+                                                    "connectionName": "integration_storage",
+                                                    "operationId": "uploadBlob",
+                                                    "serviceProviderId": "/serviceProviders/AzureBlob"
+                                                }
+                                            },
+                                            "runAfter": {}
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Parse_JSON_-_API_Response": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "else": {
+                                        "actions": {
+                                            "Create_Logs_in_CSV_": {
+                                                "type": "Table",
+                                                "inputs": {
+                                                    "from": "@array(outputs('Trigger_D365_API')['body'])",
+                                                    "format": "CSV"
+                                                },
+                                                "runAfter": {
+                                                    "Upload_blob_to_storage_container_-_Error": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Send_an_email_-_Error_processing": {
+                                                "type": "ApiConnection",
+                                                "inputs": {
+                                                    "host": {
+                                                        "connection": {
+                                                            "referenceName": "office365"
+                                                        }
+                                                    },
+                                                    "method": "post",
+                                                    "body": {
+                                                        "To": "@parameters('InventoryUploadEmailID')",
+                                                        "Subject": "D365FO - Inventory Interface -  Error Logs",
+                                                        "Body": "<p>Inventory interface error log.</p>",
+                                                        "Attachments": [
+                                                            {
+                                                                "ContentBytes": "@{base64(body('Create_Logs_in_CSV_'))}",
+                                                                "Name": "ErrorLog.csv"
+                                                            }
+                                                        ],
+                                                        "Importance": "Normal"
+                                                    },
+                                                    "path": "/v2/Mail"
+                                                },
+                                                "runAfter": {
+                                                    "Create_Logs_in_CSV_": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Upload_blob_to_storage_container_-_Error": {
+                                                "type": "ServiceProvider",
+                                                "inputs": {
+                                                    "parameters": {
+                                                        "containerName": "@parameters('AzureContainer')",
+                                                        "blobName": "@concat(variables('CompanyID'),'/',parameters('Errorfolder'),'/',body('Parse_JSON_-_File_properties')?['{FilenameWithExtension}'])",
+                                                        "content": "@body('Get_file_content_using_path')"
+                                                    },
+                                                    "serviceProviderConfiguration": {
+                                                        "connectionName": "integration_storage",
+                                                        "operationId": "uploadBlob",
+                                                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                                                    }
+                                                },
+                                                "runAfter": {}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "Delete_file_from_SP": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sharepoint"
+                                }
+                            },
+                            "method": "delete",
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('SharePointURI')))}/files/@{encodeURIComponent(body('Parse_JSON_-_File_properties')?['{Identifier}'])}"
+                        },
+                        "runAfter": {
+                            "Condition_-_Is_file_already_processed": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Filter_array_-_Text_files": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_CompanyID": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CompanyID",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_Folder_Array_Rev": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_File_name": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "FileName",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_CompanyID": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_-_Folder_Array_Rev": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "FolderArrayRev",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_-_Folder_path_array": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "Recurrence": {
+                "type": "Recurrence",
+                "recurrence": {
+                    "frequency": "Minute",
+                    "interval": 1
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "runs": 1
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

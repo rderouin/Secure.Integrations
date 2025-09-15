@@ -1,0 +1,146 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "type": "Compose",
+                "inputs": {
+                    "Blobs": [
+                        {
+                            "BlobPath": "@{body('Parse_JSON')?['BlobPath']}",
+                            "ContainerName": "@{body('Parse_JSON')?['ContainerName']}",
+                            "ContentType": "@{body('Parse_JSON')?['ContentType']}",
+                            "Filename": "@{body('Parse_JSON')?['FileName']}"
+                        }
+                    ],
+                    "CorrelationId": "@{body('Parse_JSON')?['CorrelationId']}",
+                    "Identifiers": "",
+                    "MessageDate": "@{body('Parse_JSON')?['MessageDate']}",
+                    "MessageType": "@{body('Parse_JSON')?['MessageType']}",
+                    "Operation": "@{body('Parse_JSON')?['Operation']}",
+                    "Payload": {
+                        "SalesLineId": "@{body('Parse_JSON')?['SalesLineId']}",
+                        "SalesLineNumber": "@{body('Parse_JSON')?['LineNum']}",
+                        "TruckTicketId": "@if(equals(body('Parse_JSON')?['TruckTicketId'],''),null,body('Parse_JSON')?['TruckTicketId'])",
+                        "TruckTicketNumber": "@{body('Parse_JSON')?['TruckTicketNumber']}",
+                        "Id": "@{body('Parse_JSON')?['SourceId']}"
+                    },
+                    "Source": "@{body('Parse_JSON')?['Source']}",
+                    "SourceId": "@{body('Parse_JSON')?['SourceId']}"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "enterprise-entity-updates",
+                        "message": {
+                            "contentData": "@outputs('Compose')",
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "MessageType": "@body('Parse_JSON')?['MessageType']",
+                                "Source": "@body('Parse_JSON')?['Source']"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "SalesId": {
+                                "type": "string"
+                            },
+                            "LineNum": {
+                                "type": "number"
+                            },
+                            "SalesLineId": {
+                                "type": "string"
+                            },
+                            "TruckTicketId": {
+                                "type": "string"
+                            },
+                            "TruckTicketNumber": {
+                                "type": "string"
+                            },
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "ContainerName": {
+                                "type": "string"
+                            },
+                            "FileName": {
+                                "type": "string"
+                            },
+                            "BlobPath": {
+                                "type": "string"
+                            },
+                            "ContentType": {
+                                "type": "string"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "sales-line-attachments",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

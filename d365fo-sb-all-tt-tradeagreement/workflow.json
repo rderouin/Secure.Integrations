@@ -1,0 +1,195 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "type": "Compose",
+                "inputs": {
+                    "Blobs": [],
+                    "CorrelationId": "@body('Parse_JSON')?['CorrelationId']",
+                    "Identifiers": "",
+                    "MessageDate": "@body('Parse_JSON')?['MessageDate']",
+                    "MessageType": "@body('Parse_JSON')?['MessageType']",
+                    "Operation": "@body('Parse_JSON')?['Operation']",
+                    "Payload": {
+                        "AccountCode": "@body('Parse_JSON')?['AccountCode']",
+                        "CustomerNumber": "@body('Parse_JSON')?['CustomerNumber']",
+                        "Price": "@body('Parse_JSON')?['Amount']",
+                        "Currency": "@body('Parse_JSON')?['Currency']",
+                        "DataAreaId": "@body('Parse_JSON')?['DataAreaId']",
+                        "DiscPercent": "@body('Parse_JSON')?['DiscPercent']",
+                        "FixedAmount": "@body('Parse_JSON')?['FixedAmount']",
+                        "ActiveFrom": "@body('Parse_JSON')?['FromDate']",
+                        "ItemCode": "@body('Parse_JSON')?['ItemCode']",
+                        "ProductNumber": "@body('Parse_JSON')?['ItemRelation']",
+                        "SourceLocation": "@body('Parse_JSON')?['SourceLocation']",
+                        "PriceGroup": "@body('Parse_JSON')?['PriceGroup']",
+                        "PriceUnit": "@body('Parse_JSON')?['PriceUnit']",
+                        "SalesQuoteType": "@body('Parse_JSON')?['SalesQuoteType']",
+                        "SiteId": "@body('Parse_JSON')?['SiteId']",
+                        "Substance": "@body('Parse_JSON')?['Substance']",
+                        "ActiveTo": "@if(equals(body('Parse_JSON')?['ToDate'], ''),null,body('Parse_JSON')?['ToDate'])",
+                        "UnitId": "@body('Parse_JSON')?['UnitId']",
+                        "id": "@body('Parse_JSON')?['SourceId']"
+                    },
+                    "Source": "@body('Parse_JSON')?['Source']",
+                    "SourceId": "@body('Parse_JSON')?['SourceId']"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "enterprise-entity-updates",
+                        "message": {
+                            "contentData": "@outputs('Compose')",
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "Source": "@body('Parse_JSON')?['Source']",
+                                "MessageType": "@body('Parse_JSON')?['MessageType']"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "AccountCode": {
+                                "type": "string"
+                            },
+                            "CustomerNumber": {
+                                "type": "string"
+                            },
+                            "Amount": {
+                                "type": "number"
+                            },
+                            "BusinessEventId": {
+                                "type": "string"
+                            },
+                            "ControlNumber": {
+                                "type": "integer"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "Currency": {
+                                "type": "string"
+                            },
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "DiscPercent": {
+                                "type": "number"
+                            },
+                            "EventId": {
+                                "type": "string"
+                            },
+                            "EventTime": {
+                                "type": "string"
+                            },
+                            "FixedAmount": {
+                                "type": "number"
+                            },
+                            "FromDate": {
+                                "type": "string"
+                            },
+                            "ItemCode": {
+                                "type": "string"
+                            },
+                            "ItemRelation": {
+                                "type": "string"
+                            },
+                            "SourceLocation": {
+                                "type": "string"
+                            },
+                            "MajorVersion": {
+                                "type": "integer"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "MinorVersion": {
+                                "type": "integer"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "PriceGroup": {
+                                "type": "string"
+                            },
+                            "PriceUnit": {
+                                "type": "number"
+                            },
+                            "SalesQuoteType": {
+                                "type": "string"
+                            },
+                            "SiteId": {
+                                "type": "string"
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            },
+                            "Substance": {
+                                "type": "string"
+                            },
+                            "ToDate": {
+                                "type": "string"
+                            },
+                            "UnitId": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "trade-agreements",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

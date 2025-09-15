@@ -1,0 +1,239 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each": {
+                "type": "Foreach",
+                "foreach": "@variables('MessageArray')",
+                "actions": {
+                    "Compose": {
+                        "type": "Compose",
+                        "inputs": "@items('For_each')"
+                    },
+                    "Send_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "spartan-tickets-wiq",
+                                "message": {
+                                    "contentData": "@outputs('Compose_payload')",
+                                    "to": "retry"
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Compose_payload": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Delay": {
+                        "type": "Wait",
+                        "inputs": {
+                            "interval": {
+                                "count": 1,
+                                "unit": "Second"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Parse_JSON": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@outputs('Compose')",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "contentData": {
+                                        "type": "string"
+                                    },
+                                    "contentType": {
+                                        "type": "string"
+                                    },
+                                    "userProperties": {
+                                        "type": "object",
+                                        "properties": {
+                                            "diagnostic-Id": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "messageId": {
+                                        "type": "string"
+                                    },
+                                    "scheduledEnqueueTimeUtc": {
+                                        "type": "string"
+                                    },
+                                    "timeToLive": {
+                                        "type": "string"
+                                    },
+                                    "deliveryCount": {
+                                        "type": "integer"
+                                    },
+                                    "enqueuedSequenceNumber": {
+                                        "type": "integer"
+                                    },
+                                    "enqueuedTimeUtc": {
+                                        "type": "string"
+                                    },
+                                    "lockedUntilUtc": {
+                                        "type": "string"
+                                    },
+                                    "lockToken": {
+                                        "type": "string"
+                                    },
+                                    "sequenceNumber": {
+                                        "type": "integer"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Compose": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Compose_payload": {
+                        "type": "Compose",
+                        "inputs": "@body('Parse_JSON')?['contentData']",
+                        "runAfter": {
+                            "Parse_JSON": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Until": [
+                        "Succeeded"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "repetitions": 1
+                    }
+                }
+            },
+            "Initialize_variable_MessageArray": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "MessageArray",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Until": {
+                "type": "Until",
+                "expression": "@equals(variables('counter'), 0)",
+                "limit": {
+                    "count": 60,
+                    "timeout": "PT1H"
+                },
+                "actions": {
+                    "Get_messages_from_a_queue": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "queueName": "spartan-tickets-wiq-retry"
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "getMessagesFromQueue",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        }
+                    },
+                    "Compose_array": {
+                        "type": "Compose",
+                        "inputs": "@union(variables('MessageArray'),outputs('Get_messages_from_a_queue')?['body'])",
+                        "runAfter": {
+                            "Get_messages_from_a_queue": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_counter": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "counter",
+                            "value": "@length(outputs('Get_messages_from_a_queue')?['body'])"
+                        },
+                        "runAfter": {
+                            "Set_variable_MessageArray": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_variable_MessageArray": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "MessageArray",
+                            "value": "@outputs('Compose_array')"
+                        },
+                        "runAfter": {
+                            "Compose_array": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_counter": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_counter": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "counter",
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_MessageArray": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "Recurrence": {
+                "type": "Recurrence",
+                "recurrence": {
+                    "frequency": "Day",
+                    "interval": 1,
+                    "timeZone": "Mountain Standard Time",
+                    "schedule": {
+                        "hours": [
+                            "19"
+                        ],
+                        "minutes": [
+                            0
+                        ]
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

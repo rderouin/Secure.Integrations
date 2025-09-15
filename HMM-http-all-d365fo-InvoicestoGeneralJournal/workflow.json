@@ -1,0 +1,277 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "ComposeJSON": {
+                "type": "Compose",
+                "inputs": "@json(xml(outputs('ComposeInputMessage')))",
+                "runAfter": {
+                    "ComposeInputMessage": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Compose_Request_to_Service_Bus_1": {
+                "type": "Compose",
+                "inputs": {
+                    "BA": "@body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['CustomerId']",
+                    "InvoiceDate": "@body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['InvoiceDate']",
+                    "InvoiceId": "@body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['InvoiceId']",
+                    "Source": "@body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['BillSourceId']"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('ComposeJSON')",
+                    "schema": {
+                        "properties": {
+                            "s:Envelope": {
+                                "properties": {
+                                    "@@xmlns:s": {
+                                        "type": "string"
+                                    },
+                                    "s:Body": {
+                                        "properties": {
+                                            "PublishBITransactionRequest": {
+                                                "properties": {
+                                                    "BITransactions": {
+                                                        "properties": {
+                                                            "ATTN": {
+                                                                "type": "string"
+                                                            },
+                                                            "AccountingDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "AddressSequenceNumber": {
+                                                                "type": "string"
+                                                            },
+                                                            "BillSourceId": {
+                                                                "type": "string"
+                                                            },
+                                                            "BillingCurrency": {
+                                                                "type": "string"
+                                                            },
+                                                            "BillingSpecialist": {
+                                                                "type": "string"
+                                                            },
+                                                            "BusinessUnit": {
+                                                                "type": "string"
+                                                            },
+                                                            "CustomerId": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "InvoiceDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "InvoiceId": {
+                                                                "type": "string"
+                                                            },
+                                                            "Location": {
+                                                                "type": "string"
+                                                            },
+                                                            "Producer": {
+                                                                "type": "string"
+                                                            },
+                                                            "ShippingCountry": {
+                                                                "type": "string"
+                                                            },
+                                                            "ShippingProvince": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "IntegrationHeader": {
+                                                        "properties": {
+                                                            "ClientIdentifier": {},
+                                                            "ReplyToAddress": {},
+                                                            "SourceSystemName": {
+                                                                "type": "string"
+                                                            },
+                                                            "TransactionGUID": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "ComposeJSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Response_200_success": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 200,
+                    "headers": {
+                        "Content-Type": "application/soap+xml; charset=utf-8",
+                        "Set-Cookie": "JSESSIONID=BtXt8_NePptJqHjzOrEgyrQ7oEtV1JxNUYghKnHNj9OlcDWhJI8l!536471398; path=/; HttpOnly"
+                    },
+                    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"><soap:Body><msg:PublishBITransactionResponse xmlns:msg=\"http://xmlns.tervita.com/soa/finance/billing/messages/v1\"><Acknowledgement><AckTransactionGUID>ack</AckTransactionGUID><AckDateTimeStamp>@{convertFromUtc(utcNow(),'Mountain Standard Time')}</AckDateTimeStamp>        <AckStatusCodeDescription>Success</AckStatusCodeDescription></Acknowledgement></msg:PublishBITransactionResponse></soap:Body></soap:Envelope>"
+                },
+                "runAfter": {
+                    "Send_message_to_logger_on_success": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Response_400_error": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 400
+                },
+                "runAfter": {
+                    "Send_message_to_logger_on_fail": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_to_Invoice_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "hmm-invoice",
+                        "message": {
+                            "contentData": "@outputs('Compose_Request_to_Service_Bus_1')",
+                            "contentType": "Text"
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compose_Request_to_Service_Bus_1": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_to_logger_on_fail": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "Invoice @{body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['InvoiceId']} : HMM invoice add to main topic failed",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['InvoiceId']}",
+                                        "status": "Fail"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "Source": "@workflow().name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Send_message_to_Invoice_queue": [
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            },
+            "Send_message_to_logger_on_success": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "Invoice @{body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['InvoiceId']}: HMM invoice add to main topic successful",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['s:Envelope']?['s:Body']?['PublishBITransactionRequest']?['BITransactions']?['InvoiceId']}",
+                                        "status": "Success"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "userProperties": {
+                                "Source": "@workflow().name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Send_message_to_Invoice_queue": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "ComposeInputMessage": {
+                "type": "Compose",
+                "inputs": "@replace(replace(replace(replace(replace(replace(replace(replace(string(triggerBody()),'xmlns=\"http://xmlns.tervita.com/soa/finance/billing/entities/v1\"',''),\r\n\r\n' xmlns=\"http://xmlns.tervita.com/soa/finance/billing/messages/v1\"',''),\r\n\r\n'xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"','xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"'),\r\n\r\n'xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"',''),\r\n\r\n' xmlns=\"\"',''),\r\n\r\n'soap','s'),\r\n\r\n' xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"',''),\r\n\r\n' xsi:type=\"xsd:string\"','')",
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {}
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

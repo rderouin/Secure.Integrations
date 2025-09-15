@@ -1,0 +1,210 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "type": "Compose",
+                "inputs": {
+                    "Blobs": [],
+                    "CorrelationId": "@body('Parse_JSON')?['CorrelationId']",
+                    "Identifiers": "",
+                    "MessageDate": "@body('Parse_JSON')?['MessageDate']",
+                    "MessageType": "@body('Parse_JSON')?['MessageType']",
+                    "Operation": "@body('Parse_JSON')?['Operation']",
+                    "Payload": {
+                        "DataAreaId": "@body('Parse_JSON')?['DataAreaId']",
+                        "DefaultOrderSettings": "@body('Parse_JSON')?['DefaultOrderSettings']",
+                        "ItemId": "@body('Parse_JSON')?['ItemId']",
+                        "ItemName": "@body('Parse_JSON')?['ItemName']",
+                        "ItemType": "@body('Parse_JSON')?['ItemType']",
+                        "ProductCategories": "@body('Parse_JSON')?['ProductCategories']",
+                        "ProductVariants": "@body('Parse_JSON')?['ProductVariants']",
+                        "SalesBasePrice": "@body('Parse_JSON')?['SalesBasePrice']",
+                        "SalesPriceUnit": "@body('Parse_JSON')?['SalesPriceUnit']",
+                        "SalesUnitId": "@body('Parse_JSON')?['SalesUnitId']",
+                        "TaxItemGroupId": "@body('Parse_JSON')?['TaxItemGroupId']",
+                        "CanBeUsedInTT": "@body('Parse_JSON')?['CanBeUsedInTT']",
+                        "id": "@body('Parse_JSON')?['SourceId']"
+                    },
+                    "Source": "@body('Parse_JSON')?['Source']",
+                    "SourceId": "@body('Parse_JSON')?['SourceId']"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "enterprise-entity-updates",
+                        "message": {
+                            "contentData": "@outputs('Compose')",
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "Source": "@body('Parse_JSON')?['Source']",
+                                "MessageType": "@body('Parse_JSON')?['MessageType']"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "BusinessEventId": {
+                                "type": "string"
+                            },
+                            "ControlNumber": {
+                                "type": "integer"
+                            },
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "DefaultOrderSettings": {
+                                "settings": [
+                                    {
+                                        "properties": {
+                                            "SalesSite": {
+                                                "type": "string"
+                                            },
+                                            "SalesStopped": {
+                                                "type": "boolean"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "EventId": {
+                                "type": "string"
+                            },
+                            "EventTime": {
+                                "type": "string"
+                            },
+                            "ItemId": {
+                                "type": "string"
+                            },
+                            "ItemName": {
+                                "type": "string"
+                            },
+                            "ItemType": {
+                                "type": "string"
+                            },
+                            "MajorVersion": {
+                                "type": "integer"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "MinorVersion": {
+                                "type": "integer"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "ProductCategories": {
+                                "categories": [
+                                    {
+                                        "properties": {
+                                            "CategoryHierarchyId": {
+                                                "type": "string"
+                                            },
+                                            "CategoryId": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "ProductVariants": {
+                                "type": "array",
+                                "variants": [
+                                    {
+                                        "properties": {
+                                            "Substance": {
+                                                "type": "string"
+                                            },
+                                            "WasteCode": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                ]
+                            },
+                            "SalesBasePrice": {
+                                "type": "number"
+                            },
+                            "SalesPriceUnit": {
+                                "type": "number"
+                            },
+                            "SalesUnitId": {
+                                "type": "string"
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            },
+                            "TaxItemGroupId": {
+                                "type": "string"
+                            },
+                            "CanBeUsedInTT": {
+                                "type": "boolean"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {}
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "product-updates",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

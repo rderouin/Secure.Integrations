@@ -1,0 +1,350 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_UniversalResourceIdentifier": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "UniversalResourceIdentifier",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_LocationPath": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_content": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "content",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_UniversalResourceIdentifier": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_FileType": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "FileType",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_content": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_FileCount": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "FileCount",
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_FileType": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_errorMessage": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "errorMessage",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_FileCount": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_LocationPath": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "LocationPath",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerBody()",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "InvoiceNumber": {
+                                "type": "string"
+                            },
+                            "InvoiceId": {
+                                "type": "string"
+                            },
+                            "CompanyId": {
+                                "type": "string"
+                            },
+                            "JournalNum": {
+                                "type": "string"
+                            },
+                            "Attachment": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "@@type": {
+                                            "type": "string"
+                                        },
+                                        "@@id": {
+                                            "type": "string"
+                                        },
+                                        "LocationPath": {
+                                            "type": "string"
+                                        },
+                                        "ContentType": {
+                                            "type": "string"
+                                        },
+                                        "ClientAttachmentPath": {},
+                                        "UniversalResourceIdentifier": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "@@type",
+                                        "@@id",
+                                        "LocationPath",
+                                        "ContentType",
+                                        "ClientAttachmentPath",
+                                        "UniversalResourceIdentifier"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_errorMessage": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "For_each_Attachment": {
+                "type": "Foreach",
+                "foreach": "@body('Parse_JSON')?['Attachment']",
+                "actions": {
+                    "Set_attachment": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalLines/Microsoft.Dynamics.DataEntities.addAttachment')}",
+                            "method": "POST",
+                            "body": {
+                                "_FileContent": "@variables('content')",
+                                "_journalNum": "@{body('Parse_JSON')?['JournalNum']}",
+                                "_filename": "@{concat(body('Parse_JSON')?['InvoiceNumber'] ,' - ',variables('FileCount'),'.',last(variables('FileType')))}",
+                                "_UploadDate": "@{utcNow()}",
+                                "_dataareaid": "@{body('Parse_JSON')?['CompanyId']}",
+                                "_fileNameType": "pdf"
+                            },
+                            "authentication": {
+                                "type": "ActiveDirectoryOAuth",
+                                "tenant": "@parameters('TenantId')",
+                                "audience": "@concat('https://',parameters('D365FO'))",
+                                "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                            },
+                            "retryPolicy": {
+                                "type": "fixed",
+                                "count": 4,
+                                "interval": "PT5S"
+                            }
+                        },
+                        "runAfter": {
+                            "Condition_to_Check_file_type_of_attachment": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "HTTP_request_for_attachment": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@{parameters('OIUrl')}@{variables('LocationPath')}",
+                            "method": "GET",
+                            "authentication": {
+                                "type": "ClientCertificate",
+                                "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                                "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+                            }
+                        },
+                        "runAfter": {
+                            "Set_LocationPath": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_LocationPath": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "LocationPath",
+                            "value": "@items('For_each_Attachment')?['LocationPath']"
+                        },
+                        "runAfter": {
+                            "Set_FileType": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Condition_to_Check_file_type_of_attachment": {
+                        "type": "If",
+                        "expression": {
+                            "or": [
+                                {
+                                    "contains": [
+                                        "@variables('FileType')",
+                                        "csv"
+                                    ]
+                                },
+                                {
+                                    "contains": [
+                                        "@variables('FileType')",
+                                        "txt"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Set_CSV_or_TXT_attachment_Content": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "content",
+                                    "value": "@{base64(body('HTTP_request_for_attachment'))}"
+                                }
+                            }
+                        },
+                        "else": {
+                            "actions": {
+                                "Set_attachment_content_for_non_csv_and_non_txt_file_type": {
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "content",
+                                        "value": "@{body('HTTP_request_for_attachment')?['$content']}"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_request_for_attachment": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Set_error_message_for_attachment_fail": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "errorMessage",
+                            "value": "@body('Set_attachment')?['value']"
+                        },
+                        "runAfter": {
+                            "Set_attachment": [
+                                "TIMEDOUT",
+                                "SKIPPED",
+                                "FAILED"
+                            ]
+                        }
+                    },
+                    "Increment_FileCount": {
+                        "type": "IncrementVariable",
+                        "inputs": {
+                            "name": "FileCount",
+                            "value": 1
+                        }
+                    },
+                    "Set_FileType": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "FileType",
+                            "value": "@split(variables('UniversalResourceIdentifier'),'.')"
+                        },
+                        "runAfter": {
+                            "Set_UniversalResourceIdentifier": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_UniversalResourceIdentifier": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "UniversalResourceIdentifier",
+                            "value": "@items('For_each_Attachment')?['UniversalResourceIdentifier']"
+                        },
+                        "runAfter": {
+                            "Increment_FileCount": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "repetitions": 1
+                    }
+                }
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": "@{if(greater(length(variables('errorMessage')),0),500,200)}",
+                    "body": "@coalesce(variables('errorMessage'))"
+                },
+                "runAfter": {
+                    "For_each_Attachment": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

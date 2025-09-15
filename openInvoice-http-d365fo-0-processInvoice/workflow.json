@@ -1,0 +1,1831 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Check_PO": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "contains": [
+                                "@string(body('HTTP_request_for_OIinvoice_details'))",
+                                "<CostCenterNumber>"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Send_message_to_OI_comment": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-post-update",
+                                "message": {
+                                    "contentData": {
+                                        "MessageBody": "D365 Journal creation skipped, since the invoice has a PO number",
+                                        "OIDocumentID": "@{variables('ImageinvoiceId')}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_message_audit_msg": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Terminate_If_PO_Exists": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Cancelled"
+                        },
+                        "runAfter": {
+                            "Send_message_to_OI_comment": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Send_message_audit_msg": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-audit",
+                                "message": {
+                                    "contentData": {
+                                        "D365AttachmentAdded": "",
+                                        "D365JENumber": "",
+                                        "D365JournalCreated": "0",
+                                        "D365JournalPosted": "0",
+                                        "InRetryQueue": "",
+                                        "LastUpdated": "@convertFromUtc(utcNow(), 'Mountain Standard Time')",
+                                        "MessageBody": "D365 journal creaation skipped since invoice has PO number",
+                                        "OIApproved": "1",
+                                        "OIDocDataRetrieved": "",
+                                        "OIDocumentID": "@body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']",
+                                        "OIExported": "",
+                                        "OIFutureDatedInvoice": "",
+                                        "OIInvoiceAmount": "",
+                                        "OIInvoiceNumber": "",
+                                        "OIPOInvoice": "",
+                                        "OIVendor": "",
+                                        "OIInvoiceDate": "",
+                                        "RetryCount": "0",
+                                        "Identifier": "@{workflow()['run']['name']}",
+                                        "WORKFLOW": "@{workflow()['name']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "HTTP_request_for_OIinvoice_details": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Convert_base64_content_from_primary_SB": {
+                "type": "Compose",
+                "inputs": "@base64ToString(triggerOutputs()?['body']?['contentData']?['$content'])",
+                "runAfter": {
+                    "Initialize_vendName": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition_is_journals_created": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@length(variables('errorMessage'))",
+                                0
+                            ]
+                        },
+                        {
+                            "not": {
+                                "equals": [
+                                    "@length(variables('journalNum'))",
+                                    0
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "actions": {
+                    "Validate_and_Post_Journals": {
+                        "type": "Workflow",
+                        "inputs": {
+                            "host": {
+                                "workflow": {
+                                    "id": "openInvoice-http-d365fo-3-validate-post-journals"
+                                }
+                            },
+                            "body": {
+                                "JournalNum": "@variables('journalNum')",
+                                "CompanyId": "@variables('CompanyId')",
+                                "ImageInvoiceId": "@variables('CompanyId')",
+                                "Total": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['Total']",
+                                "InvoiceNumber": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceNumber']",
+                                "InvoiceDate": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceDate']",
+                                "VendName": "@variables('VendName')",
+                                "ErrorMessage": "@variables('errorMessage')",
+                                "ErrorLog": "@variables('errorLog')"
+                            }
+                        },
+                        "runAfter": {
+                            
+                        }
+                    }
+                    
+                },
+                "else": {
+                    "actions": {
+                        "Condition_Check_for_Skip_error_message_or_retry_queue": {
+                            "type": "If",
+                            "expression": {
+                                "or": [
+                                    {
+                                        "equals": [
+                                            "@variables('errorMessage')",
+                                            "Skipped"
+                                        ]
+                                    },
+                                    {
+                                        "not": {
+                                            "equals": [
+                                                "@length(variables('errorLog'))",
+                                                0
+                                            ]
+                                        }
+                                    }
+                                ]
+                            },
+                            "actions": {
+                                "Check_whether_the_record_should_go_to_retry_queue": {
+                                    "type": "If",
+                                    "expression": {
+                                        "or": [
+                                            {
+                                                "contains": [
+                                                    "@variables('errorLog')",
+                                                    "finished or defined as a header project"
+                                                ]
+                                            },
+                                            {
+                                                "contains": [
+                                                    "@variables('errorLog')",
+                                                    "Finished and does not allow recording"
+                                                ]
+                                            },
+                                            {
+                                                "contains": [
+                                                    "@variables('errorLog')",
+                                                    "D365 vendor number lookup failed"
+                                                ]
+                                            },
+                                            {
+                                                "equals": [
+                                                    "",
+                                                    ""
+                                                ]
+                                            },
+                                            {
+                                                "and": [
+                                                    {
+                                                        "contains": [
+                                                            "@variables('errorLog')",
+                                                            "@variables('errorMessage')"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "actions": {
+                                        "Send_message": {
+                                            "type": "ServiceProvider",
+                                            "inputs": {
+                                                "parameters": {
+                                                    "entityName": "open-invoice-retry",
+                                                    "message": {
+                                                        "contentData": {
+                                                            "ImageInvoiceId": "@{variables('ImageinvoiceId')}"
+                                                        },
+                                                        "contentType": "text/plain"
+                                                    }
+                                                },
+                                                "serviceProviderConfiguration": {
+                                                    "connectionName": "PrivateServiceBus",
+                                                    "operationId": "sendMessage",
+                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "else": {
+                                        "actions": {}
+                                    }
+                                },
+                                "check_if_income_msg_from_retry_queue": {
+                                    "type": "If",
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "equals": [
+                                                    "@triggerOutputs()?['body']?['to']",
+                                                    "retry"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "actions": {},
+                                    "else": {
+                                        "actions": {
+                                            "Send_message_post_invoice_update_": {
+                                                "type": "ServiceProvider",
+                                                "inputs": {
+                                                    "parameters": {
+                                                        "entityName": "open-invoice-post-update",
+                                                        "message": {
+                                                            "contentData": {
+                                                                "MessageBody": "D365 journal creation failed: @{variables('errorMessage')}",
+                                                                "OIDocumentID": "@body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']"
+                                                            }
+                                                        }
+                                                    },
+                                                    "serviceProviderConfiguration": {
+                                                        "connectionName": "PrivateServiceBus",
+                                                        "operationId": "sendMessage",
+                                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Send_Audit_For_Journal_Creation_Failed_": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Terminate_2": {
+                                    "type": "Terminate",
+                                    "inputs": {
+                                        "runStatus": "Failed"
+                                    },
+                                    "runAfter": {
+                                        "check_if_income_msg_from_retry_queue": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Send_Audit_For_Journal_Creation_Failed_": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "open-invoice-audit",
+                                            "message": {
+                                                "contentData": {
+                                                    "D365AttachmentAdded": "",
+                                                    "D365JENumber": "",
+                                                    "D365JournalCreated": "0",
+                                                    "D365JournalPosted": "0",
+                                                    "InRetryQueue": "",
+                                                    "LastUpdated": "@{convertFromUtc(utcNow(), 'Mountain Standard Time')}",
+                                                    "MessageBody": "D365 journal creation failed: @{variables('journalNum')}, Error Message:@{variables('errorMessage')} ",
+                                                    "OIApproved": "1",
+                                                    "OIDocDataRetrieved": "",
+                                                    "OIDocumentID": "@{body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']}",
+                                                    "OIExported": "",
+                                                    "OIFutureDatedInvoice": "",
+                                                    "OIInvoiceAmount": "@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['Total']}",
+                                                    "OIInvoiceNumber": "@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceNumber']}",
+                                                    "OIPOInvoice": "",
+                                                    "OIVendor": "@{variables('VendName')}",
+                                                    "OIInvoiceDate": "@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceDate']}",
+                                                    "RetryCount": "0",
+                                                    "Identifier": "@{workflow()['run']['name']}",
+                                                    "WORKFLOW": "@{workflow()['name']}"
+                                                }
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Check_whether_the_record_should_go_to_retry_queue": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                }
+                            },
+                            "else": {
+                                "actions": {
+                                    "Delete_incorrect_journal_and_lines": {
+                                        "type": "Http",
+                                        "inputs": {
+                                            "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalHeaders/Microsoft.Dynamics.DataEntities.deleteJournal')}",
+                                            "method": "POST",
+                                            "body": {
+                                                "_journalNum": "@variables('journalNum')",
+                                                "_dataAreaId": "@variables('CompanyId')"
+                                            },
+                                            "authentication": {
+                                                "type": "ActiveDirectoryOAuth",
+                                                "tenant": "@parameters('TenantId')",
+                                                "audience": "@concat('https://',parameters('D365FO'))",
+                                                "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                                "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                            },
+                                            "retryPolicy": {
+                                                "type": "fixed",
+                                                "count": 4,
+                                                "interval": "PT5S"
+                                            }
+                                        }
+                                    },
+                                    "Post_message_to_OI": {
+                                        "type": "ServiceProvider",
+                                        "inputs": {
+                                            "parameters": {
+                                                "entityName": "open-invoice-post-update",
+                                                "message": {
+                                                    "contentData": {
+                                                        "MessageBody": "D365 journal creation failed: @{variables('errorMessage')}",
+                                                        "OIDocumentID": "@body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']"
+                                                    }
+                                                }
+                                            },
+                                            "serviceProviderConfiguration": {
+                                                "connectionName": "PrivateServiceBus",
+                                                "operationId": "sendMessage",
+                                                "serviceProviderId": "/serviceProviders/serviceBus"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Send_message_to_audit_topic": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Send_message_to_audit_topic": {
+                                        "type": "ServiceProvider",
+                                        "inputs": {
+                                            "parameters": {
+                                                "entityName": "open-invoice-audit",
+                                                "message": {
+                                                    "contentData": {
+                                                        "D365AttachmentAdded": "",
+                                                        "D365JENumber": "",
+                                                        "D365JournalCreated": "0",
+                                                        "D365JournalPosted": "0",
+                                                        "InRetryQueue": "",
+                                                        "LastUpdated": "@convertFromUtc(utcNow(), 'Mountain Standard Time')",
+                                                        "MessageBody": "@concat('D365 journal creation failed: ', variables('errorMessage'))",
+                                                        "OIApproved": "1",
+                                                        "OIDocDataRetrieved": "",
+                                                        "OIDocumentID": "@body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']",
+                                                        "OIExported": "",
+                                                        "OIFutureDatedInvoice": "",
+                                                        "OIInvoiceAmount": "@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['Total']}",
+                                                        "OIInvoiceNumber": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceNumber']",
+                                                        "OIPOInvoice": "",
+                                                        "OIVendor": "@{variables('VendName')}",
+                                                        "OIInvoiceDate": "@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceDate']}",
+                                                        "RetryCount": "1",
+                                                        "Identifier": "@{workflow()['run']['name']}",
+                                                        "WORKFLOW": "@{workflow()['name']}"
+                                                    }
+                                                }
+                                            },
+                                            "serviceProviderConfiguration": {
+                                                "connectionName": "PrivateServiceBus",
+                                                "operationId": "sendMessage",
+                                                "serviceProviderId": "/serviceProviders/serviceBus"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Delete_incorrect_journal_and_lines": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Check_to_send_msg_to_retry_queue_for_the_first_time": {
+                                        "type": "If",
+                                        "expression": {
+                                            "or": [
+                                                {
+                                                    "contains": [
+                                                        "@variables('errorMessage')",
+                                                        "finished or defined as a header project"
+                                                    ]
+                                                },
+                                                {
+                                                    "contains": [
+                                                        "@variables('errorMessage')",
+                                                        "D365 vendor number lookup failed"
+                                                    ]
+                                                },
+                                                {
+                                                    "contains": [
+                                                        "@variables('errorMessage')",
+                                                        "Finished and does not allow recording"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "actions": {
+                                            "Send_msg_to_Retry_queue": {
+                                                "type": "ServiceProvider",
+                                                "inputs": {
+                                                    "parameters": {
+                                                        "entityName": "open-invoice-retry",
+                                                        "message": {
+                                                            "contentData": {
+                                                                "ImageInvoiceId": "@{variables('ImageinvoiceId')}"
+                                                            },
+                                                            "contentType": "text/plain"
+                                                        }
+                                                    },
+                                                    "serviceProviderConfiguration": {
+                                                        "connectionName": "PrivateServiceBus",
+                                                        "operationId": "sendMessage",
+                                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "else": {
+                                            "actions": {}
+                                        },
+                                        "runAfter": {
+                                            "Post_message_to_OI": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Terminate": {
+                                        "type": "Terminate",
+                                        "inputs": {
+                                            "runStatus": "Failed"
+                                        },
+                                        "runAfter": {
+                                            "Check_to_send_msg_to_retry_queue_for_the_first_time": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "_Vendor_Journal_Lines_Process__successful": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "trackedProperties": {}
+            },
+            "HTTP_request_for_OIinvoice_details": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@{parameters('OIUrl')}/docp/supply-chain/v1/invoices/@{body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']}",
+                    "method": "GET",
+                    "authentication": {
+                        "type": "ClientCertificate",
+                        "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                        "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+                    }
+                },
+                "runAfter": {
+                    "Check_for_Duplication_Invoice": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_errorMessage": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "errorMessage",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_errorLog": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_imageinvoiceId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ImageinvoiceId",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Parse_JSON_imageinvoiceId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_CompanyId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CompanyId",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_errorMessage": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_journalNum": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "journalNum",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_CompanyId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON_imageinvoiceId": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('Convert_base64_content_from_primary_SB')",
+                    "schema": {
+                        "properties": {
+                            "ImageInvoiceId": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Convert_base64_content_from_primary_SB": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON_invoice_details": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@json(xml(replace(string(body('HTTP_request_for_OIinvoice_details')),'ImageInvoice','Invoice')))",
+                    "schema": {
+                        "properties": {
+                            "?xml": {
+                                "properties": {
+                                    "@@encoding": {
+                                        "type": "string"
+                                    },
+                                    "@@version": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "SupplierConnectInvoice": {
+                                "properties": {
+                                    "@@type": {
+                                        "type": "string"
+                                    },
+                                    "@@xmlns": {
+                                        "type": "string"
+                                    },
+                                    "AttachmentsReference": {
+                                        "properties": {
+                                            "@@numOfAttachments": {
+                                                "type": "string"
+                                            },
+                                            "Attachment": {
+                                                "items": {
+                                                    "properties": {
+                                                        "@@id": {
+                                                            "type": "string"
+                                                        },
+                                                        "@@type": {
+                                                            "type": "string"
+                                                        },
+                                                        "ClientAttachmentPath": {},
+                                                        "ContentType": {
+                                                            "type": "string"
+                                                        },
+                                                        "LocationPath": {
+                                                            "type": "string"
+                                                        },
+                                                        "UniversalResourceIdentifier": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "@@type",
+                                                        "@@id",
+                                                        "LocationPath",
+                                                        "ContentType",
+                                                        "ClientAttachmentPath",
+                                                        "UniversalResourceIdentifier"
+                                                    ],
+                                                    "type": "object"
+                                                },
+                                                "type": "array"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "Invoice": {
+                                        "properties": {
+                                            "@@id": {
+                                                "type": "string"
+                                            },
+                                            "InvoiceDetails": {
+                                                "properties": {
+                                                    "Coding": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "AFENumber": {
+                                                                    "type": "string"
+                                                                },
+                                                                "AccountInformation": {
+                                                                    "properties": {
+                                                                        "MajorAccount": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "AccountType": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "MinorAccount": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "SubCode": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "AdditionalData": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "#text": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@internal_code": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "@@internal_code",
+                                                                            "#text"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": [
+                                                                        "array",
+                                                                        "object"
+                                                                    ]
+                                                                },
+                                                                "RateOrPercentage": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ReferenceData": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "@@code": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@name": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@type": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@typeFormat": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Code": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Description": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Value": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "@@code",
+                                                                            "@@name",
+                                                                            "@@type",
+                                                                            "Value"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": [
+                                                                        "array",
+                                                                        "object"
+                                                                    ]
+                                                                },
+                                                                "Tax": {
+                                                                    "properties": {
+                                                                        "TaxType": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "Total": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "RateOrPercentage",
+                                                                "Total",
+                                                                "AccountInformation"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": [
+                                                            "array",
+                                                            "object"
+                                                        ]
+                                                    },
+                                                    "LineItem": {
+                                                        "properties": {
+                                                            "Categorization": {
+                                                                "properties": {
+                                                                    "@@CategorizationScheme": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "CategoryCode": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "Coding": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "AFENumber": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "AccountInformation": {
+                                                                            "properties": {
+                                                                                "MajorAccount": {
+                                                                                    "properties": {
+                                                                                        "AccountNumber": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "AccountType": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "Description": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "MinorAccount": {
+                                                                                    "properties": {
+                                                                                        "AccountNumber": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "Description": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SubCode": {
+                                                                                    "properties": {
+                                                                                        "AccountNumber": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "AdditionalData": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "#text": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@internal_code": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "@@internal_code",
+                                                                                    "#text"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": [
+                                                                                "array",
+                                                                                "object"
+                                                                            ]
+                                                                        },
+                                                                        "RateOrPercentage": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "ReferenceData": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "@@code": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@name": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@type": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@typeFormat": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "Code": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "Description": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "Value": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "@@code",
+                                                                                    "@@name",
+                                                                                    "@@type",
+                                                                                    "Value"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": [
+                                                                                "array",
+                                                                                "object"
+                                                                            ]
+                                                                        },
+                                                                        "Tax": {
+                                                                            "properties": {
+                                                                                "TaxType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "Total": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "RateOrPercentage",
+                                                                        "Total",
+                                                                        "AccountInformation"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": [
+                                                                    "array",
+                                                                    "object"
+                                                                ]
+                                                            },
+                                                            "Discount": {
+                                                                "properties": {
+                                                                    "RateOrPercentage": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "Total": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "LineItemChargeClass": {
+                                                                "type": "string"
+                                                            },
+                                                            "LineItemNumber": {
+                                                                "type": "string"
+                                                            },
+                                                            "LongDescription": {
+                                                                "type": "string"
+                                                            },
+                                                            "Quantity": {
+                                                                "type": "string"
+                                                            },
+                                                            "UnitPrice": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": [
+                                                            "object",
+                                                            "array"
+                                                        ]
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "InvoiceHeader": {
+                                                "properties": {
+                                                    "AdditionalData": {
+                                                        "properties": {
+                                                            "#text": {
+                                                                "type": "string"
+                                                            },
+                                                            "@@internal_code": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "CurrencyCode": {
+                                                        "type": "string"
+                                                    },
+                                                    "CurrentOwner": {
+                                                        "properties": {
+                                                            "Person": {
+                                                                "properties": {
+                                                                    "@@Role": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "EmailAddress": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "FirstName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "LastName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "PersonIdentifier": {
+                                                                        "properties": {
+                                                                            "#text": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@PersonIdentifierType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "DiscountTotal": {
+                                                        "type": "string"
+                                                    },
+                                                    "DocumentAction": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "ActionDestination": {
+                                                                    "properties": {
+                                                                        "DepartmentOrGroup": {
+                                                                            "properties": {
+                                                                                "DepartmentName": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "EmailAddress": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "FirstName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LastName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "PersonIdentifier": {
+                                                                            "properties": {
+                                                                                "#text": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "@@personIdentifierIndicator": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "Site": {
+                                                                            "properties": {
+                                                                                "SiteCode": {
+                                                                                    "properties": {
+                                                                                        "#text": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "@@siteCodeIndicator": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SiteName": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "ActionSource": {
+                                                                    "properties": {
+                                                                        "@@role": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "DepartmentOrGroup": {
+                                                                            "properties": {
+                                                                                "DepartmentName": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "EmailAddress": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "FirstName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LastName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "Site": {
+                                                                            "properties": {
+                                                                                "SiteCode": {
+                                                                                    "properties": {
+                                                                                        "#text": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "@@siteCodeIndicator": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SiteName": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "ActionType": {
+                                                                    "type": "string"
+                                                                },
+                                                                "LongDescription": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Person": {
+                                                                    "properties": {
+                                                                        "@@Role": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "DepartmentOrGroup": {
+                                                                            "properties": {
+                                                                                "DepartmentName": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "EmailAddress": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "FirstName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LastName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "Site": {
+                                                                            "properties": {
+                                                                                "SiteCode": {
+                                                                                    "properties": {
+                                                                                        "#text": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "@@SiteCodeType": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SiteName": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "Status": {
+                                                                    "type": "string"
+                                                                },
+                                                                "TransactionDateTime": {
+                                                                    "type": "string"
+                                                                },
+                                                                "TransactionIdentifier": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "Person",
+                                                                "ActionType",
+                                                                "Status",
+                                                                "TransactionDateTime",
+                                                                "TransactionIdentifier",
+                                                                "ActionSource"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "InvoiceDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "InvoiceNumber": {
+                                                        "type": "string"
+                                                    },
+                                                    "InvoiceType": {
+                                                        "type": "string"
+                                                    },
+                                                    "LongDescription": {
+                                                        "type": "string"
+                                                    },
+                                                    "Partner": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "@@PartnerType": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Company": {
+                                                                    "properties": {
+                                                                        "CompanyCode": {
+                                                                            "properties": {
+                                                                                "#text": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "@@CompanyCodeType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": [
+                                                                                "object",
+                                                                                "array"
+                                                                            ]
+                                                                        },
+                                                                        "CompanyName": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "Site": {
+                                                                    "properties": {
+                                                                        "Address": {
+                                                                            "properties": {
+                                                                                "@@AddressType": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "AddressLine": {
+                                                                                    "type": [
+                                                                                        "string",
+                                                                                        "array"
+                                                                                    ]
+                                                                                },
+                                                                                "City": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Country": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "CountryCode": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "PostalZipCode": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "StateProvince": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "StateProvinceCode": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": [
+                                                                                "object",
+                                                                                "array"
+                                                                            ]
+                                                                        },
+                                                                        "SiteCode": {
+                                                                            "properties": {
+                                                                                "#text": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "@@SiteCodeType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "SiteName": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "@@PartnerType",
+                                                                "Company",
+                                                                "Site"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "ReferenceData": {
+                                                        "properties": {
+                                                            "@@code": {
+                                                                "type": "string"
+                                                            },
+                                                            "@@name": {
+                                                                "type": "string"
+                                                            },
+                                                            "@@type": {
+                                                                "type": "string"
+                                                            },
+                                                            "Value": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "SubmittedTotal": {
+                                                        "type": "string"
+                                                    },
+                                                    "Total": {
+                                                        "type": "string"
+                                                    },
+                                                    "TotalLineItems": {
+                                                        "type": "string"
+                                                    },
+                                                    "TransportClass": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Check_PO": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Get_latest_error_log": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql_auditLogging"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365APInvoiceAudit]'))}/items",
+                    "queries": {
+                        "$filter": "OIDocumentID eq '@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['@id']}' and WORKFLOW eq 'sb-http-d365fo-oiInvoice-createJournal'",
+                        "$orderby": "recordId desc",
+                        "$top": 1
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON_invoice_details": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition_for_invoiceDate": {
+                "type": "If",
+                "expression": {
+                    "or": [
+                        {
+                            "greater": [
+                                "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceDate']",
+                                "@convertFromUtc(utcNow(),'Mountain Standard Time')"
+                            ]
+                        },
+                        {
+                            "not": {
+                                "equals": [
+                                    "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['DocumentAction']?[0]?['Status']",
+                                    "Approved"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "actions": {
+                    "Send_message_to_retry_queue": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-retry",
+                                "message": {
+                                    "contentData": {
+                                        "ImageInvoiceId": "@variables('ImageinvoiceId')",
+                                        "InvoiceDate": "@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceDate']}"
+                                    },
+                                    "contentType": "text/plain"
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        }
+                    },
+                    "Terminate_as_future_dated_invoice": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Cancelled"
+                        },
+                        "runAfter": {
+                            "Send_message_to_OI_invoice_skipped": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_message_audit_error": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-audit",
+                                "message": {
+                                    "contentData": {
+                                        "D365AttachmentAdded": "",
+                                        "D365JENumber": "",
+                                        "D365JournalCreated": "0",
+                                        "D365JournalPosted": "0",
+                                        "InRetryQueue": "",
+                                        "LastUpdated": "@convertFromUtc(utcNow(), 'Mountain Standard Time')",
+                                        "MessageBody": "D365 journal creaation skipped due to invoice date being in future or invoice is not in approved state",
+                                        "OIApproved": "0",
+                                        "OIDocDataRetrieved": "",
+                                        "OIDocumentID": "@body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']",
+                                        "OIExported": "",
+                                        "OIFutureDatedInvoice": "",
+                                        "OIInvoiceAmount": "",
+                                        "OIInvoiceNumber": "",
+                                        "OIPOInvoice": "",
+                                        "OIVendor": "",
+                                        "OIInvoiceDate": "",
+                                        "RetryCount": "0",
+                                        "Identifier": "@{workflow()['run']['name']}",
+                                        "WORKFLOW": "@{workflow()['name']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_message_to_retry_queue": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_message_to_OI_invoice_skipped": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-post-update",
+                                "message": {
+                                    "contentData": {
+                                        "MessageBody": "D365 Journal creation skipped, Either the invoice is not in approved state or the invoice date is in future.",
+                                        "OIDocumentID": "@{variables('ImageinvoiceId')}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_message_audit_error": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "Set_errorLog": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_errorLog": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "errorLog",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Set_errorLog": {
+                "type": "SetVariable",
+                "inputs": {
+                    "name": "errorLog",
+                    "value": "@{body('Get_latest_error_log')?['value']?[0]?['MessageBody']}"
+                },
+                "runAfter": {
+                    "Get_latest_error_log": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_vendName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "VendName",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_journalNum": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Get_rows_(V2)": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql_auditLogging"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365APInvoiceAudit]'))}/items",
+                    "queries": {
+                        "$filter": "OIDocumentID eq '@{body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']}' and D365JournalCreated eq '1'"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_imageinvoiceId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Check_for_Duplication_Invoice": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                0,
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Terminate_4": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Cancelled"
+                        },
+                        "runAfter": {
+                            "Send_Audit_for_Duplicate_Invoice": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_Audit_for_Duplicate_Invoice": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-audit",
+                                "message": {
+                                    "contentData": {
+                                        "D365AttachmentAdded": "",
+                                        "D365JENumber": "",
+                                        "D365JournalCreated": "1",
+                                        "D365JournalPosted": "0",
+                                        "InRetryQueue": "",
+                                        "LastUpdated": "@convertFromUtc(utcNow(), 'Mountain Standard Time')",
+                                        "MessageBody": "Duplicate invoice skipped ",
+                                        "OIApproved": "1",
+                                        "OIDocDataRetrieved": "",
+                                        "OIDocumentID": "@body('Parse_JSON_imageinvoiceId')?['ImageInvoiceId']",
+                                        "OIExported": "",
+                                        "OIFutureDatedInvoice": "",
+                                        "OIInvoiceAmount": "",
+                                        "OIInvoiceNumber": "",
+                                        "OIPOInvoice": "",
+                                        "OIVendor": "",
+                                        "OIInvoiceDate": "",
+                                        "RetryCount": "0",
+                                        "Identifier": "@{workflow()['run']['name']}",
+                                        "WORKFLOW": "@{workflow()['name']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "Get_rows_(V2)": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Process_Vendor_Journals": {
+                "type": "Workflow",
+                "inputs": {
+                    "host": {
+                        "workflow": {
+                            "id": "openInvoice-http-d365fo-1-createJournals"
+                        }
+                    },
+                    "body": {
+                        "OpenInvoicePayLoad": "@body('Parse_JSON_invoice_details')"
+                    },
+                    "retryPolicy": {
+                        "type": "none"
+                    }
+                },
+                "runAfter": {
+                    "Condition_for_invoiceDate": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Create_Vendor_Journal_Lines_Result": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Process_Vendor_Journals')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "JournalNum": {
+                                "type": "string"
+                            },
+                            "CompanyId": {
+                                "type": "string"
+                            },
+                            "ErrorMessage": {
+                                "type": "string"
+                            },
+                            "Division": {
+                                "type": "string"
+                            },
+                            "VendName": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Process_Vendor_Journals": [
+                        "SUCCEEDED",
+                        "TIMEDOUT",
+                        "FAILED",
+                        "SKIPPED"
+                    ]
+                }
+            },
+            "_Vendor_Journal_Lines_Process__successful": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@length(string(body('Create_Vendor_Journal_Lines_Result')?['ErrorMessage']))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Set_JournalNum": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "journalNum",
+                            "value": "@{body('Create_Vendor_Journal_Lines_Result')?['JournalNum']}"
+                        }
+                    },
+                    "Set_VendName": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "VendName",
+                            "value": "@{body('Create_Vendor_Journal_Lines_Result')?['VendName']}"
+                        },
+                        "runAfter": {
+                            "Set_JournalNum": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Process_Journal_Attachments": {
+                        "type": "Workflow",
+                        "inputs": {
+                            "host": {
+                                "workflow": {
+                                    "id": "openInvoice-http-d365fo-2-journalAttachments"
+                                }
+                            },
+                            "body": {
+                                "InvoiceNumber": "@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceNumber']}",
+                                "InvoiceId": "@{variables('ImageinvoiceId')}",
+                                "CompanyId": "@{body('Create_Vendor_Journal_Lines_Result')?['CompanyId']}",
+                                "JournalNum": "@{variables('journalNum')}",
+                                "Attachment": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['AttachmentsReference']?['Attachment']"
+                            },
+                            "retryPolicy": {
+                                "type": "none"
+                            }
+                        },
+                        "runAfter": {
+                            "Set_Legal_Entity": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Set_Legal_Entity": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "CompanyId",
+                            "value": "@{body('Create_Vendor_Journal_Lines_Result')?['CompanyId']}"
+                        },
+                        "runAfter": {
+                            "Set_VendName": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Set_Journal_Attachmen_Error": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "errorMessage",
+                            "value": "@{string(body('Process_Journal_Attachments'))}"
+                        },
+                        "runAfter": {
+                            "Process_Journal_Attachments": [
+                                "SUCCEEDED",
+                                "FAILED",
+                                "TIMEDOUT"
+                            ]
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Set_Create_JournalLines_Error_Message": {
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "errorMessage",
+                                "value": "@{body('Create_Vendor_Journal_Lines_Result')?['ErrorMessage']}"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Create_Vendor_Journal_Lines_Result": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "open-invoice-primary",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveQueueMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

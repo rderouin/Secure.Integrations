@@ -1,0 +1,60 @@
+{
+    "managedApiConnections": {
+        "dynamicsax": {
+            "api": {
+                "id": "/subscriptions/98eb7e44-4f4e-49bc-a1cf-98541a2743fc/providers/Microsoft.Web/locations/canadacentral/managedApis/dynamicsax"
+            },
+            "authentication": {
+                "type": "ManagedServiceIdentity"
+            },
+            "connection": {
+                "id": "/subscriptions/98eb7e44-4f4e-49bc-a1cf-98541a2743fc/resourceGroups/zcac-rg-dev-integrations/providers/Microsoft.Web/connections/dynamicsax-12"
+            },
+            "connectionRuntimeUrl": "https://2b52a65fa154e277.11.common.logic-canadacentral.azure-apihub.net/apim/dynamicsax/873fd89846a447478e450c82f683ec03"
+        },
+        "sharepointonline": {
+            "api": {
+                "id": "/subscriptions/98eb7e44-4f4e-49bc-a1cf-98541a2743fc/providers/Microsoft.Web/locations/canadacentral/managedApis/sharepointonline"
+            },
+            "authentication": {
+                "type": "ManagedServiceIdentity"
+            },
+            "connection": {
+                "id": "/subscriptions/98eb7e44-4f4e-49bc-a1cf-98541a2743fc/resourceGroups/zcac-rg-dev-integrations/providers/Microsoft.Web/connections/sharepointonline"
+            },
+            "connectionRuntimeUrl": "https://2b52a65fa154e277.11.common.logic-canadacentral.azure-apihub.net/apim/sharepointonline/5440f0753b5a4319be72ae8dc6527dfd"
+        },
+        "azureblob_1": {
+          "api": {
+              "id": "/subscriptions/98eb7e44-4f4e-49bc-a1cf-98541a2743fc/providers/Microsoft.Web/locations/canadacentral/managedApis/azureblob"
+          },
+          "authentication": {
+              "type": "ManagedServiceIdentity"
+          },
+          "connection": {
+              "id": "/subscriptions/98eb7e44-4f4e-49bc-a1cf-98541a2743fc/resourceGroups/zcac-rg-dev-integrations/providers/Microsoft.Web/connections/azureblob-2"
+          },
+          "connectionRuntimeUrl": "https://2b52a65fa154e277.11.common.logic-canadacentral.azure-apihub.net/apim/azureblob/6b4b005348824420a09eb262f2e32f3b"
+      }
+    },
+    "serviceProviderConnections": {
+        "AzureBlob": {
+            "displayName": "zcacstlgappdevintintgs3s",
+            "parameterValues": {
+                "connectionString": "@appsetting('AzureBlob_connectionString')"
+            },
+            "serviceProvider": {
+                "id": "/serviceProviders/AzureBlob"
+            }
+        },
+        "serviceBus": {
+            "parameterValues": {
+                "connectionString": "@appsetting('serviceBus_connectionString')"
+            },
+            "serviceProvider": {
+                "id": "/serviceProviders/serviceBus"
+            },
+            "displayName": "ServiceBus"
+        }
+    }
+}

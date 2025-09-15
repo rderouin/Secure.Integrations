@@ -1,0 +1,334 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_'Response'_Variable": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Response",
+                            "type": "object"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Switch": {
+                "type": "Switch",
+                "expression": "@triggerOutputs()['headers']?['MessageType']",
+                "cases": {
+                    "Sales_Order_Header": {
+                        "case": "SalesOrder",
+                        "actions": {
+                            "Invoke_Sales_Order_Header_Processor": {
+                                "type": "Workflow",
+                                "inputs": {
+                                    "host": {
+                                        "workflow": {
+                                            "id": "TT-SB-D365FO-Sales-Orders-1-Headers"
+                                        }
+                                    },
+                                    "body": "@triggerBody()",
+                                    "retryPolicy": {
+                                        "type": "none"
+                                    }
+                                },
+                                "runAfter": {},
+                                "description": "Process Sales Order Header Inserts"
+                            },
+                            "Set_Sales_Order_Header_Response": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "Response",
+                                    "value": "@body('Invoke_Sales_Order_Header_Processor')"
+                                },
+                                "runAfter": {
+                                    "Invoke_Sales_Order_Header_Processor": [
+                                        "FAILED"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "Sales_Order_Lines": {
+                        "case": "SalesLine",
+                        "actions": {
+                            "If_UseLegacySalesOrderLinesProcess_is_Not_True": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "not": {
+                                                "equals": [
+                                                    "@outputs('Compose_UseLegacySalesOrderLinesProcess')",
+                                                    true
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Invoke_Sales_Order_Lines_Processor": {
+                                        "type": "Workflow",
+                                        "inputs": {
+                                            "host": {
+                                                "workflow": {
+                                                    "id": "TT-SB-D365FO-Sales-Orders-2-Lines"
+                                                }
+                                            },
+                                            "body": "@triggerBody()",
+                                            "retryPolicy": {
+                                                "type": "none"
+                                            }
+                                        }
+                                    },
+                                    "Set_Sales_Order_Lines_Response": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "Response",
+                                            "value": "@body('Invoke_Sales_Order_Lines_Processor')"
+                                        },
+                                        "runAfter": {
+                                            "Invoke_Sales_Order_Lines_Processor": [
+                                                "FAILED"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "actions": {
+                                        "Invoke_Sales_Order_Lines_Processor_(Legacy)": {
+                                            "type": "Workflow",
+                                            "inputs": {
+                                                "host": {
+                                                    "workflow": {
+                                                        "id": "TT-SB-D365FO-Sales-Orders-2-Lines-Parallel"
+                                                    }
+                                                },
+                                                "body": "@triggerBody()",
+                                                "retryPolicy": {
+                                                    "type": "none"
+                                                }
+                                            }
+                                        },
+                                        "Set_Sales_Order_Lines_Response_(Legacy)": {
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                                "name": "Response",
+                                                "value": "@body('Invoke_Sales_Order_Lines_Processor_(Legacy)')"
+                                            },
+                                            "runAfter": {
+                                                "Invoke_Sales_Order_Lines_Processor_(Legacy)": [
+                                                    "FAILED"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose_UseLegacySalesOrderLinesProcess": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            },
+                            "Compose_UseLegacySalesOrderLinesProcess": {
+                                "type": "Compose",
+                                "inputs": "@if(equals(string(appsetting('UseLegacySalesOrderLinesProcess')), 'true'), true, false)"
+                            }
+                        }
+                    },
+                    "Invoice": {
+                        "case": "Invoice",
+                        "actions": {
+                            "Invoke_Sales_Order_Invoice_Processor": {
+                                "type": "Workflow",
+                                "inputs": {
+                                    "host": {
+                                        "workflow": {
+                                            "id": "TT-SB-D365FO-Sales-Orders-3-Invoices"
+                                        }
+                                    },
+                                    "body": "@triggerBody()",
+                                    "retryPolicy": {
+                                        "type": "none"
+                                    }
+                                },
+                                "runAfter": {},
+                                "description": "Process Sales Order Header Invoice Conversion"
+                            },
+                            "Set_Invoice_Response": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "Response",
+                                    "value": "@body('Invoke_Sales_Order_Invoice_Processor')"
+                                },
+                                "runAfter": {
+                                    "Invoke_Sales_Order_Invoice_Processor": [
+                                        "FAILED"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "default": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "Initialize_'Response'_Variable": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Did_the_call_succeed": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@variables('Response')",
+                                "@null"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Send_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "integration-logs",
+                                "message": {
+                                    "contentData": {
+                                        "CorrelationId": "",
+                                        "MessageDate": "@utcNow()",
+                                        "MessageType": "Log",
+                                        "Operation": "Information",
+                                        "Payload": [
+                                            {
+                                                "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                "Identifier": "@workflow()['run']['name']",
+                                                "MessageBody": "@{triggerOutputs()['headers']?['MessageType']}",
+                                                "Workflow": "@workflow()['name']",
+                                                "keyfield": "@{substring(string(triggerBody()),add(indexOf(string(triggerBody()),'ProformaInvoiceNumber'),24),16)}",
+                                                "status": "Success"
+                                            }
+                                        ],
+                                        "Source": "@workflow().name",
+                                        "SourceId": "@workflow().run.name"
+                                    },
+                                    "userProperties": {
+                                        "Source": "@workflow().name"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Return_HTTP_200": {
+                        "type": "Response",
+                        "kind": "http",
+                        "inputs": {
+                            "statusCode": 200
+                        },
+                        "runAfter": {
+                            "Send_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Switch": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Return_HTTP_500": {
+                            "type": "Response",
+                            "kind": "http",
+                            "inputs": {
+                                "statusCode": 500,
+                                "body": "@variables('Response')"
+                            },
+                            "runAfter": {}
+                        },
+                        "Failed": {
+                            "type": "Terminate",
+                            "inputs": {
+                                "runStatus": "Failed",
+                                "runError": {
+                                    "message": "@{variables('Response')}"
+                                }
+                            },
+                            "runAfter": {
+                                "Send_message_error": [
+                                    "Succeeded",
+                                    "FAILED"
+                                ]
+                            }
+                        },
+                        "Send_message_error": {
+                            "type": "ServiceProvider",
+                            "inputs": {
+                                "parameters": {
+                                    "entityName": "integration-logs",
+                                    "message": {
+                                        "contentData": {
+                                            "CorrelationId": "",
+                                            "MessageDate": "@utcNow()",
+                                            "MessageType": "Log",
+                                            "Operation": "Information",
+                                            "Payload": [
+                                                {
+                                                    "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                    "Identifier": "@workflow()['run']['name']",
+                                                    "MessageBody": "@{triggerOutputs()['headers']?['MessageType']} Error : @{variables('Response')}",
+                                                    "Workflow": "@workflow()['name']",
+                                                    "keyfield": "@{substring(string(triggerBody()),add(indexOf(string(triggerBody()),'ProformaInvoiceNumber'),24),16)}",
+                                                    "status": "Fail"
+                                                }
+                                            ],
+                                            "Source": "@workflow().name",
+                                            "SourceId": "@workflow().run.name"
+                                        },
+                                        "userProperties": {
+                                            "Source": "@workflow().name"
+                                        }
+                                    }
+                                },
+                                "serviceProviderConfiguration": {
+                                    "connectionName": "PrivateServiceBus",
+                                    "operationId": "sendMessage",
+                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                }
+                            },
+                            "runAfter": {
+                                "Return_HTTP_500": [
+                                    "Succeeded"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {}
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

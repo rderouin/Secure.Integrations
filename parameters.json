@@ -1,0 +1,217 @@
+{
+  "SalesOrdersContainer": {
+    "type": "String",
+    "value": "sales-orders"
+  },
+  "OIServerName": {
+    "type": "String",
+    "value": "zcacdsv-intsql1.database.windows.net"
+  },
+  "OIDBName": {
+    "type": "String",
+    "value": "AuditLogging-UAT"
+  },
+  "OIJournalName": {
+    "type": "String",
+    "value": "AP_OI"
+  },
+  "MUDTrackServerName": {
+    "type": "String",
+    "value": "AHQDSV-MTSQL1.secure-energy.ca"
+  },
+  "MUDTrackDBName": {
+    "type": "String",
+    "value": "mudtrac_stage"
+  },
+  "MudTracAPIServer": {
+    "type": "Object",
+    "value": {
+      "url": "https://qa.mudtrac-api.secure-energy.com/",
+      "user": "svc_integrationsnonprod",
+      "pwd": "WaterWave456!"
+    }
+  },
+  "InventoryUploadEmailID": {
+    "type": "String",
+    "value": "svc_d365fo_int_nonp@secure-energy.ca"
+  },
+  "APCertifyReceiptsURI": {
+    "type": "String",
+    "value": "https://api.certify.com/v1/receipts/"
+  },
+  "APCertifyDatabaseName": {
+    "type": "String",
+    "value": "AuditLogging-UAT"
+  },
+  "APCertifyServerName": {
+    "type": "String",
+    "value": "zcacdsv-intsql1.database.windows.net"
+  },
+  "HazmatDB": {
+    "type": "String",
+    "value": "RM97"
+  },
+  "HazmatDBServer": {
+    "type": "String",
+    "value": "CDRVSQL01T.ccs.corp\\HazmatMgrTest"
+  },
+  "APCertifyJournal": {
+    "type": "String",
+    "value": "AP_Certify"
+  },
+  "APCertifyExpensesURI": {
+    "type": "String",
+    "value": "https://api.certify.com/v1/expensereports"
+  },
+  "APCertifyAPIKey": {
+    "type": "String",
+    "value": "E5GGYkJKM18YsD5u92D0W8B5tFJgPt0F46yVbdOs"
+  },
+  "APCertifyAPISecret": {
+    "type": "String",
+    "value": "5931D9D7-CA28-4FDF-9C9B-3095D6BBF604"
+  },
+  "APIKey": {
+    "type": "String",
+    "value": "aca00182-85d0-4ad2-bbcb-13e0b88b9529"
+  },
+  "APISecret": {
+    "type": "String",
+    "value": "uMq8Q~IRejolJu41xf24y8uhWgA4lFOaZIBtgau9"
+  },
+  "AzureContainer": {
+    "type": "String",
+    "value": "inventory-interface"
+  },
+  "D365FO": {
+    "type": "String",
+    "value": "zcac-rg-d365fo-ttint638d7f9240bd6953devaos.axcloud.dynamics.com"
+  },
+  "D365FO_url": {
+    "type": "String",
+    "value": "https://zcac-rg-d365fo-ttint638d7f9240bd6953devaos.axcloud.dynamics.com"
+  },
+  "Errorfolder": {
+    "type": "String",
+    "value": "Error"
+  },
+  "HMMApprovedBy": {
+    "type": "String",
+    "value": "jakber"
+  },
+  "HMMCompany1": {
+    "type": "String",
+    "value": "FLIS"
+  },
+  "HMMCompany2": {
+    "type": "String",
+    "value": "FMFN"
+  },
+  "HMMDivisionDefualt": {
+    "type": "String",
+    "value": "WS Div"
+  },
+  "HMMItemSalesTax": {
+    "type": "String",
+    "value": "ALL"
+  },
+  "HMMJournalVoucher": {
+    "type": "String",
+    "value": "GEN"
+  },
+  "Inputfolder": {
+    "type": "String",
+    "value": "Input"
+  },
+  "OIPswd": {
+    "type": "String",
+    "value": "secure2015"
+  },
+  "OIUrl": {
+    "type": "String",
+    "value": "https://onboard-api.openinvoice.com"
+  },
+  "Storageaccount": {
+    "type": "String",
+    "value": "zcacazstoragedevlogapps"
+  },
+  "SuccessFolder": {
+    "type": "String",
+    "value": "Success"
+  },
+  "TenantId": {
+    "type": "String",
+    "value": "f26327e3-d04d-4a8c-8251-9a766968e77a"
+  },
+  "SharePointURI": {
+    "type": "String",
+    "value": "https://secureenergyservices.sharepoint.com/sites/D365-FO/"
+  },
+  "SPDocumentLibrary": {
+    "type": "String",
+    "value": "D365 UAT Documents"
+  },
+  "InventoryInterfaceSPFolder": {
+    "type": "String",
+    "value": "/Inventory Interface/DEV/"
+  },
+  "TradeAgreementRecurringIntegrationId": {
+    "type": "String",
+    "value": "{257E2288-EB18-4C16-B592-042FBE2D5C51}"
+  },
+  "TenantGuid": {
+    "type": "String",
+    "value": "f26327e3-d04d-4a8c-8251-9a766968e77a"
+  },
+  "TradeAgreementInterfaceSPFolder": {
+    "type": "String",
+    "value": "/Trade Agreements/DEV/"
+  },
+  "TradeAgreementInterfaceSPSuccessFolder": {
+    "type": "String",
+    "value": "/D365 UAT Documents/Trade Agreements/Processed"
+  },
+  "TradeAgreementBlobStorageFilePath": {
+    "type": "String",
+    "value": "/trade-agreements/DEV/FILES/"
+  },
+  "TradeAgreementBlobStorageSuccessPath": {
+    "type": "String",
+    "value": "PROCESSED"
+  },
+  "TradeAgreementBlobStorageFailedPath": {
+    "type": "String",
+    "value": "FAILED"
+  },
+  "4castplus": {
+    "type": "Object",
+    "value": {
+      "4castplusAPIURL": "https://comingsoonsecure.4castplus.com",
+      "4castplusAccount": "OnSite - Projects",
+      "4castplusUsername": "z4castplusDataExport@secure-energy.com"
+    }
+  },
+  "D365_REP": {
+    "type": "Object",
+    "value": {
+      "D365_REP_Server": "AHQDsv-D365REP1.secure-energy.ca",
+      "D365_REP_DB": "D365FO_REP_UAT"
+    }
+  },
+  "LoadConfirmationEmailId": {
+    "type": "String",
+    "value": "TTSignedDocs_NonProd@secure-energy.com"
+  },
+  "LoadConfirmationContainerName": {
+    "type": "String",
+    "value": "loadconfirmation-attachments"
+  },
+  "TT-SB-D365FO-Sales-Orders-2-Lines": {
+    "type": "Object",
+    "value": {
+      "PollWaitSeconds": "5",
+      "PollTimeoutDuration": "PT15M",
+      "PollCountMax": "200"
+    }
+  }
+}

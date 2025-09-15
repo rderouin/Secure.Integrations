@@ -1,0 +1,1913 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_division_array": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Division",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Journal_Description": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Expense_Line_Number": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Expense Line Number",
+                            "type": "integer",
+                            "value": 1
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_Journal_Description": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Journal Description",
+                            "type": "string",
+                            "value": "@{triggerBody()?['InvoiceNumber']} - @{triggerBody()?['EmployeeID']} - @{triggerBody()?['ReportName']}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Expense_Line_Number": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_default_dimension_display": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "DimensionDisplay",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_division_override_array": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_division_override_array": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "DivisionOverride",
+                            "type": "array",
+                            "value": []
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_division_array": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_override_dimension_display": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "DimensionDisplayOverride",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_default_dimension_display": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Return_HTTP_201": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 201,
+                    "body": "@body('Create_invoice_header')?['JournalBatchNumber']"
+                },
+                "runAfter": {
+                    "Create_Invoice_Ledger_Journal": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Catch": {
+                "type": "Scope",
+                "actions": {
+                    "Filter_error_messages": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@union(result('Journal_Posting'), result('Ledger_Line_Creation'), result('Project_Line_Creation'), result('Journal_Line_Creation'), result('Vendor_Line_Creation'), result('Invoice_Header_Creation'), result('Create_Invoice_Ledger_Journal'))",
+                            "where": "@equals(item()['status'], 'Failed')"
+                        },
+                        "runAfter": {}
+                    },
+                    "Return_HTTP_500_(2)": {
+                        "type": "Response",
+                        "kind": "http",
+                        "inputs": {
+                            "statusCode": 500,
+                            "body": "@concat('(', body('Create_invoice_header')?['JournalBatchNumber'], ') ', coalesce(body('Filter_error_messages')[0]?['outputs']?['body']?['message'], body('Filter_error_messages')[0]?['error']?['message'], concat('An error occurred in a nested loop. For more information, view the results of workflow ', workflow().run.id)))"
+                        },
+                        "runAfter": {
+                            "Filter_error_messages": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Create_Invoice_Ledger_Journal": [
+                        "FAILED"
+                    ]
+                }
+            },
+            "Create_Invoice_Ledger_Journal": {
+                "type": "Scope",
+                "actions": {
+                    "Get_existing_journal_batch_number": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "dynamicsax-2"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "_invoiceId": "@triggerBody()?['InvoiceNumber']",
+                                "_dataAreaId": "@triggerBody()?['DataAreaId']"
+                            },
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalHeaders/Microsoft.Dynamics.DataEntities.GetJournalNumberByInvoiceID'))}"
+                        },
+                        "runAfter": {},
+                        "description": "This call is to determine if a journal already exists. The batch number itself is not used."
+                    },
+                    "Does_an_invoice_journal_already_exist_for_this_report": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "not": {
+                                        "equals": [
+                                            "@body('Get_existing_journal_batch_number')?['OutputParameters']?['value']",
+                                            "@trim(' ')"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Return_HTTP_200": {
+                                "type": "Response",
+                                "kind": "http",
+                                "inputs": {
+                                    "statusCode": 200,
+                                    "body": "@body('Get_existing_journal_batch_number')?['OutputParameters']?['value']"
+                                },
+                                "runAfter": {}
+                            },
+                            "Cancel_Run": {
+                                "description": "Cancel the run, as the invoice journal already exists.",
+                                "type": "Terminate",
+                                "inputs": {
+                                    "runStatus": "Cancelled"
+                                },
+                                "runAfter": {
+                                    "Return_HTTP_200": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Get_existing_journal_batch_number": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Get_Expenses": {
+                                    "type": "Http",
+                                    "inputs": {
+                                        "method": "GET",
+                                        "uri": "@{concat(parameters('APCertifyExpensesURI'),'/', triggerBody()?['ReportId'], '/expenses')}",
+                                        "headers": {
+                                            "x-api-key": "@parameters('APCertifyAPIKey')",
+                                            "x-api-secret": "@parameters('APCertifyAPISecret')"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Log_Info_(New_Expense_Report)": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Parse_Certify_expense_lines": {
+                                    "type": "ParseJson",
+                                    "inputs": {
+                                        "content": "@if(equals(triggerBody()?['LinesOverride'], null), body('Get_Expenses'), triggerBody()?['LinesOverride'])",
+                                        "schema": {
+                                            "properties": {
+                                                "Expenses": {
+                                                    "items": {
+                                                        "properties": {
+                                                            "Amount": {
+                                                                "type": "number"
+                                                            },
+                                                            "Billable": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "CCLast": {
+                                                                "type": "string"
+                                                            },
+                                                            "CCTransactionID": {
+                                                                "type": "string"
+                                                            },
+                                                            "ConvertedAmount": {
+                                                                "type": "number"
+                                                            },
+                                                            "ConvertedCurrency": {
+                                                                "type": "string"
+                                                            },
+                                                            "ConvertedReimAmount": {
+                                                                "type": "number"
+                                                            },
+                                                            "Currency": {
+                                                                "type": "string"
+                                                            },
+                                                            "DepartmentCode": {
+                                                                "type": "string"
+                                                            },
+                                                            "DepartmentName": {
+                                                                "type": "string"
+                                                            },
+                                                            "Email": {
+                                                                "type": "string"
+                                                            },
+                                                            "EmployeeID": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseCategory": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseCategoryGLCode": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseCategoryID": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseReportApprovalCode": {
+                                                                "type": "number"
+                                                            },
+                                                            "ExpenseReportGLD1Code": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseReportGLD1Label": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseReportGLD1Name": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseReportID": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseReportName": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseTextGLD1": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseTextGLD1Label": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseTextGLD2": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseTextGLD2Label": {
+                                                                "type": "string"
+                                                            },
+                                                            "ExpenseType": {
+                                                                "type": "string"
+                                                            },
+                                                            "FirstName": {
+                                                                "type": "string"
+                                                            },
+                                                            "HSTAmount": {
+                                                                "type": "number"
+                                                            },
+                                                            "ID": {
+                                                                "type": "string"
+                                                            },
+                                                            "LastAction": {
+                                                                "type": "string"
+                                                            },
+                                                            "LastName": {
+                                                                "type": "string"
+                                                            },
+                                                            "Location": {
+                                                                "type": "string"
+                                                            },
+                                                            "LodgingCheckInDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "LodgingCheckOutDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "MileageFrom": {
+                                                                "type": "string"
+                                                            },
+                                                            "MileageTo": {
+                                                                "type": "string"
+                                                            },
+                                                            "MileageUnits": {
+                                                                "type": "number"
+                                                            },
+                                                            "PSTAmount": {
+                                                                "type": "number"
+                                                            },
+                                                            "PaymentCardName": {
+                                                                "type": "string"
+                                                            },
+                                                            "PostingDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "Processed": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "ProcessedDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "Reason": {
+                                                                "type": "string"
+                                                            },
+                                                            "ReceiptID": {
+                                                                "type": "string"
+                                                            },
+                                                            "ReceiptImageLink": {
+                                                                "type": "string"
+                                                            },
+                                                            "ReimAmount": {
+                                                                "type": "number"
+                                                            },
+                                                            "Reimbursable": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "RentalDropOffDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "RentalPickUpDate": {
+                                                                "type": "string"
+                                                            },
+                                                            "Status": {
+                                                                "type": "string"
+                                                            },
+                                                            "SubmittedAmount": {
+                                                                "type": "number"
+                                                            },
+                                                            "SubmittedCurrency": {
+                                                                "type": "string"
+                                                            },
+                                                            "TravelFrom": {
+                                                                "type": "string"
+                                                            },
+                                                            "TravelTo": {
+                                                                "type": "string"
+                                                            },
+                                                            "VATAmount": {
+                                                                "type": "number"
+                                                            },
+                                                            "Vendor": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "ID",
+                                                            "ExpenseReportID",
+                                                            "FirstName",
+                                                            "LastName",
+                                                            "Email",
+                                                            "EmployeeID",
+                                                            "DepartmentName",
+                                                            "DepartmentCode",
+                                                            "ExpenseType",
+                                                            "ExpenseCategory",
+                                                            "ExpenseCategoryGLCode",
+                                                            "Amount",
+                                                            "Billable",
+                                                            "Reimbursable",
+                                                            "ReimAmount",
+                                                            "SubmittedAmount",
+                                                            "ConvertedAmount",
+                                                            "ConvertedReimAmount",
+                                                            "ExpenseDate",
+                                                            "PostingDate",
+                                                            "LodgingCheckInDate",
+                                                            "LodgingCheckOutDate",
+                                                            "RentalPickUpDate",
+                                                            "RentalDropOffDate",
+                                                            "Vendor",
+                                                            "Location",
+                                                            "TravelFrom",
+                                                            "TravelTo",
+                                                            "MileageFrom",
+                                                            "MileageTo",
+                                                            "ProcessedDate",
+                                                            "Processed",
+                                                            "Currency",
+                                                            "SubmittedCurrency",
+                                                            "ConvertedCurrency",
+                                                            "Reason",
+                                                            "VATAmount",
+                                                            "HSTAmount",
+                                                            "PSTAmount",
+                                                            "ExpenseTextGLD1Label",
+                                                            "ExpenseTextGLD1",
+                                                            "ExpenseTextGLD2Label",
+                                                            "ExpenseReportGLD1Label",
+                                                            "ExpenseReportGLD1Name",
+                                                            "ExpenseReportGLD1Code",
+                                                            "ReceiptImageLink",
+                                                            "ReceiptID",
+                                                            "PaymentCardName",
+                                                            "CCLast",
+                                                            "CCTransactionID",
+                                                            "ExpenseCategoryID"
+                                                        ],
+                                                        "type": "object"
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Get_Expenses": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Filter_out_zero_dollar_Certify_expense_lines": {
+                                    "type": "Query",
+                                    "inputs": {
+                                        "from": "@body('Parse_Certify_expense_lines')?['Expenses']",
+                                        "where": "@not(equals(item()?['Amount'], 0))"
+                                    },
+                                    "runAfter": {
+                                        "Log_Info_(Get_Expenses)": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "If_there_are_expense_lines_to_process": {
+                                    "type": "If",
+                                    "expression": {
+                                        "and": [
+                                            {
+                                                "greater": [
+                                                    "@length(body('Filter_out_zero_dollar_Certify_expense_lines'))",
+                                                    "@float(0)"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "actions": {
+                                        "For_each_expense_line": {
+                                            "type": "Foreach",
+                                            "foreach": "@body('Filter_out_zero_dollar_Certify_expense_lines')",
+                                            "actions": {
+                                                "Journal_Line_Creation": {
+                                                    "type": "Scope",
+                                                    "actions": {
+                                                        "Set_division_array": {
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "Division",
+                                                                "value": "@split(triggerBody()?['FinancialDimensions'], '|')"
+                                                            },
+                                                            "runAfter": {}
+                                                        },
+                                                        "Set_dimension_display": {
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "DimensionDisplay",
+                                                                "value": "@{variables('Division')[0]}-@{variables('Division')[1]}-@{variables('Division')[2]}-@{variables('Division')[3]}"
+                                                            },
+                                                            "runAfter": {
+                                                                "Set_division_array": [
+                                                                    "Succeeded"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "Have_financial_dimensions_been_overridden": {
+                                                            "type": "If",
+                                                            "expression": {
+                                                                "and": [
+                                                                    {
+                                                                        "not": {
+                                                                            "equals": [
+                                                                                "@items('For_each_expense_line')?['ExpenseReportGLD3Name']",
+                                                                                null
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "or": [
+                                                                            {
+                                                                                "contains": [
+                                                                                    "@items('For_each_expense_line')?['ExpenseReportGLD3Name']",
+                                                                                    "-"
+                                                                                ]
+                                                                            },
+                                                                            {
+                                                                                "contains": [
+                                                                                    "@items('For_each_expense_line')?['ExpenseReportGLD3Name']",
+                                                                                    "|"
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "actions": {
+                                                                "Set_division_array_(override)": {
+                                                                    "type": "SetVariable",
+                                                                    "inputs": {
+                                                                        "name": "DivisionOverride",
+                                                                        "value": "@split(replace(items('For_each_expense_line')?['ExpenseReportGLD3Name'],'-','|'), '|')"
+                                                                    },
+                                                                    "runAfter": {}
+                                                                },
+                                                                "Switch": {
+                                                                    "type": "Switch",
+                                                                    "expression": "@length(variables('DivisionOverride'))",
+                                                                    "cases": {
+                                                                        "2_dimensions": {
+                                                                            "case": 2,
+                                                                            "actions": {
+                                                                                "Get_rows_certify_dimension_mapping_for_Div": {
+                                                                                    "type": "ApiConnection",
+                                                                                    "inputs": {
+                                                                                        "host": {
+                                                                                            "connection": {
+                                                                                                "referenceName": "sql_auditLogging"
+                                                                                            }
+                                                                                        },
+                                                                                        "method": "get",
+                                                                                        "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[Certify_Dimensions_Mapping]'))}/items",
+                                                                                        "queries": {
+                                                                                            "$filter": "BU_Dimension eq '@{variables('DivisionOverride')[0]}' and Location eq '@{variables('DivisionOverride')[1]}'"
+                                                                                        }
+                                                                                    },
+                                                                                    "runAfter": {}
+                                                                                },
+                                                                                "Condition_check_if_dim_override_from_db_available": {
+                                                                                    "type": "If",
+                                                                                    "expression": {
+                                                                                        "and": [
+                                                                                            {
+                                                                                                "greater": [
+                                                                                                    "@length(body('Get_rows_certify_dimension_mapping_for_Div')?['value'])",
+                                                                                                    0
+                                                                                                ]
+                                                                                            }
+                                                                                        ]
+                                                                                    },
+                                                                                    "actions": {
+                                                                                        "Set_dimension_display_override_2": {
+                                                                                            "type": "SetVariable",
+                                                                                            "inputs": {
+                                                                                                "name": "DimensionDisplayOverride",
+                                                                                                "value": "@{variables('Division')[0]}-@{body('Get_rows_certify_dimension_mapping_for_Div')?['value']?[0]?['Div_Dimension']}-@{variables('DivisionOverride')[0]}-@{variables('DivisionOverride')[1]}"
+                                                                                            },
+                                                                                            "runAfter": {}
+                                                                                        }
+                                                                                    },
+                                                                                    "runAfter": {
+                                                                                        "Get_rows_certify_dimension_mapping_for_Div": [
+                                                                                            "Succeeded"
+                                                                                        ]
+                                                                                    },
+                                                                                    "else": {
+                                                                                        "actions": {
+                                                                                            "Set_variable": {
+                                                                                                "type": "SetVariable",
+                                                                                                "inputs": {
+                                                                                                    "name": "DimensionDisplayOverride",
+                                                                                                    "value": "@{variables('Division')[0]}-@{variables('Division')[1]}-@{variables('DivisionOverride')[0]}-@{variables('DivisionOverride')[1]}"
+                                                                                                },
+                                                                                                "runAfter": {}
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "3_dimensions": {
+                                                                            "case": 3,
+                                                                            "actions": {
+                                                                                "Set_dimension_display_override_3": {
+                                                                                    "type": "SetVariable",
+                                                                                    "inputs": {
+                                                                                        "name": "DimensionDisplayOverride",
+                                                                                        "value": "@{variables('Division')[0]}-@{variables('DivisionOverride')[0]}-@{variables('DivisionOverride')[1]}-@{variables('DivisionOverride')[2]}"
+                                                                                    },
+                                                                                    "runAfter": {}
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "4_dimensions": {
+                                                                            "case": 4,
+                                                                            "actions": {
+                                                                                "Set_dimension_display_override_4": {
+                                                                                    "type": "SetVariable",
+                                                                                    "inputs": {
+                                                                                        "name": "DimensionDisplayOverride",
+                                                                                        "value": "@{variables('DivisionOverride')[0]}-@{variables('DivisionOverride')[1]}-@{variables('DivisionOverride')[2]}-@{variables('DivisionOverride')[3]}"
+                                                                                    },
+                                                                                    "runAfter": {}
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "default": {
+                                                                        "actions": {}
+                                                                    },
+                                                                    "runAfter": {
+                                                                        "Set_division_array_(override)": [
+                                                                            "Succeeded"
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            },
+                                                            "runAfter": {
+                                                                "Set_dimension_display": [
+                                                                    "Succeeded"
+                                                                ]
+                                                            },
+                                                            "else": {
+                                                                "actions": {
+                                                                    "Clear_dimension_display_override": {
+                                                                        "type": "SetVariable",
+                                                                        "inputs": {
+                                                                            "name": "DimensionDisplayOverride",
+                                                                            "value": "@trim(' ')"
+                                                                        },
+                                                                        "runAfter": {}
+                                                                    }
+                                                                }
+                                                            }
+                                                        },
+                                                        "Is_ledger_line": {
+                                                            "type": "If",
+                                                            "expression": {
+                                                                "and": [
+                                                                    {
+                                                                        "not": {
+                                                                            "contains": [
+                                                                                "@items('For_each_expense_line')?['ExpenseReportGLD1Code']",
+                                                                                "^"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "actions": {
+                                                                "Ledger_Line_Creation": {
+                                                                    "type": "Scope",
+                                                                    "actions": {
+                                                                        "Create_ledger_line": {
+                                                                            "type": "Workflow",
+                                                                            "inputs": {
+                                                                                "host": {
+                                                                                    "workflow": {
+                                                                                        "id": "Certify-http-all-d365fo-4-CreateLine"
+                                                                                    }
+                                                                                },
+                                                                                "body": {
+                                                                                    "ExpenseReportId": "@triggerBody()?['ReportId']",
+                                                                                    "ExpenseLineNumber": "@int(variables('Expense Line Number'))",
+                                                                                    "Currency": "@items('For_each_expense_line')?['ConvertedCurrency']",
+                                                                                    "DataAreaId": "@triggerBody()?['DataAreaId']",
+                                                                                    "JournalBatchNumber": "@body('Create_invoice_header')?['JournalBatchNumber']",
+                                                                                    "JournalDescription": "@concat(substring(triggerBody()?['FirstName'], 0, 1), substring(triggerBody()?['LastName'], 0, 1), '_', items('For_each_expense_line')?['ExpenseDate'], '_', items('For_each_expense_line')?['Reason'])",
+                                                                                    "DimensionDisplay": "@{coalesce(if(equals(variables('DimensionDisplayOverride'), ''), null, variables('DimensionDisplayOverride')), variables('DimensionDisplay'))}",
+                                                                                    "Amount": "@float(items('For_each_expense_line')?['ConvertedAmount'])",
+                                                                                    "ExpenseCategory": "@{items('For_each_expense_line')?['ExpenseCategory']}",
+                                                                                    "TaxComponent": "@if(empty(items('For_each_expense_line')?['ExpenseReportGLD4Code']), triggerBody()?['DefaultTaxComponent'], items('For_each_expense_line')?['ExpenseReportGLD4Code'])",
+                                                                                    "AccountDisplayValue": "@{items('For_each_expense_line')?['ExpenseCategoryGLCode']}-@{coalesce(if(equals(variables('DimensionDisplayOverride'), ''), null, variables('DimensionDisplayOverride')), variables('DimensionDisplay'))}",
+                                                                                    "AccountType": "Ledger",
+                                                                                    "ReceiptId": "@{items('For_each_expense_line')?['ReceiptID']}",
+                                                                                    "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                                    "InvoiceDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                                    "DueDate": "@{formatDateTime(addDays(triggerBody()?['ProcessedDate'], body('Get_vendor_payment_term')?['Days']), 'yyyy-MM-dd')}"
+                                                                                },
+                                                                                "retryPolicy": {
+                                                                                    "type": "none"
+                                                                                }
+                                                                            },
+                                                                            "runAfter": {}
+                                                                        },
+                                                                        "Increment_Line_Number_(2)": {
+                                                                            "type": "IncrementVariable",
+                                                                            "inputs": {
+                                                                                "name": "Expense Line Number",
+                                                                                "value": "@body('Create_ledger_line')?['LinesCreated']"
+                                                                            },
+                                                                            "runAfter": {
+                                                                                "Create_ledger_line": [
+                                                                                    "Succeeded"
+                                                                                ]
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "runAfter": {}
+                                                                }
+                                                            },
+                                                            "runAfter": {
+                                                                "Have_financial_dimensions_been_overridden": [
+                                                                    "Succeeded"
+                                                                ]
+                                                            },
+                                                            "else": {
+                                                                "actions": {
+                                                                    "Project_Line_Creation": {
+                                                                        "type": "Scope",
+                                                                        "actions": {
+                                                                            "Create_project_line": {
+                                                                                "type": "Workflow",
+                                                                                "inputs": {
+                                                                                    "host": {
+                                                                                        "workflow": {
+                                                                                            "id": "Certify-http-all-d365fo-4-CreateLine"
+                                                                                        }
+                                                                                    },
+                                                                                    "body": {
+                                                                                        "ExpenseReportId": "@triggerBody()?['ReportId']",
+                                                                                        "ExpenseLineNumber": "@int(variables('Expense Line Number'))",
+                                                                                        "Currency": "@items('For_each_expense_line')?['ConvertedCurrency']",
+                                                                                        "DataAreaId": "@triggerBody()?['DataAreaId']",
+                                                                                        "JournalBatchNumber": "@body('Create_invoice_header')?['JournalBatchNumber']",
+                                                                                        "JournalDescription": "@concat(substring(triggerBody()?['FirstName'], 0, 1), substring(triggerBody()?['LastName'], 0, 1), '_', items('For_each_expense_line')?['ExpenseDate'], '_', items('For_each_expense_line')?['Reason'])",
+                                                                                        "DimensionDisplay": "@variables('DimensionDisplay')",
+                                                                                        "Amount": "@float(items('For_each_expense_line')?['ConvertedAmount'])",
+                                                                                        "ExpenseCategory": "@{items('For_each_expense_line')?['ExpenseCategory']}",
+                                                                                        "TaxComponent": "@if(empty(items('For_each_expense_line')?['ExpenseReportGLD4Code']), triggerBody()?['DefaultTaxComponent'], items('For_each_expense_line')?['ExpenseReportGLD4Code'])",
+                                                                                        "AccountDisplayValue": "@replace(substring(items('For_each_expense_line')?['ExpenseReportGLD1Code'], add(lastIndexOf(items('For_each_expense_line')?['ExpenseReportGLD1Code'], '^'), 1)), '-', '\\-')",
+                                                                                        "AccountType": "Project",
+                                                                                        "ReceiptId": "@{items('For_each_expense_line')?['ReceiptID']}",
+                                                                                        "ProjectCategory": "@{items('For_each_expense_line')?['ExpenseCategoryGLCode']}",
+                                                                                        "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                                        "InvoiceDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                                        "DueDate": "@{formatDateTime(addDays(triggerBody()?['ProcessedDate'], body('Get_vendor_payment_term')?['Days']), 'yyyy-MM-dd')}"
+                                                                                    },
+                                                                                    "retryPolicy": {
+                                                                                        "type": "none"
+                                                                                    }
+                                                                                },
+                                                                                "runAfter": {}
+                                                                            },
+                                                                            "Increment_Line_Number_(3)": {
+                                                                                "type": "IncrementVariable",
+                                                                                "inputs": {
+                                                                                    "name": "Expense Line Number",
+                                                                                    "value": "@body('Create_project_line')?['LinesCreated']"
+                                                                                },
+                                                                                "runAfter": {
+                                                                                    "Create_project_line": [
+                                                                                        "Succeeded"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "runAfter": {}
+                                                                    }
+                                                                }
+                                                            },
+                                                            "description": "Project lines have a caret (^) symbol in them. So if this line item does not contain a caret, we assume it to be a ledger line."
+                                                        },
+                                                        "Log_Info_(Journal_Line_Creation)": {
+                                                            "type": "ServiceProvider",
+                                                            "inputs": {
+                                                                "parameters": {
+                                                                    "entityName": "integration-logs",
+                                                                    "message": {
+                                                                        "contentData": {
+                                                                            "Source": "@workflow().name",
+                                                                            "SourceId": "@workflow().run.name",
+                                                                            "MessageType": "Log",
+                                                                            "Operation": "Information",
+                                                                            "MessageDate": "@utcNow()",
+                                                                            "Payload": [
+                                                                                {
+                                                                                    "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                                    "Description": "@{variables('Journal Description')}",
+                                                                                    "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                                    "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                                    "Currency": "@{triggerBody()?['Currency']}",
+                                                                                    "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                                    "LastName": "@{triggerBody()?['LastName']}",
+                                                                                    "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                                    "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                                    "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                                    "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                                    "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                                    "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Journal line creation successful.')"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "contentType": "application/json",
+                                                                        "userProperties": {
+                                                                            "Source": "@workflow().name",
+                                                                            "MessageType": "Log",
+                                                                            "Operation": "Information"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "serviceProviderConfiguration": {
+                                                                    "connectionName": "PrivateServiceBus",
+                                                                    "operationId": "sendMessage",
+                                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                }
+                                                            },
+                                                            "runAfter": {
+                                                                "Is_ledger_line": [
+                                                                    "Succeeded"
+                                                                ]
+                                                            }
+                                                        }
+                                                    },
+                                                    "runAfter": {}
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Vendor_Line_Creation": [
+                                                    "Succeeded"
+                                                ]
+                                            },
+                                            "runtimeConfiguration": {
+                                                "concurrency": {
+                                                    "repetitions": 1
+                                                }
+                                            }
+                                        },
+                                        "Journal_Posting": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Post_Journal": {
+                                                    "type": "ApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "connection": {
+                                                                "referenceName": "dynamicsax-2"
+                                                            }
+                                                        },
+                                                        "method": "post",
+                                                        "body": {
+                                                            "_journalNum": "@body('Create_invoice_header')?['JournalBatchNumber']",
+                                                            "_dataAreaId": "@triggerBody()?['DataAreaId']"
+                                                        },
+                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalHeaders/Microsoft.Dynamics.DataEntities.postCertifyLedgerJournal'))}"
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Did_the_journal_post_succesfully": {
+                                                    "type": "If",
+                                                    "expression": {
+                                                        "and": [
+                                                            {
+                                                                "equals": [
+                                                                    "@body('Parse_''Post_Journal''_response')?['Posted']",
+                                                                    "@true"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "actions": {
+                                                        "Log_Info_(Journal_Posting)": {
+                                                            "type": "ServiceProvider",
+                                                            "inputs": {
+                                                                "parameters": {
+                                                                    "entityName": "integration-logs",
+                                                                    "message": {
+                                                                        "contentData": {
+                                                                            "Source": "@workflow().name",
+                                                                            "SourceId": "@workflow().run.name",
+                                                                            "MessageType": "Log",
+                                                                            "Operation": "Information",
+                                                                            "MessageDate": "@utcNow()",
+                                                                            "Payload": [
+                                                                                {
+                                                                                    "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                                    "Description": "@{variables('Journal Description')}",
+                                                                                    "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                                    "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                                    "Currency": "@{triggerBody()?['Currency']}",
+                                                                                    "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                                    "LastName": "@{triggerBody()?['LastName']}",
+                                                                                    "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                                    "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                                    "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                                    "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                                    "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                                    "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Journal posting succeeded.')"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "contentType": "application/json",
+                                                                        "userProperties": {
+                                                                            "Source": "@workflow().name",
+                                                                            "MessageType": "Log",
+                                                                            "Operation": "Information"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "serviceProviderConfiguration": {
+                                                                    "connectionName": "PrivateServiceBus",
+                                                                    "operationId": "sendMessage",
+                                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                }
+                                                            },
+                                                            "runAfter": {}
+                                                        }
+                                                    },
+                                                    "runAfter": {
+                                                        "Parse_'Post_Journal'_response": [
+                                                            "Succeeded"
+                                                        ]
+                                                    },
+                                                    "else": {
+                                                        "actions": {
+                                                            "Return_HTTP_500_(Journal_Posting)": {
+                                                                "type": "Response",
+                                                                "kind": "http",
+                                                                "inputs": {
+                                                                    "statusCode": 500,
+                                                                    "body": "@body('Parse_''Post_Journal''_response')?['ErrorMsg']"
+                                                                },
+                                                                "runAfter": {
+                                                                    "Log_Error_(Journal_Posting)": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Terminate_(Journal_Posting)": {
+                                                                "type": "Terminate",
+                                                                "inputs": {
+                                                                    "runStatus": "Failed",
+                                                                    "runError": {
+                                                                        "message": "@body('Parse_''Post_Journal''_response')?['ErrorMsg']"
+                                                                    }
+                                                                },
+                                                                "runAfter": {
+                                                                    "Return_HTTP_500_(Journal_Posting)": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Log_Error_(Journal_Posting)": {
+                                                                "type": "ServiceProvider",
+                                                                "inputs": {
+                                                                    "parameters": {
+                                                                        "entityName": "integration-logs",
+                                                                        "message": {
+                                                                            "contentData": {
+                                                                                "Source": "@workflow().name",
+                                                                                "SourceId": "@workflow().run.name",
+                                                                                "MessageType": "Log",
+                                                                                "Operation": "Error",
+                                                                                "MessageDate": "@utcNow()",
+                                                                                "Payload": [
+                                                                                    {
+                                                                                        "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                                        "Description": "@{variables('Journal Description')}",
+                                                                                        "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                                        "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                                        "Currency": "@{triggerBody()?['Currency']}",
+                                                                                        "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                                        "LastName": "@{triggerBody()?['LastName']}",
+                                                                                        "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                                        "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                                        "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                                        "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                                        "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                                        "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Journal posting failed: ', body('Parse_''Post_Journal''_response')?['ErrorMsg'])"
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            "contentType": "application/json",
+                                                                            "userProperties": {
+                                                                                "Source": "@workflow().name",
+                                                                                "MessageType": "Log",
+                                                                                "Operation": "Error"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "serviceProviderConfiguration": {
+                                                                        "connectionName": "PrivateServiceBus",
+                                                                        "operationId": "sendMessage",
+                                                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                    }
+                                                                },
+                                                                "runAfter": {}
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Parse_'Post_Journal'_response": {
+                                                    "type": "ParseJson",
+                                                    "inputs": {
+                                                        "content": "@body('Post_Journal')?['value']",
+                                                        "schema": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "ErrorMsg": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Posted": {
+                                                                    "type": "boolean"
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "runAfter": {
+                                                        "Post_Journal": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "For_each_expense_line": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        },
+                                        "Invoice_Header_Creation": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Create_invoice_header": {
+                                                    "type": "ApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "connection": {
+                                                                "referenceName": "dynamicsax-2"
+                                                            }
+                                                        },
+                                                        "method": "post",
+                                                        "body": {
+                                                            "JournalName": "@parameters('APCertifyJournal')",
+                                                            "dataAreaId": "@triggerBody()?['DataAreaId']",
+                                                            "HSCertifyApprovalCode": "@triggerBody()?['InvoiceNumber']",
+                                                            "OverrideSalesTax": "No",
+                                                            "Description": "@variables('Journal Description')",
+                                                            "HSAPCertifyExpReportId": "@triggerBody()?['ReportId']",
+                                                            "SalesTaxIncluded": "No"
+                                                        },
+                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalHeaders'))}/items"
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Log_Info_(Invoice_Header_Creation)": {
+                                                    "type": "ServiceProvider",
+                                                    "inputs": {
+                                                        "parameters": {
+                                                            "entityName": "integration-logs",
+                                                            "message": {
+                                                                "contentData": {
+                                                                    "Source": "@workflow().name",
+                                                                    "SourceId": "@workflow().run.name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Information",
+                                                                    "MessageDate": "@utcNow()",
+                                                                    "Payload": [
+                                                                        {
+                                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                            "Description": "@{variables('Journal Description')}",
+                                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                            "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Invoice header creation successful.')"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "contentType": "application/json",
+                                                                "userProperties": {
+                                                                    "Source": "@workflow().name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Information"
+                                                                }
+                                                            }
+                                                        },
+                                                        "serviceProviderConfiguration": {
+                                                            "connectionName": "PrivateServiceBus",
+                                                            "operationId": "sendMessage",
+                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                        }
+                                                    },
+                                                    "runAfter": {
+                                                        "Create_invoice_header": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Vendor_Payment_Term_Retrieval": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        },
+                                        "Vendor_Line_Creation": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Create_vendor_line": {
+                                                    "type": "ApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "connection": {
+                                                                "referenceName": "dynamicsax-2"
+                                                            }
+                                                        },
+                                                        "method": "post",
+                                                        "body": {
+                                                            "JournalBatchNumber": "@body('Create_invoice_header')?['JournalBatchNumber']",
+                                                            "Currency": "@triggerBody()?['Currency']",
+                                                            "dataAreaId": "@triggerBody()?['DataAreaId']",
+                                                            "LineNumber": "@variables('Expense Line Number')",
+                                                            "Credit": "@triggerBody()?['TotalAmount']",
+                                                            "DefaultDimensionDisplayValue": "@replace(triggerBody()?['FinancialDimensions'], '|', '-')",
+                                                            "InvoiceDate": "@{utcNow()}",
+                                                            "AccountDisplayValue": "@triggerBody()?['EmployeeID']",
+                                                            "Description": "@variables('Journal Description')",
+                                                            "AccountType": "Vend",
+                                                            "Invoice": "@{triggerBody()?['InvoiceNumber']}",
+                                                            "DueDate": "@{formatDateTime(addDays(triggerBody()?['ProcessedDate'], body('Get_vendor_payment_term')?['Days']), 'yyyy-MM-dd')}"
+                                                        },
+                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalLines'))}/items"
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Increment_Line_Number_(1)": {
+                                                    "type": "IncrementVariable",
+                                                    "inputs": {
+                                                        "name": "Expense Line Number",
+                                                        "value": 1
+                                                    },
+                                                    "runAfter": {
+                                                        "Log_Info_(Vendor_Line_Creation)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                },
+                                                "Log_Info_(Vendor_Line_Creation)": {
+                                                    "type": "ServiceProvider",
+                                                    "inputs": {
+                                                        "parameters": {
+                                                            "entityName": "integration-logs",
+                                                            "message": {
+                                                                "contentData": {
+                                                                    "Source": "@workflow().name",
+                                                                    "SourceId": "@workflow().run.name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Information",
+                                                                    "MessageDate": "@utcNow()",
+                                                                    "Payload": [
+                                                                        {
+                                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                            "Description": "@{variables('Journal Description')}",
+                                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                            "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Vendor line creation successful.')"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "contentType": "application/json",
+                                                                "userProperties": {
+                                                                    "Source": "@workflow().name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Information"
+                                                                }
+                                                            }
+                                                        },
+                                                        "serviceProviderConfiguration": {
+                                                            "connectionName": "PrivateServiceBus",
+                                                            "operationId": "sendMessage",
+                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                        }
+                                                    },
+                                                    "runAfter": {
+                                                        "Create_vendor_line": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Invoice_Header_Creation": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        },
+                                        "Error_(Vendor_Line_Creation)": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Log_Error_(Vendor_Line_Creation)": {
+                                                    "type": "ServiceProvider",
+                                                    "inputs": {
+                                                        "parameters": {
+                                                            "entityName": "integration-logs",
+                                                            "message": {
+                                                                "contentData": {
+                                                                    "Source": "@workflow().name",
+                                                                    "SourceId": "@workflow().run.name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error",
+                                                                    "MessageDate": "@utcNow()",
+                                                                    "Payload": [
+                                                                        {
+                                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                            "Description": "@{variables('Journal Description')}",
+                                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                            "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Vendor line creation failed.')"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "contentType": "application/json",
+                                                                "userProperties": {
+                                                                    "Source": "@workflow().name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error"
+                                                                }
+                                                            }
+                                                        },
+                                                        "serviceProviderConfiguration": {
+                                                            "connectionName": "PrivateServiceBus",
+                                                            "operationId": "sendMessage",
+                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                        }
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Terminate_(Vendor_Line_Creation)": {
+                                                    "type": "Terminate",
+                                                    "inputs": {
+                                                        "runStatus": "Failed"
+                                                    },
+                                                    "runAfter": {
+                                                        "Return_HTTP_500_(Vendor_Line_Creation)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                },
+                                                "Return_HTTP_500_(Vendor_Line_Creation)": {
+                                                    "type": "Response",
+                                                    "kind": "http",
+                                                    "inputs": {
+                                                        "statusCode": 500,
+                                                        "body": "Failure"
+                                                    },
+                                                    "runAfter": {
+                                                        "Log_Error_(Vendor_Line_Creation)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Vendor_Line_Creation": [
+                                                    "FAILED",
+                                                    "TIMEDOUT"
+                                                ]
+                                            }
+                                        },
+                                        "Error_(Invoice_Header_Creation)": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Log_Error_(Invoice_Header_Creation)": {
+                                                    "type": "ServiceProvider",
+                                                    "inputs": {
+                                                        "parameters": {
+                                                            "entityName": "integration-logs",
+                                                            "message": {
+                                                                "contentData": {
+                                                                    "Source": "@workflow().name",
+                                                                    "SourceId": "@workflow().run.name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error",
+                                                                    "MessageDate": "@utcNow()",
+                                                                    "Payload": [
+                                                                        {
+                                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                            "Description": "@{variables('Journal Description')}",
+                                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                            "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Invoice header creation failed.')"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "contentType": "application/json",
+                                                                "userProperties": {
+                                                                    "Source": "@workflow().name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error"
+                                                                }
+                                                            }
+                                                        },
+                                                        "serviceProviderConfiguration": {
+                                                            "connectionName": "PrivateServiceBus",
+                                                            "operationId": "sendMessage",
+                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                        }
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Terminate_(Invoice_Header_Creation)": {
+                                                    "type": "Terminate",
+                                                    "inputs": {
+                                                        "runStatus": "Failed"
+                                                    },
+                                                    "runAfter": {
+                                                        "Return_HTTP_500_(Invoice_Header_Creation)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                },
+                                                "Return_HTTP_500_(Invoice_Header_Creation)": {
+                                                    "type": "Response",
+                                                    "kind": "http",
+                                                    "inputs": {
+                                                        "statusCode": 500,
+                                                        "body": "Failure"
+                                                    },
+                                                    "runAfter": {
+                                                        "Log_Error_(Invoice_Header_Creation)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Invoice_Header_Creation": [
+                                                    "FAILED",
+                                                    "TIMEDOUT"
+                                                ]
+                                            }
+                                        },
+                                        "Vendor_Payment_Term_Retrieval": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Get_vendor_payment_term": {
+                                                    "type": "Workflow",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "workflow": {
+                                                                "id": "http-d365fo-GetPaymentTerm"
+                                                            }
+                                                        },
+                                                        "body": {
+                                                            "DataAreaId": "@triggerBody()?['DataAreaId']",
+                                                            "AccountNumber": "@triggerBody()?['EmployeeID']",
+                                                            "AccountType": "Vendor"
+                                                        }
+                                                    },
+                                                    "runAfter": {}
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Set_Expense_Line_Number": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        },
+                                        "Error_(Vendor_Payment_Term_Retrieval)": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Log_Error_(Vendor_Payment_Term_Retrieval)": {
+                                                    "type": "ServiceProvider",
+                                                    "inputs": {
+                                                        "parameters": {
+                                                            "entityName": "integration-logs",
+                                                            "message": {
+                                                                "contentData": {
+                                                                    "Source": "@workflow().name",
+                                                                    "SourceId": "@workflow().run.name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error",
+                                                                    "MessageDate": "@utcNow()",
+                                                                    "Payload": [
+                                                                        {
+                                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                            "Description": "@{variables('Journal Description')}",
+                                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                            "JournalNumber": "@{null}",
+                                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Vendor payment term retrieval failed.')"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "contentType": "application/json",
+                                                                "userProperties": {
+                                                                    "Source": "@workflow().name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error"
+                                                                }
+                                                            }
+                                                        },
+                                                        "serviceProviderConfiguration": {
+                                                            "connectionName": "PrivateServiceBus",
+                                                            "operationId": "sendMessage",
+                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                        }
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Terminate_(Vendor_Payment_Term_Retrieval)": {
+                                                    "type": "Terminate",
+                                                    "inputs": {
+                                                        "runStatus": "Failed"
+                                                    },
+                                                    "runAfter": {
+                                                        "Return_HTTP_500_(Vendor_Payment_Term_Retrieval)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                },
+                                                "Return_HTTP_500_(Vendor_Payment_Term_Retrieval)": {
+                                                    "type": "Response",
+                                                    "kind": "http",
+                                                    "inputs": {
+                                                        "statusCode": 500,
+                                                        "body": "Failure"
+                                                    },
+                                                    "runAfter": {
+                                                        "Log_Error_(Vendor_Payment_Term_Retrieval)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Vendor_Payment_Term_Retrieval": [
+                                                    "FAILED",
+                                                    "TIMEDOUT"
+                                                ]
+                                            }
+                                        },
+                                        "Set_Expense_Line_Number": {
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                                "name": "Expense Line Number",
+                                                "value": 1
+                                            },
+                                            "runAfter": {}
+                                        },
+                                        "Error_(Journal_Line_Creation)": {
+                                            "type": "Scope",
+                                            "actions": {
+                                                "Log_Error_(Journal_Line_Creation)": {
+                                                    "type": "ServiceProvider",
+                                                    "inputs": {
+                                                        "parameters": {
+                                                            "entityName": "integration-logs",
+                                                            "message": {
+                                                                "contentData": {
+                                                                    "Source": "@workflow().name",
+                                                                    "SourceId": "@workflow().run.name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error",
+                                                                    "MessageDate": "@utcNow()",
+                                                                    "Payload": [
+                                                                        {
+                                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                            "Description": "@{variables('Journal Description')}",
+                                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                            "JournalNumber": "@{body('Create_invoice_header')?['JournalBatchNumber']}",
+                                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Journal line creation failed.')"
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "contentType": "application/json",
+                                                                "userProperties": {
+                                                                    "Source": "@workflow().name",
+                                                                    "MessageType": "Log",
+                                                                    "Operation": "Error"
+                                                                }
+                                                            }
+                                                        },
+                                                        "serviceProviderConfiguration": {
+                                                            "connectionName": "PrivateServiceBus",
+                                                            "operationId": "sendMessage",
+                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                        }
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Terminate_(Journal_Line_Creation)": {
+                                                    "type": "Terminate",
+                                                    "inputs": {
+                                                        "runStatus": "Failed"
+                                                    },
+                                                    "runAfter": {
+                                                        "Return_HTTP_500_(Journal_Line_Creation)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                },
+                                                "Return_HTTP_500_(Journal_Line_Creation)": {
+                                                    "type": "Response",
+                                                    "kind": "http",
+                                                    "inputs": {
+                                                        "statusCode": 500,
+                                                        "body": "Failure"
+                                                    },
+                                                    "runAfter": {
+                                                        "Log_Error_(Journal_Line_Creation)": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "For_each_expense_line": [
+                                                    "FAILED",
+                                                    "TIMEDOUT"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Filter_out_zero_dollar_Certify_expense_lines": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "else": {
+                                        "actions": {
+                                            "Log_Info_(No_Journal_Lines)": {
+                                                "type": "ServiceProvider",
+                                                "inputs": {
+                                                    "parameters": {
+                                                        "entityName": "integration-logs",
+                                                        "message": {
+                                                            "contentData": {
+                                                                "Source": "@workflow().name",
+                                                                "SourceId": "@workflow().run.name",
+                                                                "MessageType": "Log",
+                                                                "Operation": "Warning",
+                                                                "MessageDate": "@utcNow()",
+                                                                "Payload": [
+                                                                    {
+                                                                        "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                        "Description": "@{variables('Journal Description')}",
+                                                                        "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                        "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                        "Currency": "@{triggerBody()?['Currency']}",
+                                                                        "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                        "LastName": "@{triggerBody()?['LastName']}",
+                                                                        "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                        "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                        "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                        "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                        "JournalNumber": "@{null}",
+                                                                        "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': No expense lines to process.')"
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "contentType": "application/json",
+                                                            "userProperties": {
+                                                                "Source": "@workflow().name",
+                                                                "MessageType": "Log",
+                                                                "Operation": "Warning"
+                                                            }
+                                                        }
+                                                    },
+                                                    "serviceProviderConfiguration": {
+                                                        "connectionName": "PrivateServiceBus",
+                                                        "operationId": "sendMessage",
+                                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                                    }
+                                                },
+                                                "runAfter": {}
+                                            }
+                                        }
+                                    }
+                                },
+                                "Error_(Get_Expenses)": {
+                                    "type": "Scope",
+                                    "actions": {
+                                        "Log_Error_(Get_Expenses)": {
+                                            "type": "ServiceProvider",
+                                            "inputs": {
+                                                "parameters": {
+                                                    "entityName": "integration-logs",
+                                                    "message": {
+                                                        "contentData": {
+                                                            "Source": "@workflow().name",
+                                                            "SourceId": "@workflow().run.name",
+                                                            "MessageType": "Log",
+                                                            "Operation": "Error",
+                                                            "MessageDate": "@utcNow()",
+                                                            "Payload": [
+                                                                {
+                                                                    "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                                    "Description": "@{variables('Journal Description')}",
+                                                                    "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                                    "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                                    "Currency": "@{triggerBody()?['Currency']}",
+                                                                    "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                                    "LastName": "@{triggerBody()?['LastName']}",
+                                                                    "FirstName": "@{triggerBody()?['FirstName']}",
+                                                                    "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                                    "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                                    "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                                    "JournalNumber": "@{null}",
+                                                                    "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Certify expense retrieval failed: ', body('Get_Expenses'))"
+                                                                }
+                                                            ]
+                                                        },
+                                                        "contentType": "application/json",
+                                                        "userProperties": {
+                                                            "Source": "@workflow().name",
+                                                            "MessageType": "Log",
+                                                            "Operation": "Error"
+                                                        }
+                                                    }
+                                                },
+                                                "serviceProviderConfiguration": {
+                                                    "connectionName": "PrivateServiceBus",
+                                                    "operationId": "sendMessage",
+                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                }
+                                            },
+                                            "runAfter": {}
+                                        },
+                                        "Terminate_(Get_Expenses)": {
+                                            "type": "Terminate",
+                                            "inputs": {
+                                                "runStatus": "Failed"
+                                            },
+                                            "runAfter": {
+                                                "Return_HTTP_500_(Get_Expenses)": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        },
+                                        "Return_HTTP_500_(Get_Expenses)": {
+                                            "type": "Response",
+                                            "kind": "http",
+                                            "inputs": {
+                                                "statusCode": 500,
+                                                "body": "Failure"
+                                            },
+                                            "runAfter": {
+                                                "Log_Error_(Get_Expenses)": [
+                                                    "Succeeded"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Get_Expenses": [
+                                            "FAILED",
+                                            "TIMEDOUT"
+                                        ]
+                                    }
+                                },
+                                "Log_Info_(Get_Expenses)": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "integration-logs",
+                                            "message": {
+                                                "contentData": {
+                                                    "Source": "@workflow().name",
+                                                    "SourceId": "@workflow().run.name",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Information",
+                                                    "MessageDate": "@utcNow()",
+                                                    "Payload": [
+                                                        {
+                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                            "Description": "@{variables('Journal Description')}",
+                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                            "JournalNumber": "@{null}",
+                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': Retrieved ', length(body('Parse_Certify_expense_lines')?['Expenses']), ' expenses from Certify.')"
+                                                        }
+                                                    ]
+                                                },
+                                                "contentType": "application/json",
+                                                "userProperties": {
+                                                    "Source": "@workflow().name",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Information"
+                                                }
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Parse_Certify_expense_lines": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Log_Info_(New_Expense_Report)": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "integration-logs",
+                                            "message": {
+                                                "contentData": {
+                                                    "Source": "@workflow().name",
+                                                    "SourceId": "@workflow().run.name",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Information",
+                                                    "MessageDate": "@utcNow()",
+                                                    "Payload": [
+                                                        {
+                                                            "InvoiceNumber": "@{triggerBody()?['InvoiceNumber']}",
+                                                            "Description": "@{variables('Journal Description')}",
+                                                            "TotalAmount": "@float(triggerBody()?['TotalAmount'])",
+                                                            "DefaultTaxComponent": "@{triggerBody()?['DefaultTaxComponent']}",
+                                                            "Currency": "@{triggerBody()?['Currency']}",
+                                                            "ProcessedDate": "@{triggerBody()?['ProcessedDate']}",
+                                                            "LastName": "@{triggerBody()?['LastName']}",
+                                                            "FirstName": "@{triggerBody()?['FirstName']}",
+                                                            "EmployeeId": "@{triggerBody()?['EmployeeId']}",
+                                                            "DataAreaId": "@{triggerBody()?['DataAreaId']}",
+                                                            "FinancialDimensions": "@{triggerBody()?['FinancialDimensions']}",
+                                                            "JournalNumber": "@{null}",
+                                                            "MessageBody": "@concat('Approval code ', triggerBody()?['InvoiceNumber'], ': New expense report approved.')"
+                                                        }
+                                                    ]
+                                                },
+                                                "contentType": "application/json",
+                                                "userProperties": {
+                                                    "Source": "@workflow().name",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Information"
+                                                }
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_override_dimension_display": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "EmployeeId": {
+                                "type": "string"
+                            },
+                            "FirstName": {
+                                "type": "string"
+                            },
+                            "LastName": {
+                                "type": "string"
+                            },
+                            "ReportId": {
+                                "type": "string"
+                            },
+                            "ReportName": {
+                                "type": "string"
+                            },
+                            "FinancialDimensions": {
+                                "type": "string"
+                            },
+                            "InvoiceNumber": {
+                                "type": "string"
+                            },
+                            "ProcessedDate": {
+                                "type": "string"
+                            },
+                            "TotalAmount": {
+                                "type": "number"
+                            },
+                            "DefaultTaxComponent": {
+                                "type": "string"
+                            },
+                            "Currency": {
+                                "type": "number"
+                            },
+                            "LinesOverride": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    }
+                },
+                "correlation": {
+                    "clientTrackingId": "@concat(triggerBody()?['ReportId'], '/', triggerBody()?['InvoiceNumber'], '/', triggerBody()?['EmployeeId'])"
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

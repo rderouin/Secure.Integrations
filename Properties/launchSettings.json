@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Secure.Integrations": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7155",
+      "launchBrowser": false
+    }
+  }
+}

@@ -1,0 +1,232 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "EnterpriseId": {
+                                "type": "string"
+                            },
+                            "Payload": {
+                                "type": "object",
+                                "properties": {
+                                    "Id": {
+                                        "type": "string"
+                                    },
+                                    "CustomerId": {
+                                        "type": "string"
+                                    },
+                                    "EDIFieldLookupId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EDIFieldName": {
+                                        "type": "string"
+                                    },
+                                    "DefaultValue": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsRequired": {
+                                        "type": "boolean"
+                                    },
+                                    "LegalEntity": {
+                                        "type": "string"
+                                    },
+                                    "IsPrinted": {
+                                        "type": "boolean"
+                                    },
+                                    "ValidationRequired": {
+                                        "type": "boolean"
+                                    },
+                                    "ValidationPatternId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ValidationErrorMessage": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ValidationPattern": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CreatedAt": {
+                                        "type": "string"
+                                    },
+                                    "CreatedBy": {},
+                                    "CreatedById": {},
+                                    "UpdatedAt": {
+                                        "type": "string"
+                                    },
+                                    "UpdatedBy": {},
+                                    "UpdatedById": {},
+                                    "DocumentType": {
+                                        "type": "string"
+                                    },
+                                    "EntityType": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('Parse_JSON')?['MessageType']",
+                                "EDIFieldDefinition"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Operation": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@body('Parse_JSON')?['Operation']",
+                                        "Delete"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Delete_field_definition": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "dynamicsax"
+                                        }
+                                    },
+                                    "method": "post",
+                                    "body": {
+                                        "_legalEntityId": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                        "_customerId": "@body('Parse_JSON')?['Payload']?['CustomerId']",
+                                        "_ediField": "@body('Parse_JSON')?['Payload']?['EDIFieldName']",
+                                        "_required": "@body('Parse_JSON')?['Payload']?['IsRequired']",
+                                        "_print": "@body('Parse_JSON')?['Payload']?['IsPrinted']",
+                                        "_defaultValue": "@if(equals(body('Parse_JSON')?['Payload']?['DefaultValue'], null),'',body('Parse_JSON')?['Payload']?['DefaultValue'])",
+                                        "_isDeleted": true
+                                    },
+                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('CustomerConfigs/Microsoft.Dynamics.DataEntities.CreateUpdateEdiField'))}"
+                                },
+                                "runAfter": {}
+                            }
+                        },
+                        "runAfter": {},
+                        "else": {
+                            "actions": {
+                                "Create_Update_field_definition": {
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "referenceName": "dynamicsax"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "body": {
+                                            "_legalEntityId": "@body('Parse_JSON')?['Payload']?['LegalEntity']",
+                                            "_customerId": "@body('Parse_JSON')?['Payload']?['CustomerId']",
+                                            "_ediField": "@body('Parse_JSON')?['Payload']?['EDIFieldName']",
+                                            "_required": "@body('Parse_JSON')?['Payload']?['IsRequired']",
+                                            "_print": "@body('Parse_JSON')?['Payload']?['IsPrinted']",
+                                            "_defaultValue": "@if(equals(body('Parse_JSON')?['Payload']?['DefaultValue'], null),'',body('Parse_JSON')?['Payload']?['DefaultValue'])",
+                                            "_isDeleted": false
+                                        },
+                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('CustomerConfigs/Microsoft.Dynamics.DataEntities.CreateUpdateEdiField'))}"
+                                    },
+                                    "runAfter": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Terminate": {
+                            "type": "Terminate",
+                            "inputs": {
+                                "runStatus": "Failed",
+                                "runError": {
+                                    "code": "400",
+                                    "message": "Invalid message type"
+                                }
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "enterprise-entity-updates",
+                        "subscriptionName": "d365fo-EDI",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

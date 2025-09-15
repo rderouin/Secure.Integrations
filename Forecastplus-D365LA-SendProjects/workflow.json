@@ -1,0 +1,762 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "4CP_Scope": {
+                "type": "Scope",
+                "actions": {
+                    "HTTP_Get_Projects": {
+                        "type": "Http",
+                        "inputs": {
+                            "method": "GET",
+                            "uri": "@{parameters('4castplus')['4castplusAPIURL']}/api/projects",
+                            "queries": {
+                                "$filter": " ModifiedOn gt @{formatDateTime(addMinutes(variables('LastRunDate'),-5),'yyyy-MM-ddTHH:mm:ss')}",
+                                "_s": "@body('Parse_JSON')?['SessionId']"
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_JSON": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "HTTP_Login_4castplus_Projects": {
+                        "type": "Http",
+                        "inputs": {
+                            "method": "POST",
+                            "uri": "@{parameters('4castplus')['4castplusAPIURL']}/api/login",
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "Password": "@appsetting('FORECASTPLUS_PASSWORD')",
+                                "UserName": "@{parameters('4castplus')['4castplusUsername']}"
+                            },
+                            "body": {
+                                "Account": "@{parameters('4castplus')['4castplusAccount']}",
+                                "Password": "@appsetting('FORECASTPLUS_PASSWORD')",
+                                "UserName": "@{parameters('4castplus')['4castplusUsername']}"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Parse_JSON": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('HTTP_Login_4castplus_Projects')",
+                            "schema": {
+                                "properties": {
+                                    "Account": {
+                                        "type": "string"
+                                    },
+                                    "ExpiresOn": {
+                                        "type": "string"
+                                    },
+                                    "SessionId": {
+                                        "type": "string"
+                                    },
+                                    "UserName": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Login_4castplus_Projects": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Parse_JSON_Get_projects": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('HTTP_Get_Projects')",
+                            "schema": {
+                                "properties": {
+                                    "nextLink": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "value": {
+                                        "items": {
+                                            "properties": {
+                                                "Active": {
+                                                    "type": "boolean"
+                                                },
+                                                "AfePurchaseOrderNumber": {},
+                                                "BusinessDimensionCode": {
+                                                    "type": "string"
+                                                },
+                                                "BusinessDimensionName": {
+                                                    "type": "string"
+                                                },
+                                                "CompanyCode": {
+                                                    "type": "string"
+                                                },
+                                                "CreatedOn": {
+                                                    "type": "string"
+                                                },
+                                                "CurrencyCode": {},
+                                                "CustomerCode": {
+                                                    "type": "string"
+                                                },
+                                                "CustomerName": {
+                                                    "type": "string"
+                                                },
+                                                "DivisionCode": {
+                                                    "type": "string"
+                                                },
+                                                "Id": {
+                                                    "type": "integer"
+                                                },
+                                                "Location": {
+                                                    "type": "string"
+                                                },
+                                                "ModifiedOn": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectBillingType": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectCode": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectEndDate": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectGeography": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectManagerName": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectName": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectSpendingType": {},
+                                                "ProjectStartDate": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectStatus": {
+                                                    "type": "string"
+                                                },
+                                                "ProjectType": {
+                                                    "type": "string"
+                                                },
+                                                "SupervisorName": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "Id",
+                                                "CompanyCode",
+                                                "DivisionCode",
+                                                "ProjectCode",
+                                                "ProjectName",
+                                                "ProjectManagerName",
+                                                "SupervisorName",
+                                                "Location",
+                                                "CustomerCode",
+                                                "CustomerName",
+                                                "ProjectBillingType",
+                                                "BusinessDimensionCode",
+                                                "BusinessDimensionName",
+                                                "ProjectType",
+                                                "ProjectSpendingType",
+                                                "ProjectGeography",
+                                                "ProjectStatus",
+                                                "CurrencyCode",
+                                                "ProjectStartDate",
+                                                "ProjectEndDate",
+                                                "AfePurchaseOrderNumber",
+                                                "Active",
+                                                "ModifiedOn",
+                                                "CreatedOn"
+                                            ],
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "runAfter": {
+                            "HTTP_Get_Projects": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Condition": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Append_to_string_variable_Error_4cp": {
+                "type": "AppendToStringVariable",
+                "inputs": {
+                    "name": "Error",
+                    "value": "Error while logging in and retrieveing 4CP data"
+                },
+                "runAfter": {
+                    "4CP_Scope": [
+                        "TIMEDOUT",
+                        "FAILED"
+                    ]
+                }
+            },
+            "Append_to_string_variable_Error_foreach": {
+                "type": "AppendToStringVariable",
+                "inputs": {
+                    "name": "Error",
+                    "value": "Error processing projects info"
+                },
+                "runAfter": {
+                    "For_each": [
+                        "TIMEDOUT",
+                        "FAILED"
+                    ]
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@length(body('Get_rows_last_run_date')?['value'])",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Set_variable_system_time": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "LastRunDate",
+                            "value": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}"
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Get_rows_last_run_date": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Set_variable_last_run_date": {
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "LastRunDate",
+                                "value": "@{body('Get_rows_last_run_date')?['value']?[0]?['Rundate']}"
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "Condition_check_if_diverror_has_data": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                "@length(variables('DivError'))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Send_an_email_for_missing_div_code": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "office365"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "To": "itsintegrations@secure-energy.com",
+                                "Subject": "Error! NonPROD ForecastPlus-D365-API @{workflow()['run']['name']}",
+                                "Body": "<p>Hi,<br>\n<br>\nFollowing projects doesnt have associated division mapping available, please check the project and update accordingly.<br>\n<br>\n@{variables('DivError')}<br>\n<br>\nThanks,<br>\nForecastPlus-D365-API</p>",
+                                "Importance": "Normal"
+                            },
+                            "path": "/v2/Mail"
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Insert_row_Forecastplus_dates": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition_check_if_error_exists_then_alert": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                "@length(variables('Error'))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Send_an_email_error_alert": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "office365"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "To": "itsintegrations@secure-energy.com",
+                                "Subject": "Error! ForecastPlus-D365-API   @{workflow()['run']['name']}",
+                                "Body": "<p>Hi,<br>\n<br>\nError processing Forecast plus API<br>\n@{variables('Error')}<br>\n<br>\nThanks,<br>\nForecastPlus-D365-API</p>",
+                                "Importance": "Normal"
+                            },
+                            "path": "/v2/Mail"
+                        },
+                        "runAfter": {}
+                    },
+                    "Terminate": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed"
+                        },
+                        "runAfter": {
+                            "Send_an_email_error_alert": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Condition_check_if_diverror_has_data": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "For_each": {
+                "type": "Foreach",
+                "foreach": "@body('Parse_JSON_Get_projects')?['value']",
+                "actions": {
+                    "Compose_Location": {
+                        "type": "Compose",
+                        "inputs": "@if(equals(items('For_each')?['ProjectType'],'F-OvLab'),'DCFOP',\r\nif(equals(items('For_each')?['ProjectType'],'F-OvLabS'),'HSEXC','DIRCT'))",
+                        "runAfter": {
+                            "Compose_legal_entity": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Compose_dataareaid": {
+                        "type": "Compose",
+                        "inputs": "@if(\r\nor(equals(toUpper(items('For_each')?['DivisionCode']),'E'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'P'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'OP'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'RS'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'WS')),'OSRV',\r\nif(equals(toUpper(items('For_each')?['DivisionCode']),'W'),'MAEC',toUpper(items('For_each')?['DivisionCode'])))",
+                        "runAfter": {}
+                    },
+                    "Compose_division": {
+                        "type": "Compose",
+                        "inputs": "@if(\r\nor(equals(toUpper(items('For_each')?['DivisionCode']),'E'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'P'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'OP'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'RS'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'WS')),'constants.divdivision',\r\nif(equals(toUpper(items('For_each')?['DivisionCode']),'W'),'DS DIV',toUpper(items('For_each')?['DivisionCode'])))",
+                        "runAfter": {
+                            "Compose_dataareaid": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Compose_filter_condition": {
+                        "type": "Compose",
+                        "inputs": "company code : @{items('For_each')?['CompanyCode']}\nbusiness dimesnion code : @{items('For_each')?['BusinessDimensionCode']}\nproject type : @{items('For_each')?['ProjectType']}",
+                        "runAfter": {
+                            "Compose_Location": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Compose_legal_entity": {
+                        "type": "Compose",
+                        "inputs": "@if(\r\nor(equals(toUpper(items('For_each')?['DivisionCode']),'E'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'P'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'OP'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'RS'),\r\nequals(toUpper(items('For_each')?['DivisionCode']),'WS')),'FLIS',\r\nif(equals(toUpper(items('For_each')?['DivisionCode']),'W'),'MAEC',toUpper(items('For_each')?['DivisionCode'])))",
+                        "runAfter": {
+                            "Compose_division": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Condition_check_if_dimension_mapping_available": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "greater": [
+                                        "@length(body('Filter_array_dimensions'))",
+                                        0
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Append_to_array_variable": {
+                                "type": "AppendToArrayVariable",
+                                "inputs": {
+                                    "name": "payload",
+                                    "value": {
+                                        "ActualStartDate": "@{items('For_each')?['ProjectStartDate']}",
+                                        "Afe": "@{items('For_each')?['AfePurchaseOrderNumber']}",
+                                        "BusinessUnit": "@{body('Filter_array_dimensions')?[0]?['BusinessUnit']}",
+                                        "CompanyLegalEntity": "@{body('Filter_array_dimensions')?[0]?['LegalEntity']}",
+                                        "CompanyName": "",
+                                        "Customer": "@{items('For_each')?['CustomerName']}",
+                                        "CustomerAccount": "@{items('For_each')?['CustomerCode']}",
+                                        "DataAreaId": "@{if(\nor(equals(toUpper(items('For_each')?['DivisionCode']),'E'),\nequals(toUpper(items('For_each')?['DivisionCode']),'P'),\nequals(toUpper(items('For_each')?['DivisionCode']),'OP'),\nequals(toUpper(items('For_each')?['DivisionCode']),'RS'),\nequals(toUpper(items('For_each')?['DivisionCode']),'WS')),'OSRV',\nif(equals(toUpper(items('For_each')?['DivisionCode']),'W'),'MAEC',toUpper(items('For_each')?['DivisionCode'])))}",
+                                        "Division": "@{body('Filter_array_dimensions')?[0]?['Division']}",
+                                        "FundingSource": "@{items('For_each')?['CustomerCode']}",
+                                        "LegalEntity": "",
+                                        "Location": "@{items('For_each')?['BusinessDimensionCode']}",
+                                        "Lsd": "@{items('For_each')?['Location']}",
+                                        "PriceGroup": "@null",
+                                        "ProjectContract": "@{items('For_each')?['CustomerCode']}",
+                                        "ProjectEndDate": "@{items('For_each')?['ProjectEndDate']}",
+                                        "ProjectGroup": "@{items('For_each')?['ProjectType']}",
+                                        "ProjectId": "@{items('For_each')?['ProjectCode']}",
+                                        "ProjectManagerFullName": "@{items('For_each')?['ProjectManagerName']}",
+                                        "ProjectName": "@{items('For_each')?['ProjectName']}",
+                                        "ProjectStage": "@{items('For_each')?['ProjectStatus']}",
+                                        "ProjectStartDate": "@{items('For_each')?['ProjectStartDate']}",
+                                        "ProjectType": "TIME AND MATERIAL",
+                                        "PropertyId": "CHG",
+                                        "Province": "@{items('For_each')?['ProjectGeography']}",
+                                        "SalesTaxGroup": "GST",
+                                        "SearchPriority": "Project",
+                                        "SourceSystem": "4CastPlus",
+                                        "SupervisorName": "@{items('For_each')?['SupervisorName']}",
+                                        "WellType": "GENERAL"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose_payload": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Append_to_string_variable_error_D365": {
+                                "type": "AppendToStringVariable",
+                                "inputs": {
+                                    "name": "Error",
+                                    "value": "Error sending projects info to D365\n"
+                                },
+                                "runAfter": {
+                                    "Invoke_a_workflow_in_this_workflow_app": [
+                                        "FAILED",
+                                        "TIMEDOUT"
+                                    ]
+                                }
+                            },
+                            "Compose_payload": {
+                                "type": "Compose",
+                                "inputs": {
+                                    "ActualStartDate": "@{items('For_each')?['ProjectStartDate']}",
+                                    "Afe": "@{items('For_each')?['AfePurchaseOrderNumber']}",
+                                    "BusinessUnit": "@{body('Filter_array_dimensions')?[0]?['BusinessUnit']}",
+                                    "CompanyLegalEntity": "@{if(equals(items('For_each')?['CompanyCode'],'OSRV'),'FLIS',items('For_each')?['CompanyCode'])}",
+                                    "CompanyName": "@{items('For_each')?['CompanyCode']}",
+                                    "Customer": "@{items('For_each')?['CustomerName']}",
+                                    "CustomerAccount": "@{items('For_each')?['CustomerCode']}",
+                                    "DataAreaId": "@{if(equals(items('For_each')?['CompanyCode'],'OSRV'),'FLIS',items('For_each')?['CompanyCode'])}",
+                                    "Division": "@{body('Filter_array_dimensions')?[0]?['Division']}",
+                                    "FundingSource": "@{items('For_each')?['CustomerCode']}",
+                                    "LegalEntity": "@{body('Filter_array_dimensions')?[0]?['LegalEntity']}",
+                                    "Location": "@{items('For_each')?['BusinessDimensionCode']}",
+                                    "Lsd": "@{items('For_each')?['Location']}",
+                                    "PriceGroup": "@null",
+                                    "ProjectContract": "@{items('For_each')?['CustomerCode']}",
+                                    "ProjectEndDate": "@{items('For_each')?['ProjectEndDate']}",
+                                    "ProjectGroup": "@{items('For_each')?['ProjectType']}",
+                                    "ProjectId": "@{items('For_each')?['ProjectCode']}",
+                                    "ProjectManagerFullName": "@{items('For_each')?['ProjectManagerName']}",
+                                    "ProjectName": "@{items('For_each')?['ProjectName']}",
+                                    "ProjectStage": "@{items('For_each')?['ProjectStatus']}",
+                                    "ProjectStartDate": "@{items('For_each')?['ProjectStartDate']}",
+                                    "ProjectType": "@{items('For_each')?['ProjectBillingType']}",
+                                    "PropertyId": "CHG",
+                                    "Province": "@{items('For_each')?['ProjectGeography']}",
+                                    "SalesTaxGroup": "GST",
+                                    "SearchPriority": "Project",
+                                    "SourceSystem": "4CastPlus",
+                                    "SupervisorName": "@{items('For_each')?['SupervisorName']}",
+                                    "WellType": "GENERAL"
+                                },
+                                "runAfter": {}
+                            },
+                            "Invoke_a_workflow_in_this_workflow_app": {
+                                "type": "Workflow",
+                                "inputs": {
+                                    "host": {
+                                        "workflow": {
+                                            "id": "controlcenter-http-fm-d365fo-projects"
+                                        }
+                                    },
+                                    "body": {
+                                        "AFE": "@{items('For_each')?['AfePurchaseOrderNumber']}",
+                                        "ActualStartDate": "@{items('For_each')?['ProjectStartDate']}",
+                                        "BusinessUnit": "@{body('Filter_array_dimensions')?[0]?['BusinessUnit']}",
+                                        "CompanyLegalEntity": "@{if(equals(items('For_each')?['CompanyCode'],'OSRV'),'FLIS',items('For_each')?['CompanyCode'])}",
+                                        "CustomerAccount": "@{items('For_each')?['CustomerCode']}",
+                                        "DataareaID": "@{if(equals(items('For_each')?['CompanyCode'],'OSRV'),'FLIS',items('For_each')?['CompanyCode'])}",
+                                        "Division": "@{body('Filter_array_dimensions')?[0]?['Division']}",
+                                        "LSD": "@{items('For_each')?['Location']}",
+                                        "LegalEntity": "@{body('Filter_array_dimensions')?[0]?['LegalEntity']}",
+                                        "Location": "@{items('For_each')?['BusinessDimensionCode']}",
+                                        "PriceGroup": "@null",
+                                        "ProjectEndDate": "@{items('For_each')?['ProjectEndDate']}",
+                                        "ProjectGroup": "@{items('For_each')?['ProjectType']}",
+                                        "ProjectId": "@{items('For_each')?['ProjectCode']}",
+                                        "ProjectName": "@{items('For_each')?['ProjectName']}",
+                                        "ProjectStartDate": "@{items('For_each')?['ProjectStartDate']}",
+                                        "Province": "@{items('For_each')?['ProjectGeography']}",
+                                        "SalesTaxGroup": "GST",
+                                        "SourceSystem": "4CastPlus",
+                                        "Afe": "@{items('For_each')?['AfePurchaseOrderNumber']}",
+                                        "CompanyName": "@{items('For_each')?['CompanyCode']}",
+                                        "Customer": "@{items('For_each')?['CustomerName']}",
+                                        "DataAreaId": "@{if(equals(items('For_each')?['CompanyCode'],'OSRV'),'FLIS',items('For_each')?['CompanyCode'])}",
+                                        "FundingSource": "@{items('For_each')?['CustomerCode']}",
+                                        "Lsd": "@{items('For_each')?['Location']}",
+                                        "ProjectContract": "@{items('For_each')?['CustomerCode']}",
+                                        "ProjectManagerFullName": "@{items('For_each')?['ProjectManagerName']}",
+                                        "ProjectStage": "@{items('For_each')?['ProjectStatus']}",
+                                        "ProjectType": "@{items('For_each')?['ProjectBillingType']}",
+                                        "PropertyId": "CHG",
+                                        "SearchPriority": "Project",
+                                        "SupervisorName": "@{items('For_each')?['SupervisorName']}",
+                                        "WellType": "GENERAL"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Append_to_array_variable": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Filter_array_dimensions": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Condition_check_if_its_not_overhead_project": {
+                                    "type": "If",
+                                    "expression": {
+                                        "or": [
+                                            {
+                                                "equals": [
+                                                    "@items('For_each')?['ProjectType']",
+                                                    "Overhead Project"
+                                                ]
+                                            },
+                                            {
+                                                "equals": [
+                                                    "@items('For_each')?['ProjectType']",
+                                                    "Miscellaneous Customer"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "actions": {},
+                                    "runAfter": {},
+                                    "else": {
+                                        "actions": {
+                                            "Append_to_string_variable": {
+                                                "type": "AppendToStringVariable",
+                                                "inputs": {
+                                                    "name": "DivError",
+                                                    "value": "(Project Name : @{items('For_each')?['ProjectName']};\nCompany code : @{items('For_each')?['CompanyCode']};\nBusiness dimension code : @{items('For_each')?['BusinessDimensionCode']};\nProject type : @{items('For_each')?['ProjectType']})\n"
+                                                },
+                                                "runAfter": {}
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "Filter_array_dimensions": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@body('Get_rows_4CP_Dimensions')?['value']",
+                            "where": "@equals(item()?['ProjectType'], items('For_each')?['ProjectType'])"
+                        },
+                        "runAfter": {
+                            "Compose_filter_condition": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Get_rows_4CP_Dimensions": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Get_rows_4CP_Dimensions": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql_auditLogging"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('4CP-Dimensions'))}/items"
+                },
+                "runAfter": {
+                    "4CP_Scope": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Get_rows_last_run_date": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql_auditLogging"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('Forecastplus_dates'))}/items",
+                    "queries": {
+                        "$orderby": "Id desc",
+                        "$top": 1
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_Error": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_DivError": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "DivError",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_LastRunDate": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_Error": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Error",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_DivError": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_LastRunDate": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "LastRunDate",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_payload": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_payload": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "payload",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Payload_to_D365": {
+                "type": "Compose",
+                "inputs": "@variables('payload')",
+                "runAfter": {
+                    "For_each": [
+                        "Succeeded",
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            },
+            "Insert_row_Forecastplus_dates": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "sql_auditLogging"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "Identifier": "@{workflow()['run']['name']}",
+                        "Rundate": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}"
+                    },
+                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('Forecastplus_dates'))}/items"
+                },
+                "runAfter": {
+                    "Payload_to_D365": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "Recurrence": {
+                "type": "Recurrence",
+                "recurrence": {
+                    "frequency": "Minute",
+                    "interval": 10
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

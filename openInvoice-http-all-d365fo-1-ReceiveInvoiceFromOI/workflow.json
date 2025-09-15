@@ -1,0 +1,487 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each_-_invoices": {
+                "type": "Foreach",
+                "foreach": "@outputs('Compose')",
+                "actions": {
+                    "For_each_-_multiple_links_": {
+                        "type": "Foreach",
+                        "foreach": "@items('For_each_-_invoices')?['links']",
+                        "actions": {
+                            "Compose_OI_image_id": {
+                                "type": "Compose",
+                                "inputs": {
+                                    "ImageInvoiceId": "@variables('ResultImageInvoiceId')"
+                                },
+                                "runAfter": {
+                                    "Set_result_OI_Id": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Duplicate_check_for_OIInvoice": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "equals": [
+                                                "@length(body('Get_row_for_the_given_OI_invoice_id')?['value'])",
+                                                0
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Send_message_to_audit_(topic)_for_new_approved_OI_invoice": {
+                                        "type": "ServiceProvider",
+                                        "inputs": {
+                                            "parameters": {
+                                                "entityName": "open-invoice-audit",
+                                                "message": {
+                                                    "contentData": {
+                                                        "D365AttachmentAdded": "",
+                                                        "D365JENumber": "",
+                                                        "D365JournalCreated": "",
+                                                        "D365JournalPosted": "",
+                                                        "InRetryQueue": "",
+                                                        "LastUpdated": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                                                        "MessageBody": "OI invoice approved",
+                                                        "OIApproved": "1",
+                                                        "OIDocDataRetrieved": "",
+                                                        "OIDocumentID": "@variables('ResultImageInvoiceId')",
+                                                        "OIExported": "",
+                                                        "OIFutureDatedInvoice": "",
+                                                        "OIInvoiceAmount": "",
+                                                        "OIInvoiceNumber": "",
+                                                        "OIPOInvoice": "",
+                                                        "OIVendor": "",
+                                                        "RetryCount": "0"
+                                                    }
+                                                }
+                                            },
+                                            "serviceProviderConfiguration": {
+                                                "connectionName": "PrivateServiceBus",
+                                                "operationId": "sendMessage",
+                                                "serviceProviderId": "/serviceProviders/serviceBus"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Send_message_to_open-invoice-primary(topic)": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Send_message_to_log_topic": {
+                                        "type": "ServiceProvider",
+                                        "inputs": {
+                                            "parameters": {
+                                                "entityName": "open-invoice-logging",
+                                                "message": {
+                                                    "contentData": {
+                                                        "DateTime": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                                                        "Identifier": "@workflow()['run']['name']",
+                                                        "MessageBody": "OI invoice received",
+                                                        "WorkFlow": "@{workflow()['name']}",
+                                                        "keyfield": "@variables('ResultImageInvoiceId')",
+                                                        "status": "success"
+                                                    }
+                                                }
+                                            },
+                                            "serviceProviderConfiguration": {
+                                                "connectionName": "PrivateServiceBus",
+                                                "operationId": "sendMessage",
+                                                "serviceProviderId": "/serviceProviders/serviceBus"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Send_message_to_audit_(topic)_for_new_approved_OI_invoice": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "HTTP_Set_open-invoice-as-exported": {
+                                        "type": "Http",
+                                        "inputs": {
+                                          "uri": "@{parameters('OIUrl')}/docp/events/supply-chain/v1/invoice.exports.set",
+                                          "method": "POST",
+                                          "body": {
+                                            "events": [
+                                              {
+                                                "data": {
+                                                  "eventContext": {
+                                                    "itemID": "@{variables('ResultImageInvoiceId')}"
+                                                  },
+                                                  "transform": {
+                                                    "invoice": {
+                                                      "exports": {
+                                                        "exportStatus": "Success",
+                                                        "exportType": "approved"
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          "authentication": {
+                                            "type": "ClientCertificate",
+                                            "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                                            "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+                                          }
+                                        },
+                                        "runAfter": {
+                                           
+                                        }
+                                      },
+                                      "Send_message_to_open-invoice-primary(topic)": {
+                                        "type": "ServiceProvider",
+                                        "inputs": {
+                                            "parameters": {
+                                                "entityName": "open-invoice-primary",
+                                                "message": {
+                                                    "contentData": "@outputs('Compose_OI_image_id')",
+                                                    "contentType": "text",
+                                                    "messageId": "@outputs('Compose_OI_image_id')?['ImageInvoiceId']"
+                                                }
+                                            },
+                                            "serviceProviderConfiguration": {
+                                                "connectionName": "PrivateServiceBus",
+                                                "operationId": "sendMessage",
+                                                "serviceProviderId": "/serviceProviders/serviceBus"
+                                            }
+                                        },
+                                        "runAfter": {"HTTP_Set_open-invoice-as-exported": [
+                                            "Succeeded"
+                                        ]}
+                                    }
+                                      
+                                },
+                                "runAfter": {
+                                    "Get_row_for_the_given_OI_invoice_id": [
+                                        "Succeeded"
+                                    ]
+                                },
+                                "else": {
+                                    "actions": {
+                                        "Send_message_to_audit_(topic)_on_duplicate_record": {
+                                            "type": "ServiceProvider",
+                                            "inputs": {
+                                                "parameters": {
+                                                    "entityName": "open-invoice-audit",
+                                                    "message": {
+                                                        "contentData": {
+                                                            "D365AttachmentAdded": "",
+                                                            "D365JENumber": "",
+                                                            "D365JournalCreated": "",
+                                                            "D365JournalPosted": "",
+                                                            "InRetryQueue": "1",
+                                                            "LastUpdated": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                                                            "MessageBody": "D365 duplicate invoice detected.",
+                                                            "OIApproved": "",
+                                                            "OIDocDataRetrieved": "",
+                                                            "OIDocumentID": "@{variables('ResultImageInvoiceId')}",
+                                                            "OIExported": "",
+                                                            "OIFutureDatedInvoice": "",
+                                                            "OIInvoiceAmount": "",
+                                                            "OIInvoiceNumber": "",
+                                                            "OIPOInvoice": "",
+                                                            "OIVendor": "",
+                                                            "RetryCount": " 1"
+                                                        }
+                                                    }
+                                                },
+                                                "serviceProviderConfiguration": {
+                                                    "connectionName": "PrivateServiceBus",
+                                                    "operationId": "sendMessage",
+                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                }
+                                            },
+                                            "runAfter": {}
+                                        }
+                                    }
+                                }
+                            },
+                            "Get_row_for_the_given_OI_invoice_id": {
+                                "type": "ApiConnection",
+                                "inputs": {
+                                    "host": {
+                                        "connection": {
+                                            "referenceName": "sql_auditLogging"
+                                        }
+                                    },
+                                    "method": "get",
+                                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[D365APInvoiceAudit]'))}/items",
+                                    "queries": {
+                                        "$filter": "OIDocumentID eq '@{variables('ResultImageInvoiceId')}' and D365JournalCreated eq '1'"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Post_message_to_OI_for_approved_invoice": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Post_message_to_OI_for_approved_invoice": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "open-invoice-post-update",
+                                        "message": {
+                                            "contentData": {
+                                                "MessageBody": "Data reterival from OI ",
+                                                "OIDocumentID": "@{variables('ResultImageInvoiceId')}"
+                                            }
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose_OI_image_id": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_HrefOIId": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "ImageInvoiceId",
+                                    "value": "@items('For_each_-_multiple_links_')?['href']"
+                                },
+                                "runAfter": {}
+                            },
+                            "Set_Split_HrefOI": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "ActualImageInvoiceId",
+                                    "value": "@split(variables('ImageInvoiceId'),'/')"
+                                },
+                                "runAfter": {
+                                    "Set_HrefOIId": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_result_OI_Id": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "ResultImageInvoiceId",
+                                    "value": "@{last(variables('ActualImageInvoiceId'))}"
+                                },
+                                "runAfter": {
+                                    "Set_Split_HrefOI": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "repetitions": 1
+                    }
+                }
+            },
+            "HTTP_request_for_approved_and_pending_OI_invoices": {
+                "type": "Http",
+                "inputs": {
+                    "method": "GET",
+                    "uri": "@{parameters('OIUrl')}/docp/supply-chain/v1/invoices?$filter=serviceType+eq+approved+and+serviceStatus+eq+pending",
+                    "authentication": {
+                        "type": "ClientCertificate",
+                        "pfx": "@variables('OICertBase64')",
+                        "password": "@variables('OICertPassword')"
+                    }
+                },
+                "runAfter": {
+                    "InitOICertPassword": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_ActualImageInvoiceId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ActualImageInvoiceId",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_HrefImage_InvoiceId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_HrefImage_InvoiceId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ImageInvoiceId",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_result_ImageId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ResultImageInvoiceId",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_ActualImageInvoiceId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('HTTP_request_for_approved_and_pending_OI_invoices')",
+                    "schema": {
+                        "properties": {
+                            "invoices": {
+                                "items": {
+                                    "properties": {
+                                        "links": {
+                                            "items": {
+                                                "properties": {
+                                                    "href": {
+                                                        "type": "string"
+                                                    },
+                                                    "rel": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "rel",
+                                                    "href"
+                                                ],
+                                                "type": "object"
+                                            },
+                                            "type": [
+                                                "array",
+                                                "object"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "links"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "meta": {
+                                "properties": {
+                                    "completeIndicator": {
+                                        "type": "boolean"
+                                    },
+                                    "number": {
+                                        "type": "integer"
+                                    },
+                                    "startSequence": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "HTTP_request_for_approved_and_pending_OI_invoices": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "InitOICertBase64": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "OICertBase64",
+                            "type": "string",
+                            "value": "@appSetting('OPEN_INVOICE_API_CERT')"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_result_ImageId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "InitOICertPassword": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "OICertPassword",
+                            "type": "string",
+                            "value": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "InitOICertBase64": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Compose": {
+                "type": "Compose",
+                "inputs": "@take(body('Parse_JSON')?['invoices'],20)",
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "Id": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "correlation": {
+                    "clientTrackingId": "@if(equals(triggerBody()?['Id'], null), guid(), triggerBody()?['Id'])"
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

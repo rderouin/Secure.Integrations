@@ -1,0 +1,465 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Try": {
+                "type": "Scope",
+                "actions": {
+                    "Get_tax_components": {
+                        "type": "Workflow",
+                        "inputs": {
+                            "host": {
+                                "workflow": {
+                                    "id": "Certify-http-all-d365fo-3-GetTax"
+                                }
+                            },
+                            "body": {
+                                "ExpenseCategory": "@triggerBody()?['ExpenseCategory']",
+                                "TaxComponent": "@triggerBody()?['TaxComponent']",
+                                "Amount": "@triggerBody()?['Amount']"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Create_journal_line": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "dynamicsax-2"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "JournalBatchNumber": "@triggerBody()?['JournalBatchNumber']",
+                                "Currency": "@triggerBody()?['Currency']",
+                                "dataAreaId": "@triggerBody()?['DataAreaId']",
+                                "LineNumber": "@variables('Line Number')",
+                                "DefaultDimensionDisplayValue": "@triggerBody()?['DimensionDisplay']",
+                                "InvoiceDate": "@triggerBody()?['InvoiceDate']",
+                                "AccountDisplayValue": "@triggerBody()?['AccountDisplayValue']",
+                                "Debit": "@float(body('Get_tax_components')['PreTaxAmount'])",
+                                "ProjCategoryId": "@triggerBody()?['ProjectCategory']",
+                                "Description": "@triggerBody()?['JournalDescription']",
+                                "AccountType": "@triggerBody()?['AccountType']",
+                                "Invoice": "@triggerBody()?['InvoiceNumber']",
+                                "DueDate": "@triggerBody()?['DueDate']"
+                            },
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalLines'))}/items"
+                        },
+                        "runAfter": {
+                            "Get_tax_components": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Create_Tax_Lines": {
+                        "type": "Scope",
+                        "actions": {
+                            "Increment_'Line_Number'": {
+                                "type": "IncrementVariable",
+                                "inputs": {
+                                    "name": "Line Number",
+                                    "value": 1
+                                },
+                                "runAfter": {}
+                            },
+                            "Is_there_a_tax_1": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "greater": [
+                                                "@body('Get_tax_components')?['Tax1Amount']",
+                                                "@float(0)"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Create_tax_1_line": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "dynamicsax-2"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "body": {
+                                                "JournalBatchNumber": "@triggerBody()?['JournalBatchNumber']",
+                                                "Currency": "@triggerBody()?['Currency']",
+                                                "dataAreaId": "@triggerBody()?['DataAreaId']",
+                                                "LineNumber": "@variables('Line Number')",
+                                                "DefaultDimensionDisplayValue": "@triggerBody()?['DimensionDisplay']",
+                                                "InvoiceDate": "@triggerBody()?['InvoiceDate']",
+                                                "AccountDisplayValue": "@{body('Get_tax_components')?['Tax1GLCode']}-@{triggerBody()?['DimensionDisplay']}",
+                                                "Debit": "@float(body('Get_tax_components')?['Tax1Amount'])",
+                                                "Description": "@triggerBody()?['JournalDescription']",
+                                                "AccountType": "Ledger",
+                                                "Invoice": "@triggerBody()?['InvoiceNumber']",
+                                                "DueDate": "@triggerBody()?['DueDate']"
+                                            },
+                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalLines'))}/items"
+                                        },
+                                        "runAfter": {}
+                                    },
+                                    "Increment_lines_created_1": {
+                                        "type": "IncrementVariable",
+                                        "inputs": {
+                                            "name": "Line Number",
+                                            "value": 1
+                                        },
+                                        "runAfter": {
+                                            "Create_tax_1_line": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Increment_'Line_Number'": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Is_there_a_tax_2": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "greater": [
+                                                "@body('Get_tax_components')?['Tax2Amount']",
+                                                "@float(0)"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Create_tax_2_line": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "dynamicsax-2"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "body": {
+                                                "JournalBatchNumber": "@triggerBody()?['JournalBatchNumber']",
+                                                "Currency": "@triggerBody()?['Currency']",
+                                                "dataAreaId": "@triggerBody()?['DataAreaId']",
+                                                "LineNumber": "@variables('Line Number')",
+                                                "DefaultDimensionDisplayValue": "@triggerBody()?['DimensionDisplay']",
+                                                "InvoiceDate": "@triggerBody()?['InvoiceDate']",
+                                                "AccountDisplayValue": "@{body('Get_tax_components')?['Tax2GLCode']}-@{triggerBody()?['DimensionDisplay']}",
+                                                "Debit": "@float(body('Get_tax_components')?['Tax2Amount'])",
+                                                "Description": "@triggerBody()?['JournalDescription']",
+                                                "AccountType": "Ledger",
+                                                "Invoice": "@triggerBody()?['InvoiceNumber']",
+                                                "DueDate": "@triggerBody()?['DueDate']"
+                                            },
+                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalLines'))}/items"
+                                        },
+                                        "runAfter": {}
+                                    },
+                                    "Increment_lines_created_2": {
+                                        "type": "IncrementVariable",
+                                        "inputs": {
+                                            "name": "Line Number",
+                                            "value": 1
+                                        },
+                                        "runAfter": {
+                                            "Create_tax_2_line": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Is_there_a_tax_1": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Create_journal_line": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Create_Receipts": {
+                        "type": "Scope",
+                        "actions": {
+                            "Is_there_a_receipt_ID": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "not": {
+                                                "equals": [
+                                                    "@triggerBody()?['ReceiptId']",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Get_receipts_from_Certify": {
+                                        "type": "Http",
+                                        "inputs": {
+                                            "method": "GET",
+                                            "uri": "@{concat(parameters('APCertifyReceiptsURI'), triggerBody()?['ReceiptID'])}",
+                                            "headers": {
+                                                "id": "@triggerBody()?['ReceiptID']",
+                                                "x-api-key": "@parameters('APCertifyAPIKey')",
+                                                "x-api-secret": "@parameters('APCertifyAPISecret')",
+                                                "Content-Type": "application/json"
+                                            }
+                                        },
+                                        "runAfter": {}
+                                    },
+                                    "Parse_Receipts": {
+                                        "type": "ParseJson",
+                                        "inputs": {
+                                            "content": "@body('Get_receipts_from_Certify')",
+                                            "schema": {
+                                                "properties": {
+                                                    "Receipts": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "Filename": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ID": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ReceiptImage": {
+                                                                    "type": "string"
+                                                                },
+                                                                "UploadDate": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "ID",
+                                                                "Filename",
+                                                                "UploadDate"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Get_receipts_from_Certify": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Filter_receipts_attached_to_expenses": {
+                                        "type": "Query",
+                                        "inputs": {
+                                            "from": "@body('Parse_Receipts')?['Receipts']",
+                                            "where": "@not(equals(item()?['ReceiptImage'], null))"
+                                        },
+                                        "runAfter": {
+                                            "Parse_Receipts": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "For_each_receipt": {
+                                        "type": "Foreach",
+                                        "foreach": "@body('Filter_receipts_attached_to_expenses')",
+                                        "actions": {
+                                            "Add_receipt_attachment": {
+                                                "type": "ApiConnection",
+                                                "inputs": {
+                                                    "host": {
+                                                        "connection": {
+                                                            "referenceName": "dynamicsax-2"
+                                                        }
+                                                    },
+                                                    "method": "post",
+                                                    "body": {
+                                                        "_FileContent": "@items('For_each_receipt')?['ReceiptImage']",
+                                                        "_journalNum": "@body('Create_journal_line')?['JournalBatchNumber']",
+                                                        "_lineNum": "@triggerBody()?['ExpenseLineNumber']",
+                                                        "_filename": "@items('For_each_receipt')?['Filename']",
+                                                        "_UploadDate": "@items('For_each_receipt')?['UploadDate']",
+                                                        "_dataareaid": "@triggerBody()?['DataAreaId']"
+                                                    },
+                                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.addAttachment'))}"
+                                                },
+                                                "runAfter": {}
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Filter_receipts_attached_to_expenses": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {}
+                            }
+                        },
+                        "runAfter": {
+                            "Create_journal_line": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_'Line_Number'_(Integer)": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_'Line_Number'_(Integer)": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Line Number",
+                            "type": "integer",
+                            "value": "@triggerBody()?['ExpenseLineNumber']"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Return_HTTP_200": {
+                "type": "Response",
+                "kind": "http",
+                "inputs": {
+                    "statusCode": 200,
+                    "body": {
+                        "JournalBatchNumber": "@body('Create_journal_line')?['JournalBatchNumber']",
+                        "LinesCreated": "@int(sub(variables('Line Number'), triggerBody()?['ExpenseLineNumber']))"
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Catch": {
+                "type": "Scope",
+                "actions": {
+                    "Filter_error_messages": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@result('Try')",
+                            "where": "@equals(item()['status'], 'Failed')"
+                        },
+                        "runAfter": {}
+                    },
+                    "Return_HTTP_500": {
+                        "type": "Response",
+                        "kind": "http",
+                        "inputs": {
+                            "statusCode": 500,
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "body": {
+                                "JournalBatchNumber": "@body('Create_journal_line')?['JournalBatchNumber']",
+                                "LinesCreated": "@int(sub(variables('Line Number'), triggerBody()?['ExpenseLineNumber']))",
+                                "ErrorMessage": "@coalesce(body('Filter_error_messages')[0]?['outputs']?['body']?['message'], body('Filter_error_messages')[0]?['error']?['message'], body('Filter_error_messages')[0]?['code'])"
+                            }
+                        },
+                        "runAfter": {
+                            "Filter_error_messages": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "FAILED"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "ExpenseReportId": {
+                                "type": "string"
+                            },
+                            "ExpenseLineNumber": {
+                                "type": "string"
+                            },
+                            "Currency": {
+                                "type": "string"
+                            },
+                            "DataAreaId": {
+                                "type": "string"
+                            },
+                            "JournalBatchNumber": {
+                                "type": "string"
+                            },
+                            "JournalDescription": {
+                                "type": "string"
+                            },
+                            "DimensionDisplay": {
+                                "type": "string"
+                            },
+                            "Amount": {
+                                "type": "number"
+                            },
+                            "ExpenseCategory": {
+                                "type": "string"
+                            },
+                            "TaxComponent": {
+                                "type": "string"
+                            },
+                            "AccountDisplayValue": {
+                                "type": "string"
+                            },
+                            "AccountType": {
+                                "type": "string"
+                            },
+                            "ReceiptId": {
+                                "type": "string"
+                            },
+                            "ProjectCategory": {
+                                "type": "string"
+                            },
+                            "InvoiceNumber": {
+                                "type": "string"
+                            },
+                            "InvoiceDate": {
+                                "type": "string"
+                            },
+                            "DueDate": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "correlation": {
+                    "clientTrackingId": "@concat(triggerBody()?['ExpenseReportId'], '/', triggerBody()?['InvoiceNumber'])"
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

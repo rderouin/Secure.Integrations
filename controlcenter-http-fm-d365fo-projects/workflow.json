@@ -1,0 +1,415 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Append_to_string_variable": {
+                "type": "AppendToStringVariable",
+                "inputs": {
+                    "name": "ErrorLog",
+                    "value": "Error from D365 @{body('Find_project')}"
+                },
+                "runAfter": {
+                    "Find_project": [
+                        "FAILED",
+                        "TIMEDOUT"
+                    ]
+                }
+            },
+            "Check_if_the_data_exists": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('Find_project')?['value']",
+                                "True"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Append_to_string_variable_2": {
+                        "type": "AppendToStringVariable",
+                        "inputs": {
+                            "name": "ErrorLog",
+                            "value": "Errro from D365 @{body('Update_record')}"
+                        },
+                        "runAfter": {
+                            "Update_record": [
+                                "FAILED",
+                                "TIMEDOUT"
+                            ]
+                        }
+                    },
+                    "Update_record": {
+                        "inputs": {
+                            "body": {
+                                "_afe": "@triggerBody()?['AFE']",
+                                "_approverCoding": "@triggerBody()?['HSApproverCoding']",
+                                "_bu": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['BusinessLine'], triggerBody()?['BusinessUnit'])}",
+                                "_custAccount": "@triggerBody()?['CustomerAccount']",
+                                "_dataAreaID": "@triggerBody()?['DataareaID']",
+                                "_division": "@triggerBody()?['Division']",
+                                "_legalEntity": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['LegalEntity'], triggerBody()?['CompanyLegalEntity'])}",
+                                "_location": "@triggerBody()?['Location']",
+                                "_lsd": "@triggerBody()?['LSD']",
+                                "_msl": "@triggerBody()?['MSL']",
+                                "_poNumber": "@triggerBody()?['HSPONumber']",
+                                "_projEndDate": "@triggerBody()?['ProjectEndDate']",
+                                "_projGroupId": "@triggerBody()?['ProjectGroup']",
+                                "_projId": "@triggerBody()?['ProjectId']",
+                                "_projLicense": "@triggerBody()?['License']",
+                                "_projManager": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['AxProjectManager'], triggerBody()?['ProjectManagerFullName'])}",
+                                "_projPriceGroupID": "@triggerBody()?['PriceGroup']",
+                                "_projStartDate": "@triggerBody()?['ActualStartDate']",
+                                "_projectedStateDate": "@triggerBody()?['ProjectStartDate']",
+                                "_province": "@triggerBody()?['Province']",
+                                "_rig": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['RigId'], triggerBody()?['Rig'])}",
+                                "_salesManager": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['SalesManager'], triggerBody()?['SalesManagerFullName'])}",
+                                "_site": "@triggerBody()?['Site']",
+                                "_sourceSystem": "@triggerBody()?['SourceSystem']",
+                                "_taxGroupID": "@triggerBody()?['SalesTaxGroup']",
+                                "_wellName": "@triggerBody()?['Wellname']"
+                            },
+                            "host": {
+                                "connection": {
+                                    "referenceName": "dynamicsax"
+                                }
+                            },
+                            "method": "post",
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSProjProjectV2/Microsoft.Dynamics.DataEntities.updateProject'))}"
+                        },
+                        "type": "ApiConnection",
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Find_project": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Append_to_string_variable_3": {
+                            "type": "AppendToStringVariable",
+                            "inputs": {
+                                "name": "ErrorLog",
+                                "value": "error from D365 @{body('Create_FO_project_record')}"
+                            },
+                            "runAfter": {
+                                "Create_FO_project_record": [
+                                    "FAILED",
+                                    "TIMEDOUT"
+                                ]
+                            }
+                        },
+                        "Create_FO_project_record": {
+                            "inputs": {
+                                "body": {
+                                    "ActualEndDate": "@triggerBody()?['ProjectEndDate']",
+                                    "ActualStartDate": "@triggerBody()?['ActualStartDate']",
+                                    "CustomerAccountNumber": "@triggerBody()?['CustomerAccount']",
+                                    "HSAFE": "@triggerBody()?['AFE']",
+                                    "HSApproverCoding": "@triggerBody()?['HSApproverCoding']",
+                                    "HSBU": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['BusinessLine'], triggerBody()?['BusinessUnit'])}",
+                                    "HSDivision": "@triggerBody()?['Division']",
+                                    "HSLSD": "@triggerBody()?['LSD']",
+                                    "HSLegalEntity": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['LegalEntity'], triggerBody()?['CompanyLegalEntity'])}",
+                                    "HSLocation": "@triggerBody()?['Location']",
+                                    "HSMSL": "@triggerBody()?['MSL']",
+                                    "HSProjLicense": "@triggerBody()?['License']",
+                                    "HSProvince": "@triggerBody()?['Province']",
+                                    "HSRIG": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['RigId'], triggerBody()?['Rig'])}",
+                                    "HSSite": "@triggerBody()?['Site']",
+                                    "HSSourceSystem": "@triggerBody()?['SourceSystem']",
+                                    "HSWellName": "@triggerBody()?['Wellname']",
+                                    "PONumber": "@triggerBody()?['HSPONumber']",
+                                    "ProjectGroupId": "@triggerBody()?['ProjectGroup']",
+                                    "ProjectId": "@triggerBody()?['ProjectId']",
+                                    "ProjectManagerPersonnelNumber": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['AxProjectManager'], triggerBody()?['ProjectManagerFullName'])}",
+                                    "ProjectName": "@triggerBody()?['ProjectName']",
+                                    "ProjectStage": "InProcess",
+                                    "ProjectedStartDate": "@triggerBody()?['ProjectStartDate']",
+                                    "SalesManagerPersonnelNumber": "@{if(equals(triggerBody()?['SourceSystem'], 'CC'), triggerBody()?['SalesManager'], triggerBody()?['SalesManagerFullName'])}",
+                                    "SalesPriceGroupId": "@triggerBody()?['PriceGroup']",
+                                    "SalesTaxGroupId": "@triggerBody()?['SalesTaxGroup']",
+                                    "ScheduleStartDate": "@{utcNow()}",
+                                    "dataAreaId": "@triggerBody()?['DataareaID']"
+                                },
+                                "host": {
+                                    "connection": {
+                                        "referenceName": "dynamicsax"
+                                    }
+                                },
+                                "method": "post",
+                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSProjProjectV2'))}/items"
+                            },
+                            "type": "ApiConnection",
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "Find_project": {
+                "inputs": {
+                    "body": {
+                        "_legalEntity": "@triggerBody()?['LegalEntity']",
+                        "_projId": "@triggerBody()?['ProjectId']"
+                    },
+                    "host": {
+                        "connection": {
+                            "referenceName": "dynamicsax"
+                        }
+                    },
+                    "method": "post",
+                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSProjProjectV2/Microsoft.Dynamics.DataEntities.findProject'))}"
+                },
+                "runAfter": {
+                    "Initialize_variable_ErrorLog": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "ApiConnection"
+            },
+            "Initialize_variable_ErrorLog": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ErrorLog",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "check_if_error_exists": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                "@length(variables('ErrorLog'))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Error_Response": {
+                        "type": "Response",
+                        "kind": "Http",
+                        "inputs": {
+                            "statusCode": 500,
+                            "body": " @{variables('ErrorLog')}"
+                        },
+                        "runAfter": {
+                            "Send_message": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_message": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "integration-logs",
+                                "message": {
+                                    "contentData": {
+                                        "CorrelationId": "",
+                                        "MessageDate": "@utcNow()",
+                                        "MessageType": "Log",
+                                        "Operation": "Error",
+                                        "Payload": [
+                                            {
+                                                "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                "Identifier": "@workflow()['run']['name']",
+                                                "MessageBody": "@{variables('ErrorLog')}",
+                                                "Workflow": "@workflow()['name']",
+                                                "keyfield": "@{triggerBody()?['ProjectId']}",
+                                                "status": "Fail"
+                                            }
+                                        ],
+                                        "Source": "@workflow().name",
+                                        "SourceId": "@workflow().run.name"
+                                    },
+                                    "userProperties": {
+                                        "Source": "@workflow().name"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Terminate": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed"
+                        },
+                        "runAfter": {
+                            "Error_Response": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Append_to_string_variable": [
+                        "Succeeded",
+                        "SKIPPED",
+                        "FAILED",
+                        "TIMEDOUT"
+                    ],
+                    "Check_if_the_data_exists": [
+                        "Succeeded",
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Response": {
+                            "type": "Response",
+                            "kind": "http",
+                            "inputs": {
+                                "statusCode": 200,
+                                "headers": {
+                                    "Content-Type": "application/json"
+                                },
+                                "body": "@body('Create_FO_project_record')?['ProjectId']"
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "properties": {
+                            "AFE": {
+                                "type": "string"
+                            },
+                            "ActualStartDate": {
+                                "type": "string"
+                            },
+                            "AxProjectManagerId": {
+                                "type": "string"
+                            },
+                            "BusinessLine": {
+                                "type": "string"
+                            },
+                            "BusinessUnit": {
+                                "type": "string"
+                            },
+                            "CompanyLegalEntity": {
+                                "type": "string"
+                            },
+                            "CustomerAccount": {
+                                "type": "string"
+                            },
+                            "DSLocation": {
+                                "type": "string"
+                            },
+                            "DataareaID": {
+                                "type": "string"
+                            },
+                            "Division": {
+                                "type": "string"
+                            },
+                            "HSApproverCoding": {
+                                "type": "string"
+                            },
+                            "HSPONumber": {
+                                "type": "string"
+                            },
+                            "ItemRelation": {
+                                "type": "string"
+                            },
+                            "LSD": {
+                                "type": "string"
+                            },
+                            "LegalEntity": {
+                                "type": "string"
+                            },
+                            "License": {
+                                "type": "string"
+                            },
+                            "Location": {
+                                "type": "string"
+                            },
+                            "MSL": {
+                                "type": "string"
+                            },
+                            "PriceGroup": {
+                                "type": "string"
+                            },
+                            "ProjectEndDate": {
+                                "type": "string"
+                            },
+                            "ProjectGroup": {
+                                "type": "string"
+                            },
+                            "ProjectId": {
+                                "type": "string"
+                            },
+                            "ProjectManagerId": {
+                                "type": "string"
+                            },
+                            "ProjectName": {
+                                "type": "string"
+                            },
+                            "ProjectStartDate": {
+                                "type": "string"
+                            },
+                            "Province": {
+                                "type": "string"
+                            },
+                            "RIG": {
+                                "type": "string"
+                            },
+                            "RIGId": {
+                                "type": "string"
+                            },
+                            "SalesManager": {
+                                "type": "string"
+                            },
+                            "SalesManagerId": {
+                                "type": "string"
+                            },
+                            "SalesTaxGroup": {
+                                "type": "string"
+                            },
+                            "Site": {
+                                "type": "string"
+                            },
+                            "SourceSystem": {
+                                "type": "string"
+                            },
+                            "Wellname": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "correlation": {
+                    "clientTrackingId": "@{triggerBody()?['ProjectId']}"
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

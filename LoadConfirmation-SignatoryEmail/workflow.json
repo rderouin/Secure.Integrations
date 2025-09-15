@@ -1,0 +1,211 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose_payload": {
+                "type": "Compose",
+                "inputs": {
+                    "Source": "O365",
+                    "SourceId": "@{concat(workflow()['run']['name'],' - ',convertFromUtc(utcNow(),'Mountain Standard Time','yyyy-MM-dd'))}",
+                    "MessageType": "LoadConfirmationApprovalEmail",
+                    "Operation": "Create",
+                    "CorrelationId": "@{workflow()['run']['name']}",
+                    "MessageDate": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                    "Blobs": "@variables('BlobsPayload')",
+                    "Payload": {
+                        "From": "@{triggerBody()?['from']}",
+                        "Subject": "@{triggerBody()?['subject']}",
+                        "Body": "@{triggerBody()?['bodyPreview']}",
+                        "Attachments": "@variables('AttachmentsPayload')"
+                    }
+                },
+                "runAfter": {
+                    "For_each": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "For_each": {
+                "type": "Foreach",
+                "foreach": "@triggerBody()?['attachments']",
+                "actions": {
+                    "Condition": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "not": {
+                                        "equals": [
+                                            "@items('For_each')?['isInline']",
+                                            true
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Compose": {
+                                "type": "Compose",
+                                "inputs": "@items('For_each')?['contentBytes']",
+                                "runAfter": {}
+                            },
+                            "Compose_GUID": {
+                                "type": "Compose",
+                                "inputs": "@guid()",
+                                "runAfter": {
+                                    "Compose": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Upload_blob_to_storage_container": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "containerName": "@parameters('LoadConfirmationContainerName')",
+                                        "blobName": "@concat(workflow()['run']['name'],' - ',convertFromUtc(utcNow(),'Mountain Standard Time','yyyy-MM-dd'),'/',outputs('Compose_GUID'))",
+                                        "content": "@base64ToBinary(items('For_each')?['contentBytes'])"
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "integration_storage",
+                                        "operationId": "uploadBlob",
+                                        "serviceProviderId": "/serviceProviders/AzureBlob"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose_GUID": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Append_to_array_variable_blobspayload": {
+                                "type": "AppendToArrayVariable",
+                                "inputs": {
+                                    "name": "BlobsPayload",
+                                    "value": {
+                                        "BlobPath": "@{concat(workflow()['run']['name'],' - ',convertFromUtc(utcNow(),'Mountain Standard Time','yyyy-MM-dd'),'/',outputs('Compose_GUID'))}",
+                                        "ContainerName": "@{parameters('LoadConfirmationContainerName')}",
+                                        "ContentType": "@{items('For_each')?['contentType']}",
+                                        "Filename": "@{items('For_each')?['name']}"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Upload_blob_to_storage_container": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Append_to_array_variable_AttachmentsPayload": {
+                                "type": "AppendToArrayVariable",
+                                "inputs": {
+                                    "name": "AttachmentsPayload",
+                                    "value": {
+                                        "BlobPath": "@{concat(workflow()['run']['name'],' - ',convertFromUtc(utcNow(),'Mountain Standard Time','yyyy-MM-dd'),'/',outputs('Compose_GUID'))}",
+                                        "BlobContainer": "@{parameters('LoadConfirmationContainerName')}",
+                                        "ContentType": "@{items('For_each')?['contentType']}",
+                                        "Filename": "@{items('For_each')?['name']}",
+                                        "IsEncrypted": false
+                                    }
+                                },
+                                "runAfter": {
+                                    "Append_to_array_variable_blobspayload": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable_AttachmentsPayload": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_BlobsPayload": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BlobsPayload",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "approval-emails",
+                        "message": {
+                            "contentData": "@outputs('Compose_payload')",
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "Source": "O365",
+                                "MessageType": "LoadConfirmationApprovalEmail"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Compose_payload": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_AttachmentsPayload": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "AttachmentsPayload",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_BlobsPayload": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_a_new_email_arrives_in_a_shared_mailbox_(V2)": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "office365_loadconfirmations"
+                        }
+                    },
+                    "method": "get",
+                    "path": "/v2/SharedMailbox/Mail/OnNewEmail",
+                    "queries": {
+                        "mailboxAddress": "@parameters('LoadConfirmationEmailId')",
+                        "folderId": "Inbox",
+                        "importance": "Any",
+                        "hasAttachments": false,
+                        "includeAttachments": true
+                    }
+                },
+                "recurrence": {
+                    "frequency": "Second",
+                    "interval": 15
+                },
+                "splitOn": "@triggerBody()?['value']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

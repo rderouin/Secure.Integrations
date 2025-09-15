@@ -1,0 +1,1248 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Try": {
+                "type": "Scope",
+                "actions": {
+                    "For_each_sales_line": {
+                        "type": "Foreach",
+                        "foreach": "@outputs('Add_LineIndex_to_sales_lines')",
+                        "actions": {
+                            "Create_Sales_Line": {
+                                "type": "Workflow",
+                                "inputs": {
+                                    "host": {
+                                        "workflow": {
+                                            "id": "TT-SB-D365FO-Sales-Orders-2-Lines-Parallel-CreateLine"
+                                        }
+                                    },
+                                    "body": {
+                                        "SalesLine": "@item()"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "none"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Append_to_'Sales_Lines_Results'_(2)": {
+                                "type": "AppendToArrayVariable",
+                                "inputs": {
+                                    "name": "SalesLineResultsError",
+                                    "value": {
+                                        "SalesLineNumber": "@{body('Parse_JSON')?['SalesLineNumber']}",
+                                        "Id": "@{body('Parse_JSON')?['Id']}",
+                                        "IsSuccessful": false,
+                                        "Status": "@{body('Parse_JSON')?['Status']}",
+                                        "Message": "@body('Create_Sales_Line')"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Create_Sales_Line": [
+                                        "FAILED",
+                                        "TIMEDOUT",
+                                        "SKIPPED"
+                                    ]
+                                }
+                            },
+                            "Append_to_'Sales_Lines_Results'_(1)": {
+                                "type": "AppendToArrayVariable",
+                                "inputs": {
+                                    "name": "Sales Line Results",
+                                    "value": {
+                                        "SalesLineNumber": "@{body('Parse_JSON')?['SalesLineNumber']}",
+                                        "Id": "@{body('Parse_JSON')?['Id']}",
+                                        "IsSuccessful": true,
+                                        "Status": "@{body('Parse_JSON')?['Status']}",
+                                        "Message": ""
+                                    }
+                                },
+                                "runAfter": {
+                                    "Create_Sales_Line": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Parse_JSON": {
+                                "type": "ParseJson",
+                                "inputs": {
+                                    "content": "@item()",
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "SalesLineNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckTicketId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckTicketNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ProductId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ProductName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ProductNumber": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Quantity": {
+                                                "type": "number"
+                                            },
+                                            "QuantityPercent": {
+                                                "type": "number"
+                                            },
+                                            "TareWeight": {
+                                                "type": "number"
+                                            },
+                                            "GrossWeight": {
+                                                "type": "number"
+                                            },
+                                            "UnitOfMeasure": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "OriginalRate": {},
+                                            "Rate": {
+                                                "type": "number"
+                                            },
+                                            "TotalValue": {
+                                                "type": "number"
+                                            },
+                                            "IsRateOverridden": {
+                                                "type": "boolean"
+                                            },
+                                            "LoadConfirmationId": {},
+                                            "LoadConfirmationNumber": {},
+                                            "InvoiceId": {},
+                                            "ProformaInvoiceNumber": {},
+                                            "IsReversed": {
+                                                "type": "boolean"
+                                            },
+                                            "IsReversal": {
+                                                "type": "boolean"
+                                            },
+                                            "ReversedSalesLineId": {},
+                                            "ReversalSalesLineId": {},
+                                            "SourceLocationId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceLocationIdentifier": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceLocationFormattedIdentifier": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceLocationTypeId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "SourceLocationTypeName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "WellClassification": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CustomerId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CustomerName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "GeneratorId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "GeneratorName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "FacilitySiteId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "IsAdditionalService": {
+                                                "type": "boolean"
+                                            },
+                                            "IsReadOnlyLine": {
+                                                "type": [
+                                                    "boolean",
+                                                    "null"
+                                                ]
+                                            },
+                                            "IsCutLine": {
+                                                "type": "boolean"
+                                            },
+                                            "CutType": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "MaterialApprovalId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "MaterialApprovalNumber": {},
+                                            "ServiceTypeId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ServiceTypeName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckingCompanyId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckingCompanyName": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "UserName": {},
+                                            "PriceChangeUserName": {},
+                                            "PriceChangeDate": {},
+                                            "ChangeReason": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ChangeComments": {},
+                                            "Status": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "ManifestNumber": {},
+                                            "BillOfLading": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "DowNonDow": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckTicketDate": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "TruckTicketEffectiveDate": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "IsEdiValid": {
+                                                "type": "boolean"
+                                            },
+                                            "PricingRuleId": {},
+                                            "EdiFieldValues": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "EDIFieldDefinitionId": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "EDIFieldName": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "EDIFieldValueContent": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "IsValid": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "Id": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "EDIFieldDefinitionId",
+                                                        "EDIFieldName",
+                                                        "EDIFieldValueContent",
+                                                        "IsValid",
+                                                        "Id"
+                                                    ]
+                                                }
+                                            },
+                                            "Attachments": {
+                                                "type": "array"
+                                            },
+                                            "EDIFieldsValueString": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "EDIFieldsValueStringHumanized": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AttachmentIndicatorType": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "HasAttachments": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Substance": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Division": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "BusinessUnit": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LegalEntity": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "AccountNumber": {},
+                                            "CustomerNumber": {},
+                                            "FacilityId": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CreatedBy": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CreatedById": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "CreatedAt": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "UpdatedAt": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "UpdatedBy": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "UpdatedById": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "DocumentType": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "EntityType": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "Id": {
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            },
+                                            "LineIndex": {
+                                                "type": "number"
+                                            },
+                                            "LineNumber": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    }
+                                },
+                                "runAfter": {}
+                            },
+                            "Compose": {
+                                "type": "Compose",
+                                "inputs": "@{body('Parse_JSON')?['SalesLineNumber']}\n@{body('Parse_JSON')?['Id']}",
+                                "runAfter": {
+                                    "Parse_JSON": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Append_to_array_variable": {
+                                "type": "AppendToArrayVariable",
+                                "inputs": {
+                                    "name": "SalesLineResultsError",
+                                    "value": {
+                                        "SalesLineNumber": "@{body('Parse_JSON')?['SalesLineNumber']}",
+                                        "Id": "@{body('Parse_JSON')?['Id']}",
+                                        "IsSuccessful": true,
+                                        "Status": "@{body('Parse_JSON')?['Status']}",
+                                        "Message": ""
+                                    }
+                                },
+                                "runAfter": {
+                                    "Append_to_'Sales_Lines_Results'_(1)": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_variable": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "errorflow",
+                                    "value": "error"
+                                },
+                                "runAfter": {
+                                    "Append_to_'Sales_Lines_Results'_(2)": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Add_LineIndex_to_sales_lines": [
+                                "Succeeded"
+                            ]
+                        },
+                        "runtimeConfiguration": {
+                            "concurrency": {
+                                "repetitions": 5
+                            }
+                        }
+                    },
+                    "SalesLines": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@triggerBody()",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "Source": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SourceId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Operation": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrelationId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageDate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Blobs": {},
+                                    "Payload": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "SalesLineNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckTicketNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ProductName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ProductNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Quantity": {
+                                                    "type": "number"
+                                                },
+                                                "QuantityPercent": {
+                                                    "type": "number"
+                                                },
+                                                "TareWeight": {
+                                                    "type": "number"
+                                                },
+                                                "GrossWeight": {
+                                                    "type": "number"
+                                                },
+                                                "UnitOfMeasure": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Rate": {
+                                                    "type": "number"
+                                                },
+                                                "TotalValue": {
+                                                    "type": "number"
+                                                },
+                                                "ProformaInvoiceNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "SourceLocationFormattedIdentifier": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "SourceLocationTypeId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "SourceLocationTypeName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "WellClassification": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CustomerId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CustomerName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "GeneratorId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "GeneratorName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "FacilityId": {
+                                                    "type": "string"
+                                                },
+                                                "FacilitySiteId": {
+                                                    "type": "string"
+                                                },
+                                                "CutType": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "MaterialApprovalNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ServiceTypeId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ServiceTypeName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckingCompanyName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ManifestNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "BillOfLading": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "DowNonDow": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckTicketDate": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "IsEdiValid": {
+                                                    "type": "boolean"
+                                                },
+                                                "EDIFieldValues": {
+                                                    "type": [
+                                                        "array",
+                                                        "null"
+                                                    ],
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "Id": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "EDIFieldDefinitionId": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "IsValid": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "EDIFieldName": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "EDIFieldValueContent": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Attachments": {
+                                                    "type": [
+                                                        "array",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "EDIFieldsValueString": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "AttachmentIndicatorType": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "HasAttachments": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Substance": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Division": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "BusinessUnit": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "LegalEntity": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CustomerNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Id": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Filter_out_reversal_lines": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@body('SalesLines')?['Payload']",
+                            "where": "@equals(item()['IsReversal'], false)"
+                        },
+                        "runAfter": {
+                            "SalesLines": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Add_LineIndex_to_sales_lines": {
+                        "type": "JavaScriptCode",
+                        "inputs": {
+                            "code": "var inputArray = workflowContext.actions.Filter_out_reversal_lines.outputs.body;\r\n\r\nreturn inputArray.map((item, index) => {\r\n    var lineNumber =\r\n        item.SalesLineNumber &&\r\n        item.SalesLineNumber.match(/\\d+/) &&\r\n        item.SalesLineNumber.match(/\\d+/)[0];\r\n    \r\n    lineNumber = parseInt(lineNumber) || index;\r\n\r\n    return Object.assign(item, {\r\n        \"LineIndex\": index,\r\n        \"LineNumber\": lineNumber\r\n    });\r\n});",
+                            "explicitDependencies": {
+                                "actions": [
+                                    "Filter_out_reversal_lines"
+                                ]
+                            }
+                        },
+                        "runAfter": {
+                            "Filter_out_reversal_lines": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_'Sales_Line_Results'_(Array)": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_'Sales_Line_Results'_(Array)": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Sales Line Results",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_errorflow": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "If_line_errors_occurred": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@variables('errorflow')",
+                                "@string('error')"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "On_Failure": {
+                        "type": "Scope",
+                        "actions": {
+                            "Send_SalesLineAck_failure_message": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "enterprise-entity-updates",
+                                        "message": {
+                                            "contentData": "@outputs('Create_SalesLineAck_failure_message')",
+                                            "contentType": "application/json",
+                                            "sessionId": "@guid()",
+                                            "userProperties": {
+                                                "source": "D365FO",
+                                                "messageType": "SalesLineAck"
+                                            },
+                                            "messageId": "@guid()"
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Create_SalesLineAck_failure_message": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Return_HTTP_500_(1)": {
+                                "type": "Response",
+                                "kind": "http",
+                                "inputs": {
+                                    "statusCode": 500,
+                                    "body": "@outputs('Create_SalesLineAck_failure_message')"
+                                },
+                                "runAfter": {
+                                    "Send_SalesLineAck_failure_message": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Create_SalesLineAck_failure_message": {
+                                "type": "Compose",
+                                "inputs": {
+                                    "Source": "D365FO",
+                                    "SourceId": "@{body('SalesLines')['SourceId']}",
+                                    "MessageType": "SalesLineAck",
+                                    "Operation": "@{body('SalesLines')['Operation']}",
+                                    "CorrelationId": "@{body('SalesLines')['CorrelationId']}",
+                                    "MessageDate": "@{body('SalesLines')['MessageDate']}",
+                                    "Blobs": null,
+                                    "Payload": "@variables('SalesLineResultsError')"
+                                },
+                                "runAfter": {
+                                    "Compose_failure_sales_line_payload": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Compose_failure_sales_line_payload": {
+                                "type": "Select",
+                                "inputs": {
+                                    "from": "@variables('SalesLineResultsError')",
+                                    "select": {
+                                        "SalesLineNumber": "@item()['SalesLineNumber']",
+                                        "Id": "@item()['Id']",
+                                        "IsSuccessful": "False",
+                                        "Message": "@item()['Message']"
+                                    }
+                                },
+                                "runAfter": {}
+                            },
+                            "Failed_(1)": {
+                                "type": "Terminate",
+                                "inputs": {
+                                    "runStatus": "Failed",
+                                    "runError": {
+                                        "message": "@{outputs('Create_SalesLineAck_failure_message')}"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Send_message_error_log": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Send_message_error_log": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "integration-logs",
+                                        "message": {
+                                            "contentData": {
+                                                "CorrelationId": "",
+                                                "MessageDate": "@utcNow()",
+                                                "MessageType": "Log",
+                                                "Operation": "Information",
+                                                "Payload": [
+                                                    {
+                                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                        "Identifier": "@workflow()['run']['name']",
+                                                        "MessageBody": "@{outputs('Create_SalesLineAck_failure_message')}",
+                                                        "Workflow": "@workflow()['name']",
+                                                        "keyfield": "@{body('SalesLines')?['Payload']?[0]?['ProformaInvoiceNumber']}",
+                                                        "status": "Fail"
+                                                    }
+                                                ],
+                                                "Source": "@workflow().name",
+                                                "SourceId": "@workflow().run.name"
+                                            },
+                                            "userProperties": {
+                                                "Source": "@workflow().name"
+                                            }
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Return_HTTP_500_(1)": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Failed_(2)": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed"
+                        },
+                        "runAfter": {
+                            "Return_HTTP_500_(2)": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Return_HTTP_500_(2)": {
+                        "type": "Response",
+                        "kind": "http",
+                        "inputs": {
+                            "statusCode": 500
+                        },
+                        "runAfter": {
+                            "On_Failure": [
+                                "FAILED"
+                            ]
+                        },
+                        "description": " This path is necessary if the input data was so bad that we couldn't compose a proper error response. "
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "Succeeded",
+                        "FAILED",
+                        "TIMEDOUT",
+                        "SKIPPED"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "On_Success": {
+                            "type": "Scope",
+                            "actions": {
+                                "Compose_successful_sales_line_payload": {
+                                    "type": "Select",
+                                    "inputs": {
+                                        "from": "@variables('Sales Line Results')",
+                                        "select": {
+                                            "SalesLineNumber": "@item()['SalesLineNumber']",
+                                            "Id": "@item()['Id']",
+                                            "IsSuccessful": "true",
+                                            "Message": "@trim(' ')"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                },
+                                "Create_SalesLineAck_success_message": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                        "Source": "D365FO",
+                                        "SourceId": "@{body('SalesLines')['SourceId']}",
+                                        "MessageType": "SalesLineAck",
+                                        "Operation": "@{body('SalesLines')['Operation']}",
+                                        "CorrelationId": "@{body('SalesLines')['CorrelationId']}",
+                                        "MessageDate": "@{body('SalesLines')['MessageDate']}",
+                                        "Blobs": null,
+                                        "Payload": "@variables('Sales Line Results')"
+                                    },
+                                    "runAfter": {
+                                        "Compose_successful_sales_line_payload": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Send_SalesLineAck_success_message": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "enterprise-entity-updates",
+                                            "message": {
+                                                "contentData": "@outputs('Create_SalesLineAck_success_message')",
+                                                "contentType": "application/json",
+                                                "sessionId": "@guid()",
+                                                "userProperties": {
+                                                    "source": "D365FO",
+                                                    "messageType": "SalesLineAck"
+                                                },
+                                                "messageId": "@guid()"
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Create_SalesLineAck_success_message": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Return_HTTP_200": {
+                                    "type": "Response",
+                                    "kind": "http",
+                                    "inputs": {
+                                        "statusCode": 200,
+                                        "body": "@outputs('Create_SalesLineAck_success_message')"
+                                    },
+                                    "runAfter": {
+                                        "Send_SalesLineAck_success_message": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Send_message_success": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "integration-logs",
+                                            "message": {
+                                                "contentData": {
+                                                    "CorrelationId": "",
+                                                    "MessageDate": "@utcNow()",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Information",
+                                                    "Payload": [
+                                                        {
+                                                            "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                            "Identifier": "@workflow()['run']['name']",
+                                                            "MessageBody": " ",
+                                                            "Workflow": "@workflow()['name']",
+                                                            "keyfield": "@{body('SalesLines')?['Payload']?[0]?['ProformaInvoiceNumber']}",
+                                                            "status": "Success"
+                                                        }
+                                                    ],
+                                                    "Source": "@workflow().name",
+                                                    "SourceId": "@workflow().run.name"
+                                                },
+                                                "userProperties": {
+                                                    "Source": "@workflow().name"
+                                                }
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Return_HTTP_200": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                }
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "Initialize_variable_SalesLineResultsError": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SalesLineResultsError",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_variable_errorflow": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "errorflow",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_SalesLineResultsError": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {},
+                "correlation": {
+                    "clientTrackingId": "@if(equals(triggerBody()?['Payload']?[0]?['ProformaInvoiceNumber'], null), guid(), triggerBody()?['Payload']?[0]?['ProformaInvoiceNumber'])"
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

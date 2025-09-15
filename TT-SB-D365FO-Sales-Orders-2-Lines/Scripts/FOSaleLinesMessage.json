@@ -1,0 +1,54 @@
+{
+  "SourceID": "b58fb81c-cf25-4e24-98ad-3ae36ee0f17f",
+  "SalesLines": [
+    {
+      "SalesLineID": "b58fb81c-cf25-4e24-18ad-1ae36ee0f17f",
+      "PerformaInvoiceNumber": "ABC100000001-GS",
+      "ProductNumber": "123ABC01",
+      "UnitPrice": 123.01,
+      "Quantity": 11
+    },
+    {
+      "SalesLineID": "b58fb81c-cf25-4e24-18ad-2ae36ee0f17f",
+      "PerformaInvoiceNumber": "ABC100000002-GS",
+      "ProductNumber": "123ABC02",
+      "UnitPrice": 123.02,
+      "Quantity": 12
+    },
+    {
+      "SalesLineID": "b58fb81c-cf25-4e24-18ad-3ae36ee0f17f",
+      "PerformaInvoiceNumber": "ABC100000003-GS",
+      "ProductNumber": "123ABC03",
+      "UnitPrice": 123.03,
+      "Quantity": 13
+    }
+  ],
+  "SalesLineEDI": [
+    {
+      "SalesLineID": "b58fb81c-cf25-4e24-18ad-1ae36ee0f17f",
+      "Afe": "AfeValue1",
+      "AfeOwner": "AfeOwner1"
+    },
+    {
+      "SalesLineID": "b58fb81c-cf25-4e24-18ad-2ae36ee0f17f",
+      "Afe": "AfeValue2",
+      "AfeOwner": "AfeOwner2"
+    }
+  ],
+  "Attachments": [
+    {
+      "SalesLineID": "b58fb81c-cf25-4e24-18ad-1ae36ee0f17f",
+      "ContainerName": "d365fo-attachments",
+      "BlobPath": "TT/202305/4e8068da-4c2f-4c2c-92ad-f60b45a62731",
+      "FileName": "ABC100000001-GS-1.pdf",
+      "ContentType": "application/pdf"
+    },
+    {
+      "SalesLineID": "b58fb81c-cf25-4e24-18ad-1ae36ee0f17f",
+      "ContainerName": "d365fo-attachments",
+      "BlobPath": "TT/202305/4e8068da-4c2f-4c2c-92ad-f60b45a62732",
+      "FileName": "ABC100000001-GS-2.pdf",
+      "ContentType": "application/pdf"
+    }
+  ]
+}

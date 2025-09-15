@@ -1,0 +1,16 @@
+{
+   "TransactionID": "{{ content.runid }}",
+  "TradeAgreementLine": [
+    {% for item in content.value %}
+    {
+      "AccountRelation": "{{ item.PriceCustomerGroupCode }}",
+      "Description":"{{ item.PriceGroupName }}",
+      "Amount": {{ item.Price }},
+      "FromDate": "{{ item.FromDate | Date: "yyyy-MM-dd" }}",
+      "InventSiteId": "{{ item.PriceSiteId }}",
+      "ItemRelation": "{{ item.ItemNumber }}"
+    }
+     {% unless forloop.last %},{% endunless %}
+    {% endfor %}    
+  ]
+}

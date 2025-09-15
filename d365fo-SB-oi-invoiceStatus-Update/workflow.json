@@ -1,0 +1,195 @@
+{
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "actions": {
+        "Parse_JSON": {
+          "type": "ParseJson",
+          "inputs": {
+            "content": "@body('Parse_JSON_2')?['contentData']",
+            "schema": {
+              "properties": {
+                "MessageBody": {
+                  "type": "string"
+                },
+                "OIDocumentID": {
+                  "type": "string"
+                },
+                "OIInvoiceReceived": {
+                  "type": "string"
+                },
+                "RetryQueue": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "runAfter": {
+            "Parse_JSON_2": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Parse_JSON_2": {
+          "type": "ParseJson",
+          "inputs": {
+            "content": "@triggerOutputs()?['body']",
+            "schema": {
+              "properties": {
+                "contentData": {
+                  "type": "string"
+                },
+                "contentType": {
+                  "type": "string"
+                },
+                "deliveryCount": {
+                  "type": "integer"
+                },
+                "enqueuedSequenceNumber": {
+                  "type": "integer"
+                },
+                "enqueuedTimeUtc": {
+                  "type": "string"
+                },
+                "lockToken": {
+                  "type": "string"
+                },
+                "lockedUntilUtc": {
+                  "type": "string"
+                },
+                "messageId": {
+                  "type": "string"
+                },
+                "scheduledEnqueueTimeUtc": {
+                  "type": "string"
+                },
+                "sequenceNumber": {
+                  "type": "integer"
+                },
+                "timeToLive": {
+                  "type": "string"
+                },
+                "userProperties": {
+                  "properties": {
+                    "diagnostic-Id": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "runAfter": {}
+        },
+        "Send_an_Alert_email_": {
+          "type": "ApiConnection",
+          "inputs": {
+            "host": {
+              "connection": {
+                "referenceName": "office365"
+              }
+            },
+            "method": "post",
+            "body": {
+              "To": "rpayavula@secure-energy.com",
+              "Subject": "Error ! d365fo-SB-oi-invoiceStatus-Update @{workflow()['run']['name']}",
+              "Body": "<p>Hi,<br>\n<br>\nError while sending export status or comment back to OI.<br>\n@{body('HTTP_post_update')}@{body('HTTP_post_comment_to_OI')}<br>\n<br>\nThanks,<br>\nd365fo-SB-oi-invoiceStatus-Update</p>",
+              "Importance": "Normal"
+            },
+            "path": "/v2/Mail"
+          },
+          "runAfter": {
+            "HTTP_post_comment_to_OI": [
+              "FAILED",
+              "TIMEDOUT"
+            ]
+          }
+        },
+        "Send_message_to_log": {
+          "type": "ServiceProvider",
+          "inputs": {
+            "parameters": {
+              "entityName": "open-invoice-logging",
+              "message": {
+                "contentData": {
+                  "DateTime": " @{convertFromUtc( utcNow(),'Mountain Standard Time')}",
+                  "Identifier": " @{workflow()['run']['name']}",
+                  "MessageBody": "@{body('Parse_JSON')?['MessageBody']}",
+                  "WorkFlow": "d365fo-SB-oi-invoiceStatus-Update",
+                  "keyfield": "@{body('Parse_JSON')?['OIDocumentID']}",
+                  "status": ""
+                }
+              }
+            },
+            "serviceProviderConfiguration": {
+              "connectionName": "PrivateServiceBus",
+              "operationId": "sendMessage",
+              "serviceProviderId": "/serviceProviders/serviceBus"
+            }
+          },
+          "runAfter": {
+            "Parse_JSON": [
+              "Succeeded"
+            ]
+          }
+        },
+        "HTTP_post_comment_to_OI": {
+          "type": "Http",
+          "inputs": {
+            "uri": "@{parameters('OIUrl')}/docp/events/supply-chain/v1/invoice.comment.add",
+            "method": "POST",
+            "body": {
+              "events": [
+                {
+                  "data": {
+                    "eventContext": {
+                      "itemID": "@{body('Parse_JSON')?['OIDocumentID']}"
+                    },
+                    "transform": {
+                      "invoice": {
+                        "note": {
+                          "textValue": "@{if(greater(length(body('Parse_JSON')?['MessageBody']),2000),substring(body('Parse_JSON')?['MessageBody'],0,1999),body('Parse_JSON')?['MessageBody'])}",
+                          "visibility": "@{if(contains(body('Parse_JSON')?['MessageBody'],'Payment'),'Public','Private')}"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "authentication": {
+              "type": "ClientCertificate",
+              "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+              "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+            }
+          },
+          "runAfter": {
+            "Send_message_to_log": [
+              "Succeeded"
+            ]
+          }
+        }
+      },
+      "triggers": {
+        "When_messages_are_available_in_a_topic_subscription": {
+          "type": "ServiceProvider",
+          "inputs": {
+            "parameters": {
+              "queueName": "open-invoice-post-update",
+              "isSessionsEnabled": false
+            },
+            "serviceProviderConfiguration": {
+              "connectionName": "PrivateServiceBus",
+              "operationId": "receiveQueueMessages",
+              "serviceProviderId": "/serviceProviders/serviceBus"
+            }
+          },
+          "splitOn": "@triggerOutputs()?['body']"
+        }
+      },
+      "contentVersion": "1.0.0.0",
+      "outputs": {}
+    }
+  }

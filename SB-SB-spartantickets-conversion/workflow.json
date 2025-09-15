@@ -1,0 +1,1583 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Compose": {
+                "type": "Compose",
+                "inputs": "@json(xml(variables('payload')))",
+                "runAfter": {
+                    "Condition_check_if_TC_in_payload": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Compose_incoming_xml": {
+                "type": "Compose",
+                "inputs": "@triggerOutputs()?['body']?['contentData']",
+                "runAfter": {
+                    "Compose_sample_xml_input_1": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Compose_json": {
+                "type": "Compose",
+                "inputs": {
+                    "Blobs": "",
+                    "CorrelationId": "@{workflow()['run']['name']}",
+                    "Identifiers": "",
+                    "MessageDate": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                    "MessageType": "SpartanOffLoadSummary",
+                    "Operation": "Create",
+                    "Payload": "@body('Parse_JSON')?['TransferTransactionRecord']",
+                    "Source": "Spartan",
+                    "SourceId": "@{body('Parse_JSON')?['TransferTransactionRecord']?['ID']}"
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Compose_sample_xml_input_1": {
+                "type": "Compose",
+                "inputs": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<TransferTransactionRecord xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n  <ID>5805ca59-8082-40a4-a7f0-3e18558d52fb</ID>\n  <IsEnabled>true</IsEnabled>\n  <TransactionID>128427</TransactionID>\n  <CustomerTransactionID>128427</CustomerTransactionID>\n  <Status>TransactionOpened</Status>\n \n<FacilityUWI>155-10-05-026-05W5</FacilityUWI>\n\n<IsTransactionExportedToProductionAccounting>false</IsTransactionExportedToProductionAccounting>\n  <IsUpgradeRecord>true</IsUpgradeRecord>\n  <IsEditableRecord>false</IsEditableRecord>\n  <IsSplitTicket>false</IsSplitTicket>\n  <SplitTicketPercentage>100</SplitTicketPercentage>\n  <SplitTicketVolume>0</SplitTicketVolume>\n  <TransferTransactionType>Master</TransferTransactionType>\n  <IsStoredInExternalDatabase>false</IsStoredInExternalDatabase>\n  <TransferScanFileName>128427.la.glace.south.fst.oil.emulsion.1.20220906.082114.20220906.083120.transaction</TransferScanFileName>\n  <SoftwareVersion>Version 5.1.2.0</SoftwareVersion>\n  <ExternalDatabaseTransactionID>0</ExternalDatabaseTransactionID>\n  <FacilityOperatorExternalDatabaseKey />\n  <FacilityOperatorExternalDatabaseKeyID>0</FacilityOperatorExternalDatabaseKeyID>\n  <LocationExternalDatabaseKey>-1</LocationExternalDatabaseKey>\n  <LocationExternalDatabaseKeyID>-1</LocationExternalDatabaseKeyID>\n  <ProductMarketerExternalDatabaseKey />\n  <ProductMarketerExternalDatabaseKeyID>0</ProductMarketerExternalDatabaseKeyID>\n  <ProductShipperExternalDatabaseKey />\n  <ProductShipperExternalDatabaseKeyID>0</ProductShipperExternalDatabaseKeyID>\n  <ProductProducerExternalDatabaseKey>ARC Resources Ltd.</ProductProducerExternalDatabaseKey>\n  <ProductProducerExternalDatabaseKeyID>0</ProductProducerExternalDatabaseKeyID>\n  <ProductExternalDatabaseKey />\n  <ProductExternalDatabaseKeyID>0</ProductExternalDatabaseKeyID>\n  <ProductPurchaserExternalDatabaseKey />\n  <ProductPurchaserExternalDatabaseKeyID>0</ProductPurchaserExternalDatabaseKeyID>\n  <TransportVehicleExternalDatabaseKey />\n  <TransportVehicleExternalDatabaseKeyID>0</TransportVehicleExternalDatabaseKeyID>\n  <TransportDriverExternalDatabaseKey />\n  <TransportDriverExternalDatabaseKeyID>0</TransportDriverExternalDatabaseKeyID>\n  <TransportCompanyExternalDatabaseKey />\n  <TransportCompanyExternalDatabaseKeyID>0</TransportCompanyExternalDatabaseKeyID>\n  <TerminationReason>TransportDriver</TerminationReason>\n  <TransferStartTime>2022-09-06T08:21:14.0305944-06:00</TransferStartTime>\n  <TransferFinishTime>2022-09-06T15:31:20.3053188-06:00</TransferFinishTime>\n  <UngroundedCount>0</UngroundedCount>\n  <AlarmWhileFlowingCount>0</AlarmWhileFlowingCount>\n  <Comments />\n  <SafetyComments />\n  <InvestigateTransaction>false</InvestigateTransaction>\n  <SamplerJarNumber>-1</SamplerJarNumber>\n  <FacilityName>La Glace South FST</FacilityName>\n  \n  <PanelIdentifier>0</PanelIdentifier>\n  <PlantIdentifier>20001</PlantIdentifier>\n  <FacilityOperatorName>Logan Arseneault</FacilityOperatorName>\n  <FacilityCorporateName>Secure Energy</FacilityCorporateName>\n  <TransferPointName>Oil Emulsion 1</TransferPointName>\n  <TransferPointInstance>1</TransferPointInstance>\n  <TransferPointDirection>Offload Transfer</TransferPointDirection>\n  <ProductMarketerName />\n  <ProductShipperName />\n  <ProductProducerName />\n  <ProductPurchaserName />\n  <OilDensitySource>AutoComp</OilDensitySource>\n  <WaterDensitySource>AutoComp</WaterDensitySource>\n  <LocationUWI>100-14-18-064-05W6-00</LocationUWI>\n  <LocationName>Not In List</LocationName>\n  <LocationDescription>Not In List</LocationDescription>\n  <LocationCode />\n  <LocationBusinessAssociateName>ARC Resources Ltd.</LocationBusinessAssociateName>\n  <LocationBusinessAssociateCode />\n  <ProductName>Condensate</ProductName>\n  <ProductDescription>Emulsion Product</ProductDescription>\n  <ProductCode>01</ProductCode>\n  <ProductType>Emulsion</ProductType>\n  <AutoCompCorrectedOilDensity>778.03988737136171</AutoCompCorrectedOilDensity>\n  <AutoCompCorrectedWaterDensity>994.224869487773</AutoCompCorrectedWaterDensity>\n  <LocationAutoCompCorrectedOilDensity>778.03988737136171</LocationAutoCompCorrectedOilDensity>\n  <LocationAutoCompCorrectedWaterDensity>994.224869487773</LocationAutoCompCorrectedWaterDensity>\n  <LocationAnalyzedCorrectedOilDensity>754.2</LocationAnalyzedCorrectedOilDensity>\n  <LocationAnalyzedCorrectedWaterDensity>0</LocationAnalyzedCorrectedWaterDensity>\n  <OilShrinkageFactor>0</OilShrinkageFactor>\n  <LocationVapourPressure>0</LocationVapourPressure>\n  <TransportVehicleType>Truck Transfer Point</TransportVehicleType>\n  <TransportVehicleTypeCode />\n  <TransportVehicleAxles>2</TransportVehicleAxles>\n  <TransportDriverName> TRUCKER</TransportDriverName>\n  <TransportDriverFirstName />\n  <TransportDriverLastName>TRUCKER</TransportDriverLastName>\n  <TransportCompanyName>Maximum Tank Truck Services</TransportCompanyName>\n  <WaybillNumber>274659</WaybillNumber>\n  <TransportVehicleUnitNumber>12</TransportVehicleUnitNumber>\n  <RailCarInsulationType>NonInsulated</RailCarInsulationType>\n  <TransferLoadVolumePreset>30</TransferLoadVolumePreset>\n  <TransferLoadMassPreset>16000</TransferLoadMassPreset>\n  <PlacardStyle>No Placards Applied</PlacardStyle>\n  <PumpOffAmount>30</PumpOffAmount>\n  <PumpOffVolume>30</PumpOffVolume>\n  <PumpOffMass>16000</PumpOffMass>\n  <EstimatedEmulsionWaterCut>0</EstimatedEmulsionWaterCut>\n  <EstimatedEmulsionTemperature>15</EstimatedEmulsionTemperature>\n  <EstimatedEmulsionDensity>0</EstimatedEmulsionDensity>\n  <OpeningEmulsionVolume>0</OpeningEmulsionVolume>\n  <OpeningEmulsionVolumeInventory>540071.125</OpeningEmulsionVolumeInventory>\n  <CorrectedOpeningEmulsionVolume>136503.95326869749</CorrectedOpeningEmulsionVolume>\n  <CorrectedClosingEmulsionVolume>136506.30184842119</CorrectedClosingEmulsionVolume>\n  <OpeningEmulsionMass>0</OpeningEmulsionMass>\n  <OpeningEmulsionMassInventory>467130368</OpeningEmulsionMassInventory>\n  <MeterCorrectionFactor>0.9982</MeterCorrectionFactor>\n  <MeterCalibrationIdentifier>SKY EYE</MeterCalibrationIdentifier>\n  <MeterSerialNumber />\n  <MeterTag>FIT-7100</MeterTag>\n  <OilVolume>0.022253360616876782</OilVolume>\n  <EmulsionVolume>2.349366401004791</EmulsionVolume>\n  <WaterVolume>2.3271130403879141</WaterVolume>\n  <GasVolume>0</GasVolume>\n  <EmulsionWaterCut>99.052793101690767</EmulsionWaterCut>\n  <CorrectionForSedimentAndWater>0.0094801913393297577</CorrectionForSedimentAndWater>\n  <EmulsionDensity>1126.6558886269597</EmulsionDensity>\n  <AverageEmulsionPressure>0</AverageEmulsionPressure>\n  <AverageVapourPressure>175384.38737637684</AverageVapourPressure>\n  <AverageEmulsionTemperature>16.823414174480597</AverageEmulsionTemperature>\n  <AverageOilDensity>776.6000620731387</AverageOilDensity>\n  <AverageEmulsionDensity>1127.1110949655847</AverageEmulsionDensity>\n  <AverageCorrectedEmulsionDensity>1127.4943545193396</AverageCorrectedEmulsionDensity>\n  <AverageDriveGain>42.218706548471204</AverageDriveGain>\n  <OilMass>333.25383137140625</OilMass>\n  <WaterMass>2313.6736588629688</WaterMass>\n  <EmulsionMassRate>262.07202873607673</EmulsionMassRate>\n  <OilMassRate>32.995428848654079</OilMassRate>\n  <WaterMassRate>229.07659988742262</WaterMassRate>\n  <EmulsionFlowRate>0.2326105347529496</EmulsionFlowRate>\n  <OilFlowRate>0.0022033030313739388</OilFlowRate>\n  <WaterFlowRate>0.23040723172157565</WaterFlowRate>\n  <CorrectedEmulsionFlowRate>0.23253264591128894</CorrectedEmulsionFlowRate>\n  <CorrectedOilFlowRate>0.0022044539758796109</CorrectedOilFlowRate>\n  <CorrectedWaterFlowRate>0.23032819193540929</CorrectedWaterFlowRate>\n  <WaterDensity>0</WaterDensity>\n  <ClosingEmulsionVolume>2.3536028861999512</ClosingEmulsionVolume>\n  <ClosingEmulsionVolumeInventory>540073.4375</ClosingEmulsionVolumeInventory>\n  <ClosingEmulsionMass>2646.927490234375</ClosingEmulsionMass>\n  <ClosingEmulsionMassInventory>467133024</ClosingEmulsionMassInventory>\n  <IndicatedVolume>2.3536028861999512</IndicatedVolume>\n  <EmulsionMass>2646.927490234375</EmulsionMass>\n  <OilPressureCorrectionFactor>1</OilPressureCorrectionFactor>\n  <OilTemperatureCorrectionFactor>1.000522372315239</OilTemperatureCorrectionFactor>\n  <WaterTemperatureCorrectionFactor>0.99966095594840865</WaterTemperatureCorrectionFactor>\n  <OilTemperaturePressureCorrectionFactor>1.000522372315239</OilTemperaturePressureCorrectionFactor>\n  <CorrectedOilVolume>0.02226498515638407</CorrectedOilVolume>\n  <CorrectedEmulsionVolume>2.3485797237040185</CorrectedEmulsionVolume>\n  <CorrectedWaterVolume>2.3263147385476342</CorrectedWaterVolume>\n  <CorrectedGasVolume>0</CorrectedGasVolume>\n  <CorrectedEmulsionWaterCut>99.051980866067026</CorrectedEmulsionWaterCut>\n  <CorrectedEmulsionDensity>1127.03327186178</CorrectedEmulsionDensity>\n  <CorrectedOilDensity>778.03988737136171</CorrectedOilDensity>\n  <CorrectedWaterDensity>994.224869487773</CorrectedWaterDensity>\n  <CorrectedVapourDensity>778.03988737136171</CorrectedVapourDensity>\n  <CorrectedShrinkageOilVolume>0.02226498515638407</CorrectedShrinkageOilVolume>\n  <CorrectedShrinkageEmulsionVolume>2.348579723704018</CorrectedShrinkageEmulsionVolume>\n  <ShrinkageEmulsionVolume>2.349366401004791</ShrinkageEmulsionVolume>\n  <CorrectedShrinkageEmulsionVolumeLoss>4.4408920985006262E-16</CorrectedShrinkageEmulsionVolumeLoss>\n  <ShrinkageEmulsionMass>2646.927490234375</ShrinkageEmulsionMass>\n  <ShrinkageEmulsionMassLoss>0</ShrinkageEmulsionMassLoss>\n  <CorrectedShrinkageEmulsionWaterCut>99.051980866067041</CorrectedShrinkageEmulsionWaterCut>\n  <OilTankCorrectedEmulsionVolume>0</OilTankCorrectedEmulsionVolume>\n  <OilTankCorrectedWaterVolume>0</OilTankCorrectedWaterVolume>\n  <OilTankCorrectedOilVolume>0</OilTankCorrectedOilVolume>\n  <WaterTankCorrectedEmulsionVolume>0</WaterTankCorrectedEmulsionVolume>\n  <WaterTankCorrectedOilVolume>0</WaterTankCorrectedOilVolume>\n  <WaterTankCorrectedWaterVolume>0</WaterTankCorrectedWaterVolume>\n  <EmulsionTankCorrectedEmulsionVolume>0</EmulsionTankCorrectedEmulsionVolume>\n  <EmulsionTankCorrectedWaterVolume>0</EmulsionTankCorrectedWaterVolume>\n  <EmulsionTankCorrectedOilVolume>0</EmulsionTankCorrectedOilVolume>\n  <OilTankEmulsionVolume>0</OilTankEmulsionVolume>\n  <OilTankOilVolume>0</OilTankOilVolume>\n  <OilTankWaterVolume>0</OilTankWaterVolume>\n  <WaterTankEmulsionVolume>0</WaterTankEmulsionVolume>\n  <WaterTankOilVolume>0</WaterTankOilVolume>\n  <WaterTankWaterVolume>0</WaterTankWaterVolume>\n  <EmulsionTankEmulsionVolume>0</EmulsionTankEmulsionVolume>\n  <EmulsionTankOilVolume>0</EmulsionTankOilVolume>\n  <EmulsionTankWaterVolume>0</EmulsionTankWaterVolume>\n  <OilTankName />\n  <WaterTankName />\n  <EmulsionTankName />\n  <CustomerApplicationField1 />\n  <CustomerApplicationField2 />\n  <CustomerApplicationField3 />\n  <CustomerApplicationField4 />\n  <CustomerApplicationField5 />\n  <CustomerApplicationField6 />\n  <CustomerApplicationField7 />\n  <CustomerApplicationField8 />\n  <CustomerApplicationField9 />\n  <RoundedCorrectedWaterVolume>2.3</RoundedCorrectedWaterVolume>\n  <RoundedCorrectedEmulsionVolume>2.3</RoundedCorrectedEmulsionVolume>\n  <RoundedCorrectedEmulsionWaterCut>100</RoundedCorrectedEmulsionWaterCut>\n</TransferTransactionRecord>",
+                "runAfter": {
+                    "Initialize_variable_counter": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition_check_and_add_LocationOperatingStatus": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "contains": [
+                                "@outputs('Compose_incoming_xml')",
+                                "<LocationOperatingStatus>"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Set_incoming_as_Payload": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "payload",
+                            "value": "@{outputs('Compose_incoming_xml')}"
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Compose_incoming_xml": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Update_incoming_with_LocationOperatingStatus_and_set_as_Payload": {
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "payload",
+                                "value": "@{replace(outputs('Compose_incoming_xml'),'</TransferTransactionRecord>','<LocationOperatingStatus>Production</LocationOperatingStatus></TransferTransactionRecord>')}"
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "Initialize_variable_counter": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "counter",
+                            "type": "integer",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_uwi": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_payload": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "payload",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_variable_uwi": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "uwi",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_payload": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('Compose')",
+                    "schema": {
+                        "properties": {
+                            "?xml": {
+                                "properties": {
+                                    "@@encoding": {
+                                        "type": "string"
+                                    },
+                                    "@@version": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "TransferTransactionRecord": {
+                                "properties": {
+                                    "@@xmlns:xsd": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "@@xmlns:xsi": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AlarmWhileFlowingCount": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AutoCompCorrectedOilDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AutoCompCorrectedWaterDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AverageCorrectedEmulsionDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AverageDriveGain": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AverageEmulsionDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AverageEmulsionPressure": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AverageEmulsionTemperature": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AverageOilDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AverageVapourPressure": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ClosingEmulsionMass": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ClosingEmulsionMassInventory": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ClosingEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ClosingEmulsionVolumeInventory": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Comments": {},
+                                    "CorrectedClosingEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedEmulsionDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedEmulsionFlowRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedEmulsionWaterCut": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedGasVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedOilDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedOilFlowRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedOpeningEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedShrinkageEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedShrinkageEmulsionVolumeLoss": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedShrinkageEmulsionWaterCut": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedShrinkageOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedVapourDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedWaterDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedWaterFlowRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectedWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrectionForSedimentAndWater": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CustomerApplicationField1": {},
+                                    "CustomerApplicationField2": {},
+                                    "CustomerApplicationField3": {},
+                                    "CustomerApplicationField4": {},
+                                    "CustomerApplicationField5": {},
+                                    "CustomerApplicationField6": {},
+                                    "CustomerApplicationField7": {},
+                                    "CustomerApplicationField8": {},
+                                    "CustomerApplicationField9": {},
+                                    "CustomerTransactionID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionFlowRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionMass": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionMassRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionTankCorrectedEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionTankCorrectedOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionTankCorrectedWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionTankEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionTankName": {},
+                                    "EmulsionTankOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionTankWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EmulsionWaterCut": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EstimatedEmulsionDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EstimatedEmulsionTemperature": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "EstimatedEmulsionWaterCut": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ExternalDatabaseTransactionID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "FacilityCorporateName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "FacilityName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "FacilityOperatorExternalDatabaseKey": {},
+                                    "FacilityOperatorExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "FacilityOperatorName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "FacilityUWI": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "GasVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IndicatedVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "InvestigateTransaction": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsEditableRecord": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsEnabled": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsSplitTicket": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsStoredInExternalDatabase": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsTransactionExportedToProductionAccounting": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsUpgradeRecord": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationAnalyzedCorrectedOilDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationAnalyzedCorrectedWaterDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationAutoCompCorrectedOilDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationAutoCompCorrectedWaterDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationBusinessAssociateCode": {},
+                                    "LocationBusinessAssociateName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationCode": {},
+                                    "LocationDescription": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationExternalDatabaseKey": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationUWI": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "LocationVapourPressure": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MeterCalibrationIdentifier": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MeterCorrectionFactor": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MeterSerialNumber": {},
+                                    "MeterTag": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilDensitySource": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilFlowRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilMass": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilMassRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilPressureCorrectionFactor": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilShrinkageFactor": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTankCorrectedEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTankCorrectedOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTankCorrectedWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTankEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTankName": {},
+                                    "OilTankOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTankWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTemperatureCorrectionFactor": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilTemperaturePressureCorrectionFactor": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OpeningEmulsionMass": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OpeningEmulsionMassInventory": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OpeningEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "OpeningEmulsionVolumeInventory": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "PanelIdentifier": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "PlacardStyle": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "PlantIdentifier": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductCode": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductDescription": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductExternalDatabaseKey": {},
+                                    "ProductExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductMarketerExternalDatabaseKey": {},
+                                    "ProductMarketerExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductMarketerName": {},
+                                    "ProductName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductProducerExternalDatabaseKey": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductProducerExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductProducerName": {},
+                                    "ProductPurchaserExternalDatabaseKey": {},
+                                    "ProductPurchaserExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductPurchaserName": {},
+                                    "ProductShipperExternalDatabaseKey": {},
+                                    "ProductShipperExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ProductShipperName": {},
+                                    "ProductType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "PumpOffAmount": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "PumpOffMass": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "PumpOffVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "RailCarInsulationType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "RoundedCorrectedEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "RoundedCorrectedEmulsionWaterCut": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "RoundedCorrectedWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SafetyComments": {},
+                                    "SamplerJarNumber": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ShrinkageEmulsionMass": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ShrinkageEmulsionMassLoss": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "ShrinkageEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SoftwareVersion": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SplitTicketPercentage": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SplitTicketVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Status": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TerminationReason": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransactionID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferFinishTime": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferLoadMassPreset": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferLoadVolumePreset": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferPointDirection": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferPointInstance": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferPointName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferScanFileName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferStartTime": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransferTransactionType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportCompanyExternalDatabaseKey": {},
+                                    "TransportCompanyExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportCompanyName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportDriverExternalDatabaseKey": {},
+                                    "TransportDriverExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportDriverFirstName": {},
+                                    "TransportDriverLastName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportDriverName": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportVehicleAxles": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportVehicleExternalDatabaseKey": {},
+                                    "TransportVehicleExternalDatabaseKeyID": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportVehicleType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "TransportVehicleTypeCode": {},
+                                    "TransportVehicleUnitNumber": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "UngroundedCount": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterDensity": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterDensitySource": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterFlowRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterMass": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterMassRate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterTankCorrectedEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterTankCorrectedOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterTankCorrectedWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterTankEmulsionVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterTankName": {},
+                                    "WaterTankOilVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterTankWaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterTemperatureCorrectionFactor": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaterVolume": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "WaybillNumber": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "spartan-tickets",
+                        "message": {
+                            "contentData": "@outputs('Compose_json')"
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Condition_check_to_send_to_wiq": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_log_success": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "Facility: @{body('Parse_JSON')?['TransferTransactionRecord']?['FacilityName']} Transaction: @{body('Parse_JSON')?['TransferTransactionRecord']?['TransactionID']} FileName: @{body('Parse_JSON')?['TransferTransactionRecord']?['TransferScanFileName']} TransferFinishTime: @{body('Parse_JSON')?['TransferTransactionRecord']?['TransferFinishTime']} ",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['TransferTransactionRecord']?['PlantIdentifier']}@{body('Parse_JSON')?['TransferTransactionRecord']?['TransactionID']}-SP",
+                                        "status": "Success"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "MessageType": "Log",
+                                "Operation": "Information",
+                                "Source": "@workflow().name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Send_message": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Send_message_log_error": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "CorrelationId": "",
+                                "MessageDate": "@utcNow()",
+                                "MessageType": "Log",
+                                "Operation": "Error",
+                                "Payload": [
+                                    {
+                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                        "Identifier": "@workflow()['run']['name']",
+                                        "MessageBody": "@{outputs('Compose_incoming_xml')}",
+                                        "Workflow": "@workflow()['name']",
+                                        "keyfield": "@{body('Parse_JSON')?['TransferTransactionRecord']?['PlantIdentifier']}@{body('Parse_JSON')?['TransferTransactionRecord']?['TransactionID']}-SP",
+                                        "status": "Fail"
+                                    }
+                                ],
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name"
+                            },
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "MessageType": "Log",
+                                "Operation": "Error",
+                                "Source": "@workflow().name"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Send_message": [
+                        "FAILED",
+                        "TIMEDOUT",
+                        "SKIPPED"
+                    ]
+                }
+            },
+            "Compose_BA": {
+                "type": "Compose",
+                "inputs": "@substring(variables('payload'),add(indexOf(variables('payload'),'<LocationBusinessAssociateName>'),31),sub(indexOf(variables('payload'),'</LocationBusinessAssociateName>'),add(indexOf(variables('payload'),'<LocationBusinessAssociateName>'),31)))",
+                "runAfter": {
+                    "Condition_check_and_add_LocationOperatingStatus": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition_check_if_TC_in_payload": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "contains": [
+                                "@variables('payload')",
+                                "<TransportCompanyName>"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Compose_TC": {
+                        "type": "Compose",
+                        "inputs": "@substring(variables('payload'),add(indexOf(variables('payload'),'<TransportCompanyName>'),22),sub(indexOf(variables('payload'),'</TransportCompanyName>'),add(indexOf(variables('payload'),'<TransportCompanyName>'),22)))",
+                        "runAfter": {}
+                    },
+                    "Get_rows_TC_and_BA": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sqlD365Replica"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365_REP')['D365_REP_Server']))},@{encodeURIComponent(encodeURIComponent(parameters('D365_REP')['D365_REP_DB']))}/tables/@{encodeURIComponent(encodeURIComponent('[SPARTAN].[Materialized_TruckView_UWI_FacilityList]'))}/items",
+                            "queries": {
+                                "$filter": "CLEAN_OPERATOR_BILLING_CUSTOMER eq '@{replace(replace(outputs('Compose_TC'),'&amp;','&'),'''','''''')}' or CLEAN_OPERATOR_BILLING_CUSTOMER eq '@{replace(replace(outputs('Compose_BA'),'&amp;','&'),'''','''''')}'"
+                            },
+                            "retryPolicy": {
+                                "type": "exponential",
+                                "count": 10,
+                                "interval": "PT50S"
+                            }
+                        },
+                        "runAfter": {
+                            "Compose_TC": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Check_if_rows_returned": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "greater": [
+                                        "@length(body('Get_rows_TC_and_BA')?['value'])",
+                                        0
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Filter_array_for_BA": {
+                                "type": "Query",
+                                "inputs": {
+                                    "from": "@body('Get_rows_TC_and_BA')?['value']",
+                                    "where": "@equals(item()['CLEAN_OPERATOR_BILLING_CUSTOMER'], replace(replace(outputs('Compose_BA'), '&amp;', '&'), '''', ''''''))"
+                                },
+                                "runAfter": {}
+                            },
+                            "Filter_array_for_TC": {
+                                "type": "Query",
+                                "inputs": {
+                                    "from": "@body('Get_rows_TC_and_BA')?['value']",
+                                    "where": "@equals(item()['CLEAN_OPERATOR_BILLING_CUSTOMER'], replace(replace(outputs('Compose_TC'), '&amp;', '&'), '''', ''''''))"
+                                },
+                                "runAfter": {
+                                    "Check_if_BA_row_exists": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Check_if_TC_row_exists": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "greater": [
+                                                "@length(body('Filter_array_for_TC'))",
+                                                0
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Compose_TC_update": {
+                                        "type": "Compose",
+                                        "inputs": "@{substring(variables('payload'),0,indexOf(variables('payload'),'<TransportCompanyName>'))}\n<TransportCompanyName>@{replace(body('Filter_array_for_TC')[0]['OPERATOR_BILLING_CUSTOMER'],'&','&amp;')}@{substring(variables('payload'),indexOf(variables('payload'),'</TransportCompanyName>'))}",
+                                        "runAfter": {}
+                                    },
+                                    "set_payload_with_updated_TC": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "payload",
+                                            "value": "@{outputs('Compose_TC_update')}"
+                                        },
+                                        "runAfter": {
+                                            "Compose_TC_update": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Filter_array_for_TC": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Check_if_BA_row_exists": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "greater": [
+                                                "@length(body('Filter_array_for_BA'))",
+                                                0
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Compose_BA_Update": {
+                                        "type": "Compose",
+                                        "inputs": "@{substring(variables('payload'),0,indexOf(variables('payload'),'<LocationBusinessAssociateName>'))}\n<LocationBusinessAssociateName>@{replace(body('Filter_array_for_BA')[0]['OPERATOR_BILLING_CUSTOMER'],'&','&amp;')}@{substring(variables('payload'),indexOf(variables('payload'),'</LocationBusinessAssociateName>'))}",
+                                        "runAfter": {}
+                                    },
+                                    "set_payload_with_updated_BA": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "payload",
+                                            "value": "@{outputs('Compose_BA_Update')}"
+                                        },
+                                        "runAfter": {
+                                            "Compose_BA_Update": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Filter_array_for_BA": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Get_rows_TC_and_BA": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Compose_BA": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Condition_if_BA_exists": {
+                            "type": "If",
+                            "expression": {
+                                "and": [
+                                    {
+                                        "greater": [
+                                            "@length(body('Get_rows_BA')?['value'])",
+                                            0
+                                        ]
+                                    }
+                                ]
+                            },
+                            "actions": {
+                                "Compose_Update_BA": {
+                                    "type": "Compose",
+                                    "inputs": "@{substring(variables('payload'),0,indexOf(variables('payload'),'<LocationBusinessAssociateName>'))}\n<LocationBusinessAssociateName>@{replace(body('Get_rows_BA')?['value'][0]['OPERATOR_BILLING_CUSTOMER'],'&','&amp;')}@{substring(variables('payload'),indexOf(variables('payload'),'</LocationBusinessAssociateName>'))}",
+                                    "runAfter": {}
+                                },
+                                "set_payload_with_updated_BA_only": {
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "payload",
+                                        "value": "@{outputs('Compose_Update_BA')}"
+                                    },
+                                    "runAfter": {
+                                        "Compose_Update_BA": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                }
+                            },
+                            "runAfter": {
+                                "Get_rows_BA": [
+                                    "Succeeded"
+                                ]
+                            }
+                        },
+                        "Get_rows_BA": {
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "referenceName": "sqlD365Replica"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365_REP')['D365_REP_Server']))},@{encodeURIComponent(encodeURIComponent(parameters('D365_REP')['D365_REP_DB']))}/tables/@{encodeURIComponent(encodeURIComponent('[SPARTAN].[Materialized_TruckView_UWI_FacilityList]'))}/items",
+                                "queries": {
+                                    "$filter": "CLEAN_OPERATOR_BILLING_CUSTOMER eq '@{replace(replace(outputs('Compose_BA'),'&amp;','&'),'''','''''')}'",
+                                    "$top": 1
+                                },
+                                "retryPolicy": {
+                                    "type": "exponential",
+                                    "count": 10,
+                                    "interval": "PT50S"
+                                }
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "Condition_check_to_send_to_wiq": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "contains": [
+                                "@string(variables('payload'))",
+                                "<ScheduleNumber>"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Send_message_to_wiq": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "spartan-tickets-wiq",
+                                "message": {
+                                    "contentData": "@body('Parse_JSON')?['TransferTransactionRecord']"
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Compose_json": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "spartan-tickets-xml",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveQueueMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

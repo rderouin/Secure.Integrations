@@ -1,0 +1,1787 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Check_Duplicate": {
+                "type": "ApiConnection",
+                "inputs": {
+                    "host": {
+                        "connection": {
+                            "referenceName": "dynamicsax-6"
+                        }
+                    },
+                    "method": "post",
+                    "body": {
+                        "_InvoiceId": "@body('Parse_JSON')?['InvoiceId']",
+                        "_dataareaid1": "@parameters('HMMCompany1')",
+                        "_dataareaid2": "@parameters('HMMCompany2')"
+                    },
+                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.checkHMMInvoiceDuplicate'))}"
+                },
+                "runAfter": {
+                    "Initialize_Payment_term_response": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Compose": {
+                "type": "Compose",
+                "inputs": "@base64ToString(triggerOutputs()?['body']?['contentData'].$content)",
+                "runAfter": {}
+            },
+            "If_the_invoice_is_not_already_created_as_Gen_Journal": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('Check_Duplicate')?['value']",
+                                "False"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Condition_check_if_HMM_lines_exist": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "not": {
+                                        "equals": [
+                                            "@empty(body('Get_rows_from_HMM_invoice_detail_table'))",
+                                            true
+                                        ]
+                                    }
+                                },
+                                {
+                                    "equals": [
+                                        "@outputs('Get_rows_from_HMM_invoice_detail_table')['statusCode']",
+                                        200
+                                    ]
+                                },
+                                {
+                                    "greater": [
+                                        "@length(body('Filter_invoices_with_minimum_of_one_line_item'))",
+                                        0
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "For_each": {
+                                "type": "Foreach",
+                                "foreach": "@body('Get_rows_from_HMM_invoice_detail_table')?['value']",
+                                "actions": {
+                                    "If_Line_Category_is_Line": {
+                                        "type": "If",
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "equals": [
+                                                        "@items('For_each')?['invoiceLineCategory']",
+                                                        "Line"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "actions": {
+                                            "If_no_termination": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@variables('Loop break')",
+                                                                false
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Check_if_BU_Location_Or_Customer_Id_exist": {
+                                                        "type": "If",
+                                                        "expression": {
+                                                            "and": [
+                                                                {
+                                                                    "not": {
+                                                                        "equals": [
+                                                                            "@empty(body('Get_BU_and_Location')?['value'])",
+                                                                            true
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "not": {
+                                                                        "equals": [
+                                                                            "@variables('AX_ID')",
+                                                                            ""
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            ]
+                                                        },
+                                                        "actions": {
+                                                            "Check_Line_Num": {
+                                                                "type": "If",
+                                                                "expression": {
+                                                                    "or": [
+                                                                        {
+                                                                            "equals": [
+                                                                                "@variables('HMMLines')",
+                                                                                1
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "actions": {
+                                                                    "Create_Journal_with_1st_line": {
+                                                                        "type": "ApiConnection",
+                                                                        "inputs": {
+                                                                            "host": {
+                                                                                "connection": {
+                                                                                    "referenceName": "dynamicsax-6"
+                                                                                }
+                                                                            },
+                                                                            "method": "post",
+                                                                            "body": {
+                                                                                "LineNumber": "@variables('HMMLines')",
+                                                                                "JournalName": "@parameters('HMMJournalVoucher')",
+                                                                                "CurrencyCode": "@items('For_each')?['currency']",
+                                                                                "dataAreaId": "@variables('AxCompany')",
+                                                                                "ItemSalesTaxGroup": "@parameters('HMMItemSalesTax')",
+                                                                                "Text": "@items('For_each')?['itemDescription']",
+                                                                                "TransDate": "@variables('InvoiceDate(Line)')",
+                                                                                "DefaultDimensionDisplayValue": "@variables('Default Dimension Display')",
+                                                                                "DebitAmount": "@if(less(float(items('For_each')?['amount']),0),float(mul(float(items('For_each')?['amount']),-1)),0)",
+                                                                                "DocumentDate": "@variables('InvoiceDate(Line)')",
+                                                                                "AccountDisplayValue": "@variables('Account')",
+                                                                                "Description": "@{concat(body('Parse_JSON')?['InvoiceId'],' ','Import',' ',formatDateTime(utcNow(),'MM-dd-yyyy'))} ",
+                                                                                "SalesTaxGroup": "@if(equals(variables('SalesTaxGroup'), 'BLANK'),'GST',variables('SalesTaxGroup'))",
+                                                                                "AccountType": "Ledger",
+                                                                                "Invoice": "@body('Parse_JSON')?['InvoiceId']",
+                                                                                "CreditAmount": "@if(greater(float(items('For_each')?['amount']),0),float(mul(float(items('For_each')?['amount']),1)),0)"
+                                                                            },
+                                                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal'))}/items"
+                                                                        },
+                                                                        "runAfter": {}
+                                                                    },
+                                                                    "If_journal_is_successfully_created": {
+                                                                        "type": "If",
+                                                                        "expression": {
+                                                                            "and": [
+                                                                                {
+                                                                                    "equals": [
+                                                                                        "@actions('Create_Journal_with_1st_line').status",
+                                                                                        "Succeeded"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "actions": {
+                                                                            "Increment_HMM_Lines": {
+                                                                                "type": "IncrementVariable",
+                                                                                "inputs": {
+                                                                                    "name": "HMMLines",
+                                                                                    "value": 1
+                                                                                },
+                                                                                "runAfter": {}
+                                                                            },
+                                                                            "Increment_SumDebit": {
+                                                                                "type": "IncrementVariable",
+                                                                                "inputs": {
+                                                                                    "name": "HMMSumDebit",
+                                                                                    "value": "@items('For_each')?['amount']"
+                                                                                },
+                                                                                "runAfter": {
+                                                                                    "Set_Journal_Batch_Num": [
+                                                                                        "Succeeded"
+                                                                                    ]
+                                                                                }
+                                                                            },
+                                                                            "Set_Journal_Batch_Num": {
+                                                                                "type": "SetVariable",
+                                                                                "inputs": {
+                                                                                    "name": "Journal Num",
+                                                                                    "value": "@body('Create_Journal_with_1st_line')?['JournalBatchNumber']"
+                                                                                },
+                                                                                "runAfter": {
+                                                                                    "Increment_HMM_Lines": [
+                                                                                        "Succeeded"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "runAfter": {
+                                                                            "Create_Journal_with_1st_line": [
+                                                                                "Succeeded",
+                                                                                "TIMEDOUT",
+                                                                                "SKIPPED",
+                                                                                "FAILED"
+                                                                            ]
+                                                                        },
+                                                                        "else": {
+                                                                            "actions": {
+                                                                                "Parse_JSON_Error_Message": {
+                                                                                    "type": "ParseJson",
+                                                                                    "inputs": {
+                                                                                        "content": "@body('Create_Journal_with_1st_line')",
+                                                                                        "schema": {
+                                                                                            "properties": {
+                                                                                                "errors": {
+                                                                                                    "type": "array"
+                                                                                                },
+                                                                                                "message": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "source": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "status": {
+                                                                                                    "type": "number"
+                                                                                                }
+                                                                                            },
+                                                                                            "type": "object"
+                                                                                        }
+                                                                                    },
+                                                                                    "runAfter": {
+                                                                                        "Termination_-_Set_Loop_break": [
+                                                                                            "Succeeded"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                "Rollback_Journal": {
+                                                                                    "type": "ApiConnection",
+                                                                                    "inputs": {
+                                                                                        "host": {
+                                                                                            "connection": {
+                                                                                                "referenceName": "dynamicsax-6"
+                                                                                            }
+                                                                                        },
+                                                                                        "method": "post",
+                                                                                        "body": {
+                                                                                            "_LedgerJournalId": "@variables('Journal Num')",
+                                                                                            "_dataAreaId": "@{variables('AxCompany')}",
+                                                                                            "_errorTxt": "@body('Parse_JSON_Error_Message')?['message']",
+                                                                                            "_hmmInvoiceId": "@body('Parse_JSON')?['InvoiceId']"
+                                                                                        },
+                                                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.deleteJournalHMM'))}"
+                                                                                    },
+                                                                                    "runAfter": {
+                                                                                        "Parse_JSON_Error_Message": [
+                                                                                            "Succeeded"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                "Send_message_to_HMM_Invoice_Retry_Queue_-_Error_in_line_creation": {
+                                                                                    "type": "ServiceProvider",
+                                                                                    "inputs": {
+                                                                                        "parameters": {
+                                                                                            "entityName": "hmm-invoice-retry",
+                                                                                            "message": {
+                                                                                                "contentData": "@{outputs('Compose')}",
+                                                                                                "contentType": "Text"
+                                                                                            }
+                                                                                        },
+                                                                                        "serviceProviderConfiguration": {
+                                                                                            "connectionName": "PrivateServiceBus",
+                                                                                            "operationId": "sendMessage",
+                                                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                                        }
+                                                                                    },
+                                                                                    "runAfter": {
+                                                                                        "Rollback_Journal": [
+                                                                                            "Succeeded"
+                                                                                        ]
+                                                                                    }
+                                                                                },
+                                                                                "Termination_-_Set_Loop_break": {
+                                                                                    "type": "SetVariable",
+                                                                                    "inputs": {
+                                                                                        "name": "Loop break",
+                                                                                        "value": true
+                                                                                    },
+                                                                                    "runAfter": {}
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "runAfter": {
+                                                                    "Set_Ax_Company": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                },
+                                                                "else": {
+                                                                    "actions": {
+                                                                        "Create_remaining_journal_lines": {
+                                                                            "type": "ApiConnection",
+                                                                            "inputs": {
+                                                                                "host": {
+                                                                                    "connection": {
+                                                                                        "referenceName": "dynamicsax-6"
+                                                                                    }
+                                                                                },
+                                                                                "method": "post",
+                                                                                "body": {
+                                                                                    "LineNumber": "@variables('HMMLines')",
+                                                                                    "JournalName": "@parameters('HMMJournalVoucher')",
+                                                                                    "CurrencyCode": "@{items('For_each')?['Currency']}",
+                                                                                    "dataAreaId": "@items('For_each')?['AXCompany']",
+                                                                                    "JournalBatchNumber": "@variables('Journal Num')",
+                                                                                    "ItemSalesTaxGroup": "@parameters('HMMItemSalesTax')",
+                                                                                    "Text": "@items('For_each')?['itemDescription']",
+                                                                                    "TransDate": "@variables('InvoiceDate(Line)')",
+                                                                                    "DefaultDimensionDisplayValue": "@variables('Default Dimension Display')",
+                                                                                    "DebitAmount": "@if(less(float(items('For_each')?['amount']),0),float(mul(float(items('For_each')?['amount']),-1)),0)",
+                                                                                    "DocumentDate": "@variables('InvoiceDate(Line)')",
+                                                                                    "AccountDisplayValue": "@variables('Account')",
+                                                                                    "SalesTaxGroup": "@if(equals(variables('SalesTaxGroup'), 'BLANK'),'GST',variables('SalesTaxGroup'))",
+                                                                                    "AccountType": "Ledger",
+                                                                                    "Invoice": "@body('Parse_JSON')?['InvoiceId']",
+                                                                                    "CreditAmount": "@if(greater(float(items('For_each')?['amount']),0),float(mul(float(items('For_each')?['amount']),1)),0)"
+                                                                                },
+                                                                                "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal'))}/items"
+                                                                            },
+                                                                            "runAfter": {}
+                                                                        },
+                                                                        "If_line_is_successfully_created": {
+                                                                            "type": "If",
+                                                                            "expression": {
+                                                                                "and": [
+                                                                                    {
+                                                                                        "equals": [
+                                                                                            "@actions('Create_remaining_journal_lines').status",
+                                                                                            "Succeeded"
+                                                                                        ]
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            "actions": {
+                                                                                "Increment_HMMLines_2": {
+                                                                                    "type": "IncrementVariable",
+                                                                                    "inputs": {
+                                                                                        "name": "HMMLines",
+                                                                                        "value": 1
+                                                                                    },
+                                                                                    "runAfter": {}
+                                                                                },
+                                                                                "Increment_HMM_SumDebit_": {
+                                                                                    "type": "IncrementVariable",
+                                                                                    "inputs": {
+                                                                                        "name": "HMMSumDebit",
+                                                                                        "value": "@items('For_each')?['amount']"
+                                                                                    },
+                                                                                    "runAfter": {
+                                                                                        "Increment_HMMLines_2": [
+                                                                                            "Succeeded"
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "runAfter": {
+                                                                                "Create_remaining_journal_lines": [
+                                                                                    "Succeeded",
+                                                                                    "TIMEDOUT",
+                                                                                    "SKIPPED",
+                                                                                    "FAILED"
+                                                                                ]
+                                                                            },
+                                                                            "else": {
+                                                                                "actions": {
+                                                                                    "Journal_rollback": {
+                                                                                        "type": "ApiConnection",
+                                                                                        "inputs": {
+                                                                                            "host": {
+                                                                                                "connection": {
+                                                                                                    "referenceName": "dynamicsax-6"
+                                                                                                }
+                                                                                            },
+                                                                                            "method": "post",
+                                                                                            "body": {
+                                                                                                "_LedgerJournalId": "@variables('Journal Num')",
+                                                                                                "_dataAreaId": "@variables('AxCompany')",
+                                                                                                "_errorTxt": "@body('Parse_JSON_Error_Msg')?['message']",
+                                                                                                "_hmmInvoiceId": "@body('Parse_JSON')?['InvoiceId']"
+                                                                                            },
+                                                                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.deleteJournalHMM'))}"
+                                                                                        },
+                                                                                        "runAfter": {
+                                                                                            "Parse_JSON_Error_Msg": [
+                                                                                                "Succeeded"
+                                                                                            ]
+                                                                                        }
+                                                                                    },
+                                                                                    "Loop_break_for_terminating_loop": {
+                                                                                        "type": "SetVariable",
+                                                                                        "inputs": {
+                                                                                            "name": "Loop break",
+                                                                                            "value": true
+                                                                                        },
+                                                                                        "runAfter": {}
+                                                                                    },
+                                                                                    "Parse_JSON_Error_Msg": {
+                                                                                        "type": "ParseJson",
+                                                                                        "inputs": {
+                                                                                            "content": "@body('Create_remaining_journal_lines')",
+                                                                                            "schema": {
+                                                                                                "properties": {
+                                                                                                    "errors": {
+                                                                                                        "type": "array"
+                                                                                                    },
+                                                                                                    "message": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "source": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "status": {
+                                                                                                        "type": "number"
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "object"
+                                                                                            }
+                                                                                        },
+                                                                                        "runAfter": {
+                                                                                            "Loop_break_for_terminating_loop": [
+                                                                                                "Succeeded"
+                                                                                            ]
+                                                                                        }
+                                                                                    },
+                                                                                    "Send_message_to_HMM_Invoice_Retry_-_Error_in_line": {
+                                                                                        "type": "ServiceProvider",
+                                                                                        "inputs": {
+                                                                                            "parameters": {
+                                                                                                "entityName": "hmm-invoice-retry",
+                                                                                                "message": {
+                                                                                                    "contentData": "@{outputs('Compose')}",
+                                                                                                    "contentType": "Text"
+                                                                                                }
+                                                                                            },
+                                                                                            "serviceProviderConfiguration": {
+                                                                                                "connectionName": "PrivateServiceBus",
+                                                                                                "operationId": "sendMessage",
+                                                                                                "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                                            }
+                                                                                        },
+                                                                                        "runAfter": {
+                                                                                            "Journal_rollback": [
+                                                                                                "Succeeded"
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            "For_each_2": {
+                                                                "type": "Foreach",
+                                                                "foreach": "@body('Get_HMM_Tax_Mapping')?['value']",
+                                                                "actions": {
+                                                                    "Set_sales_tax_group": {
+                                                                        "type": "SetVariable",
+                                                                        "inputs": {
+                                                                            "name": "SalesTaxGroup",
+                                                                            "value": "@items('For_each_2')?['TAXGROUP']"
+                                                                        },
+                                                                        "runAfter": {}
+                                                                    }
+                                                                },
+                                                                "runAfter": {
+                                                                    "Reset_sales_tax_group": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "For_each_3": {
+                                                                "type": "Foreach",
+                                                                "foreach": "@body('Get_BU_and_Location')?['value']",
+                                                                "actions": {
+                                                                    "Set_acc": {
+                                                                        "type": "SetVariable",
+                                                                        "inputs": {
+                                                                            "name": "Account",
+                                                                            "value": "@{items('For_each')?['AX_account']}-@{items('For_each')?['AXCompany']}-@{parameters('HMMDivisionDefualt')}-@{items('For_each_3')?['D365_BU']}-@{items('For_each_3')?['D365_Loc']}"
+                                                                        },
+                                                                        "runAfter": {
+                                                                            "Set_default_dimension_display_value": [
+                                                                                "Succeeded"
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "Set_default_dimension_display_value": {
+                                                                        "type": "SetVariable",
+                                                                        "inputs": {
+                                                                            "name": "Default Dimension Display",
+                                                                            "value": "@{items('For_each')?['AXCompany']}-@{parameters('HMMDivisionDefualt')}-@{items('For_each_3')?['D365_BU']}-@{items('For_each_3')?['D365_Loc']}"
+                                                                        },
+                                                                        "runAfter": {}
+                                                                    }
+                                                                },
+                                                                "runAfter": {}
+                                                            },
+                                                            "Get_HMM_Tax_Mapping": {
+                                                                "type": "ApiConnection",
+                                                                "inputs": {
+                                                                    "host": {
+                                                                        "connection": {
+                                                                            "referenceName": "sql_auditLogging"
+                                                                        }
+                                                                    },
+                                                                    "method": "get",
+                                                                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[HMM_Tax_Map]'))}/items",
+                                                                    "queries": {
+                                                                        "$filter": "HMMTAXAREA eq '@{items('For_each')?['taxArea']}' AND HMMTAXCATEGORY eq '@{items('For_each')?['TaxCategory']}' AND ADDRESSSTATEID eq '@{items('For_each')?['ShippingProvince']}' AND DATAAREAID eq '@{items('For_each')?['AXDataAreaId']}'"
+                                                                    }
+                                                                },
+                                                                "runAfter": {
+                                                                    "Set_customer_(formatted)": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Set_Ax_Company": {
+                                                                "type": "SetVariable",
+                                                                "inputs": {
+                                                                    "name": "AxCompany",
+                                                                    "value": "@items('For_each')?['AXCompany']"
+                                                                },
+                                                                "runAfter": {
+                                                                    "Set_customer_line_currency": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Set_customer_(formatted)": {
+                                                                "type": "SetVariable",
+                                                                "inputs": {
+                                                                    "name": "CustomerId",
+                                                                    "value": "@{replace(replace(variables('AX_ID'),'-','\\-'),' ','')}"
+                                                                },
+                                                                "runAfter": {
+                                                                    "Check_Payment_term_response": [
+                                                                        "Succeeded",
+                                                                        "TIMEDOUT",
+                                                                        "SKIPPED",
+                                                                        "FAILED"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Set_customer_line_currency": {
+                                                                "type": "SetVariable",
+                                                                "inputs": {
+                                                                    "name": "CustomerLineCurrency",
+                                                                    "value": "@items('For_each')?['currency']"
+                                                                },
+                                                                "runAfter": {
+                                                                    "Set_invoice_date": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Set_invoice_date": {
+                                                                "type": "SetVariable",
+                                                                "inputs": {
+                                                                    "name": "InvoiceDate(Line)",
+                                                                    "value": "@items('For_each')?['invoiceDate']"
+                                                                },
+                                                                "runAfter": {
+                                                                    "For_each_2": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Get_Payment_term": {
+                                                                "type": "Workflow",
+                                                                "inputs": {
+                                                                    "host": {
+                                                                        "workflow": {
+                                                                            "id": "http-d365fo-GetPaymentTerm"
+                                                                        }
+                                                                    },
+                                                                    "body": {
+                                                                        "DataAreaId": "@variables('AxCompany')",
+                                                                        "AccountNumber": "@variables('AX_ID')",
+                                                                        "AccountType": "Customer"
+                                                                    }
+                                                                },
+                                                                "runAfter": {
+                                                                    "For_each_3": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Set_Payment_term_response": {
+                                                                "type": "SetVariable",
+                                                                "inputs": {
+                                                                    "name": "PaymentTermResponse",
+                                                                    "value": "@body('Get_Payment_term')"
+                                                                },
+                                                                "runAfter": {
+                                                                    "Get_Payment_term": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Check_Payment_term_response": {
+                                                                "type": "If",
+                                                                "expression": {
+                                                                    "and": [
+                                                                        {
+                                                                            "not": {
+                                                                                "equals": [
+                                                                                    "@variables('PaymentTermResponse')",
+                                                                                    "@null"
+                                                                                ]
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "actions": {
+                                                                    "Parse_Payment_term_response": {
+                                                                        "type": "ParseJson",
+                                                                        "inputs": {
+                                                                            "content": "@variables('PaymentTermResponse')",
+                                                                            "schema": {
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "DataAreaId": {
+                                                                                        "type": [
+                                                                                            "string",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    },
+                                                                                    "AccountType": {
+                                                                                        "type": [
+                                                                                            "string",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    },
+                                                                                    "AccountNumber": {
+                                                                                        "type": [
+                                                                                            "string",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    },
+                                                                                    "PaymentTerm": {
+                                                                                        "type": [
+                                                                                            "string",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    },
+                                                                                    "Days": {
+                                                                                        "type": [
+                                                                                            "integer",
+                                                                                            "null"
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "runAfter": {}
+                                                                    },
+                                                                    "Set_payment_term": {
+                                                                        "type": "SetVariable",
+                                                                        "inputs": {
+                                                                            "name": "PaymentTerm",
+                                                                            "value": "@body('Parse_Payment_term_response')?['PaymentTerm']"
+                                                                        },
+                                                                        "runAfter": {
+                                                                            "Parse_Payment_term_response": [
+                                                                                "Succeeded"
+                                                                            ]
+                                                                        }
+                                                                    },
+                                                                    "Set_Payment_term_days": {
+                                                                        "type": "SetVariable",
+                                                                        "inputs": {
+                                                                            "name": "PaymentTermDays",
+                                                                            "value": "@body('Parse_Payment_term_response')?['Days']"
+                                                                        },
+                                                                        "runAfter": {
+                                                                            "Set_payment_term": [
+                                                                                "Succeeded"
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "runAfter": {
+                                                                    "Set_Payment_term_response": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            },
+                                                            "Reset_sales_tax_group": {
+                                                                "type": "SetVariable",
+                                                                "inputs": {
+                                                                    "name": "SalesTaxGroup",
+                                                                    "value": "BLANK"
+                                                                },
+                                                                "runAfter": {
+                                                                    "Get_HMM_Tax_Mapping": [
+                                                                        "Succeeded"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "runAfter": {
+                                                            "Set_customer_AX_ID": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "else": {
+                                                            "actions": {
+                                                                "Send_message_to_retry_": {
+                                                                    "type": "ServiceProvider",
+                                                                    "inputs": {
+                                                                        "parameters": {
+                                                                            "entityName": "hmm-invoice-retry",
+                                                                            "message": {
+                                                                                "contentData": "@outputs('Compose')",
+                                                                                "contentType": "Text"
+                                                                            }
+                                                                        },
+                                                                        "serviceProviderConfiguration": {
+                                                                            "connectionName": "PrivateServiceBus",
+                                                                            "operationId": "sendMessage",
+                                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                        }
+                                                                    },
+                                                                    "runAfter": {
+                                                                        "Set_loop_break_for_no_BU_Location_or_Customer_Id": [
+                                                                            "Succeeded"
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "Set_loop_break_for_no_BU_Location_or_Customer_Id": {
+                                                                    "type": "SetVariable",
+                                                                    "inputs": {
+                                                                        "name": "Loop break",
+                                                                        "value": true
+                                                                    },
+                                                                    "runAfter": {}
+                                                                }
+                                                            }
+                                                        }
+                                                    },
+                                                    "Get_BU_and_Location": {
+                                                        "type": "ApiConnection",
+                                                        "inputs": {
+                                                            "host": {
+                                                                "connection": {
+                                                                    "referenceName": "sql_auditLogging"
+                                                                }
+                                                            },
+                                                            "method": "get",
+                                                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[HMM_D365_BU_Loc_Mapping]'))}/items",
+                                                            "queries": {
+                                                                "$filter": "HMM_BU eq '@{items('For_each')?['AX_BU']}' "
+                                                            }
+                                                        },
+                                                        "runAfter": {}
+                                                    },
+                                                    "Set_customer_AX_ID": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "AX_ID",
+                                                            "value": "@items('For_each')?['AX_ID']"
+                                                        },
+                                                        "runAfter": {
+                                                            "Get_BU_and_Location": [
+                                                                "Succeeded"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "runAfter": {}
+                                            }
+                                        },
+                                        "runAfter": {},
+                                        "else": {
+                                            "actions": {
+                                                "Increment_HMM_Tax_amount": {
+                                                    "type": "IncrementVariable",
+                                                    "inputs": {
+                                                        "name": "HMM Tax amount",
+                                                        "value": "@if(less(float(items('For_each')?['amount']),0),float(mul(float(items('For_each')?['amount']),-1)),float(mul(float(items('For_each')?['amount']),1)))"
+                                                    },
+                                                    "runAfter": {}
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "runAfter": {},
+                                "runtimeConfiguration": {
+                                    "concurrency": {
+                                        "repetitions": 1
+                                    }
+                                }
+                            },
+                            "If_journal_exists": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "not": {
+                                                "equals": [
+                                                    "@variables('Journal Num')",
+                                                    ""
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Create_customer_line": {
+                                        "type": "ApiConnection",
+                                        "inputs": {
+                                            "host": {
+                                                "connection": {
+                                                    "referenceName": "dynamicsax-6"
+                                                }
+                                            },
+                                            "method": "post",
+                                            "body": {
+                                                "LineNumber": "@variables('HMMLines')",
+                                                "JournalName": "@parameters('HMMJournalVoucher')",
+                                                "CurrencyCode": "@variables('CustomerLineCurrency')",
+                                                "dataAreaId": "@variables('AxCompany')",
+                                                "JournalBatchNumber": "@variables('Journal Num')",
+                                                "ItemSalesTaxGroup": "@parameters('HMMItemSalesTax')",
+                                                "TransDate": "@variables('InvoiceDate(Line)')",
+                                                "DefaultDimensionDisplayValue": "@variables('Default Dimension Display')",
+                                                "DebitAmount": "@if(less(float(variables('HMMSumDebit')),0),0,float(mul(float(variables('HMMSumDebit')),1)))",
+                                                "DocumentDate": "@variables('InvoiceDate(Line)')",
+                                                "AccountDisplayValue": "@variables('CustomerId')",
+                                                "AccountType": "Cust",
+                                                "Invoice": "@body('Parse_JSON')?['InvoiceId']",
+                                                "CreditAmount": "@if(greater(float(variables('HMMSumDebit')),0),0,float(mul(float(variables('HMMSumDebit')),-1)))"
+                                            },
+                                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal'))}/items"
+                                        },
+                                        "runAfter": {}
+                                    },
+                                    "If_customer_line_is_successfully_created": {
+                                        "type": "If",
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "equals": [
+                                                        "@actions('Create_customer_line').status",
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "actions": {
+                                            "Condition": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@body('Tax_tolerance_met')?['value']",
+                                                                "True"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Get_rows_from_log_to_check_dup": {
+                                                        "type": "ApiConnection",
+                                                        "inputs": {
+                                                            "host": {
+                                                                "connection": {
+                                                                    "referenceName": "sql_auditLogging"
+                                                                }
+                                                            },
+                                                            "method": "get",
+                                                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('APCertifyServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('APCertifyDatabaseName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[IntegrationLog]'))}/items",
+                                                            "queries": {
+                                                                "$filter": "keyfield eq '@{body('Parse_JSON')?['InvoiceId']}' and status eq 'Success' and Messagebody eq 'Invoice @{body('Parse_JSON')?['InvoiceId']} : HMM invoice processed successfully.'"
+                                                            }
+                                                        },
+                                                        "runAfter": {}
+                                                    },
+                                                    "Condition_2": {
+                                                        "type": "If",
+                                                        "expression": {
+                                                            "and": [
+                                                                {
+                                                                    "greater": [
+                                                                        "@length(body('Get_rows_from_log_to_check_dup')?['value'])",
+                                                                        0
+                                                                    ]
+                                                                }
+                                                            ]
+                                                        },
+                                                        "actions": {
+                                                            "Send_message": {
+                                                                "type": "ServiceProvider",
+                                                                "inputs": {
+                                                                    "parameters": {
+                                                                        "entityName": "integration-logs",
+                                                                        "message": {
+                                                                            "contentData": {
+                                                                                "Source": "@{workflow().name}",
+                                                                                "SourceId": "@{workflow().run.name}",
+                                                                                "MessageType": "Log",
+                                                                                "Operation": "Error",
+                                                                                "CorrelationId": "",
+                                                                                "MessageDate": "@{utcNow()}",
+                                                                                "Payload": [
+                                                                                    {
+                                                                                        "DateTime": "@{convertFromUtc(utcNow(),'Mountain Standard Time')}",
+                                                                                        "Identifier": "@{workflow()['run']['name']}",
+                                                                                        "MessageBody": "Invoice @{body('Parse_JSON')?['InvoiceId']}  is duplicate",
+                                                                                        "Workflow": "@{workflow()['name']}",
+                                                                                        "keyfield": "",
+                                                                                        "status": "fail"
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                            "userProperties": {
+                                                                                "Source": "@workflow().name"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "serviceProviderConfiguration": {
+                                                                        "connectionName": "PrivateServiceBus",
+                                                                        "operationId": "sendMessage",
+                                                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                    }
+                                                                },
+                                                                "runAfter": {}
+                                                            }
+                                                        },
+                                                        "runAfter": {
+                                                            "Get_rows_from_log_to_check_dup": [
+                                                                "Succeeded"
+                                                            ]
+                                                        },
+                                                        "else": {
+                                                            "actions": {
+                                                                "Post_journal": {
+                                                                    "type": "ApiConnection",
+                                                                    "inputs": {
+                                                                        "host": {
+                                                                            "connection": {
+                                                                                "referenceName": "dynamicsax-6"
+                                                                            }
+                                                                        },
+                                                                        "method": "post",
+                                                                        "body": {
+                                                                            "_LedgerJournalId": "@variables('Journal Num')",
+                                                                            "_dataareaid": "@variables('AxCompany')",
+                                                                            "_hmmInvoiceId": "@body('Parse_JSON')?['InvoiceId']"
+                                                                        },
+                                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.postJournalHMM'))}"
+                                                                    },
+                                                                    "runAfter": {}
+                                                                },
+                                                                "If_Posting_is_successful": {
+                                                                    "type": "If",
+                                                                    "expression": {
+                                                                        "and": [
+                                                                            {
+                                                                                "not": {
+                                                                                    "contains": [
+                                                                                        "@body('Post_journal')?['value']",
+                                                                                        "Error"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "actions": {
+                                                                        "Send_success_message_to_log_topic": {
+                                                                            "type": "ServiceProvider",
+                                                                            "inputs": {
+                                                                                "parameters": {
+                                                                                    "entityName": "integration-logs",
+                                                                                    "message": {
+                                                                                        "contentData": {
+                                                                                            "Source": "@workflow().name",
+                                                                                            "SourceId": "@workflow().run.name",
+                                                                                            "MessageType": "Log",
+                                                                                            "Operation": "Information",
+                                                                                            "CorrelationId": "",
+                                                                                            "MessageDate": "@utcNow()",
+                                                                                            "Payload": [
+                                                                                                {
+                                                                                                    "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                                                                    "Identifier": "@workflow()['run']['name']",
+                                                                                                    "MessageBody": "Invoice @{body('Parse_JSON')?['InvoiceId']} : HMM invoice processed successfully.",
+                                                                                                    "Workflow": "@workflow()['name']",
+                                                                                                    "keyfield": "@{body('Parse_JSON')?['InvoiceId']}",
+                                                                                                    "status": "success"
+                                                                                                }
+                                                                                            ]
+                                                                                        },
+                                                                                        "contentType": "application/json",
+                                                                                        "userProperties": {
+                                                                                            "Source": "@workflow().name",
+                                                                                            "MessageType": "Log",
+                                                                                            "Operation": "Information"
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "serviceProviderConfiguration": {
+                                                                                    "connectionName": "PrivateServiceBus",
+                                                                                    "operationId": "sendMessage",
+                                                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                                }
+                                                                            },
+                                                                            "runAfter": {}
+                                                                        }
+                                                                    },
+                                                                    "runAfter": {
+                                                                        "Post_journal": [
+                                                                            "Succeeded",
+                                                                            "FAILED",
+                                                                            "TIMEDOUT"
+                                                                        ]
+                                                                    },
+                                                                    "else": {
+                                                                        "actions": {
+                                                                            "Rollback_journal_on_unsuccessful_posting": {
+                                                                                "type": "ApiConnection",
+                                                                                "inputs": {
+                                                                                    "host": {
+                                                                                        "connection": {
+                                                                                            "referenceName": "dynamicsax-6"
+                                                                                        }
+                                                                                    },
+                                                                                    "method": "post",
+                                                                                    "body": {
+                                                                                        "_LedgerJournalId": "@variables('Journal Num')",
+                                                                                        "_dataAreaId": "@variables('AxCompany')",
+                                                                                        "_errorTxt": "@body('Post_journal')?['value']",
+                                                                                        "_hmmInvoiceId": "@body('Parse_JSON')?['InvoiceId']"
+                                                                                    },
+                                                                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.deleteJournalHMM'))}"
+                                                                                },
+                                                                                "runAfter": {}
+                                                                            },
+                                                                            "Send_message_to_retry": {
+                                                                                "type": "ServiceProvider",
+                                                                                "inputs": {
+                                                                                    "parameters": {
+                                                                                        "entityName": "hmm-invoice-retry",
+                                                                                        "message": {
+                                                                                            "contentData": "@{outputs('Compose')}",
+                                                                                            "contentType": "Text"
+                                                                                        }
+                                                                                    },
+                                                                                    "serviceProviderConfiguration": {
+                                                                                        "connectionName": "PrivateServiceBus",
+                                                                                        "operationId": "sendMessage",
+                                                                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                                    }
+                                                                                },
+                                                                                "runAfter": {
+                                                                                    "Rollback_journal_on_unsuccessful_posting": [
+                                                                                        "Succeeded"
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "runAfter": {
+                                                    "Tax_tolerance_met": [
+                                                        "Succeeded",
+                                                        "TIMEDOUT",
+                                                        "SKIPPED",
+                                                        "FAILED"
+                                                    ]
+                                                },
+                                                "else": {
+                                                    "actions": {
+                                                        "Send_tax_tolerance_check_failure_message_to_log_topic": {
+                                                            "type": "ServiceProvider",
+                                                            "inputs": {
+                                                                "parameters": {
+                                                                    "entityName": "integration-logs",
+                                                                    "message": {
+                                                                        "contentData": {
+                                                                            "Source": "@workflow().name",
+                                                                            "SourceId": "@workflow().run.name",
+                                                                            "MessageType": "Log",
+                                                                            "Operation": "Error",
+                                                                            "CorrelationId": "",
+                                                                            "MessageDate": "@utcNow()",
+                                                                            "Payload": [
+                                                                                {
+                                                                                    "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                                                    "Identifier": "@workflow()['run']['name']",
+                                                                                    "MessageBody": "Invoice @{body('Parse_JSON')?['InvoiceId']} : HMM invoice tax tolerance check failed.",
+                                                                                    "Workflow": "@workflow()['name']",
+                                                                                    "keyfield": "",
+                                                                                    "status": "fail"
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "contentType": "application/json",
+                                                                        "userProperties": {
+                                                                            "Source": "@workflow().name",
+                                                                            "MessageType": "Log",
+                                                                            "Operation": "Error"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "serviceProviderConfiguration": {
+                                                                    "connectionName": "PrivateServiceBus",
+                                                                    "operationId": "sendMessage",
+                                                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                                                }
+                                                            },
+                                                            "runAfter": {}
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "Tax_tolerance_met": {
+                                                "type": "ApiConnection",
+                                                "inputs": {
+                                                    "host": {
+                                                        "connection": {
+                                                            "referenceName": "dynamicsax-6"
+                                                        }
+                                                    },
+                                                    "method": "post",
+                                                    "body": {
+                                                        "_taxAmountHMM": "@variables('HMM Tax amount')",
+                                                        "_journalNum": "@variables('Journal Num')",
+                                                        "_dataAreaId": "@variables('AxCompany')",
+                                                        "_invoiceDate": "@variables('InvoiceDate(Line)')",
+                                                        "_hshmminvoiceId": "@body('Parse_JSON')?['InvoiceId']"
+                                                    },
+                                                    "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.TaxesMeetToleranceHMM'))}"
+                                                },
+                                                "runAfter": {},
+                                                "limit": {
+                                                    "timeout": "PT40M"
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Create_customer_line": [
+                                                "Succeeded",
+                                                "TIMEDOUT",
+                                                "FAILED",
+                                                "SKIPPED"
+                                            ]
+                                        },
+                                        "else": {
+                                            "actions": {
+                                                "Rollback_the_journal": {
+                                                    "type": "ApiConnection",
+                                                    "inputs": {
+                                                        "host": {
+                                                            "connection": {
+                                                                "referenceName": "dynamicsax-6"
+                                                            }
+                                                        },
+                                                        "method": "post",
+                                                        "body": {
+                                                            "_LedgerJournalId": "@variables('Journal Num')",
+                                                            "_dataAreaId": "@variables('AxCompany')",
+                                                            "_errorTxt": "Error in customer line.",
+                                                            "_hmmInvoiceId": "@body('Parse_JSON')?['InvoiceId']"
+                                                        },
+                                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSLedgerJournal/Microsoft.Dynamics.DataEntities.deleteJournalHMM'))}"
+                                                    },
+                                                    "runAfter": {}
+                                                },
+                                                "Send_message_to_retry_queue": {
+                                                    "type": "ServiceProvider",
+                                                    "inputs": {
+                                                        "parameters": {
+                                                            "entityName": "hmm-invoice-retry",
+                                                            "message": {
+                                                                "contentData": "@outputs('Compose')",
+                                                                "contentType": "Text"
+                                                            }
+                                                        },
+                                                        "serviceProviderConfiguration": {
+                                                            "connectionName": "PrivateServiceBus",
+                                                            "operationId": "sendMessage",
+                                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                                        }
+                                                    },
+                                                    "runAfter": {
+                                                        "Rollback_the_journal": [
+                                                            "Succeeded"
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "For_each": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Filter_invoices_with_minimum_of_one_line_item": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Send_message_to_HMM_Invoice_Retry_Queue_-_Missing_HMM_Line_Detail": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "hmm-invoice-retry",
+                                            "message": {
+                                                "contentData": "@outputs('Compose')",
+                                                "contentType": "Text"
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                },
+                                "Send_message_to_logger_for_empty_HMM_invoice_detail_query": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "integration-logs",
+                                            "message": {
+                                                "contentData": {
+                                                    "Source": "@workflow().name",
+                                                    "SourceId": "@workflow().run.name",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Error",
+                                                    "CorrelationId": "",
+                                                    "MessageDate": "@utcNow()",
+                                                    "Payload": [
+                                                        {
+                                                            "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                            "Identifier": "@workflow()['run']['name']",
+                                                            "MessageBody": "Invoice @{body('Parse_JSON')?['InvoiceId']} : HMM invoice details query failed - added to retry topic",
+                                                            "Workflow": "@workflow()['name']",
+                                                            "keyfield": "",
+                                                            "status": "fail"
+                                                        }
+                                                    ]
+                                                },
+                                                "contentType": "application/json",
+                                                "userProperties": {
+                                                    "Source": "@workflow().name",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Error"
+                                                }
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Send_message_to_HMM_Invoice_Retry_Queue_-_Missing_HMM_Line_Detail": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Terminate_-_Failed_-_HMM_Invoice_Details_Empty": {
+                                    "type": "Terminate",
+                                    "inputs": {
+                                        "runStatus": "Failed",
+                                        "runError": {
+                                            "code": "Query Failed",
+                                            "message": "HMM invoice query contains zero invoice or tax lines"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Send_message_to_logger_for_empty_HMM_invoice_detail_query": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "Get_rows_from_HMM_invoice_detail_table": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "sql_hazmat"
+                                }
+                            },
+                            "method": "get",
+                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('default'))},@{encodeURIComponent(encodeURIComponent('default'))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[v_HMM_INVOICE_DETAIL]'))}/items",
+                            "queries": {
+                                "$filter": "invoiceId eq @{body('Parse_JSON')?['InvoiceId']} AND itemDescription ne 'HOLD BACK' AND amount ne 0"
+                            }
+                        },
+                        "runAfter": {}
+                    },
+                    "Filter_invoices_with_minimum_of_one_line_item": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@body('Get_rows_from_HMM_invoice_detail_table')?['value']",
+                            "where": "@equals(item()?['invoiceLineCategory'], 'Line')"
+                        },
+                        "runAfter": {
+                            "Get_rows_from_HMM_invoice_detail_table": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Check_Duplicate": [
+                        "Succeeded",
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Send_message_to_logger_for_duplicate_HMM_invoice": {
+                            "type": "ServiceProvider",
+                            "inputs": {
+                                "parameters": {
+                                    "entityName": "integration-logs",
+                                    "message": {
+                                        "contentData": {
+                                            "Source": "@workflow().name",
+                                            "SourceId": "@workflow().run.name",
+                                            "MessageType": "Log",
+                                            "Operation": "Error",
+                                            "CorrelationId": "",
+                                            "MessageDate": "@utcNow()",
+                                            "Payload": [
+                                                {
+                                                    "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                    "Identifier": "@workflow()['run']['name']",
+                                                    "MessageBody": "Invoice @{body('Parse_JSON')?['InvoiceId']} : HMM invoice duplicate detected in D365",
+                                                    "Workflow": "@workflow()['name']",
+                                                    "keyfield": "",
+                                                    "status": "fail"
+                                                }
+                                            ]
+                                        },
+                                        "contentType": "application/json",
+                                        "userProperties": {
+                                            "Source": "@workflow().name",
+                                            "MessageType": "Log",
+                                            "Operation": "Error"
+                                        }
+                                    }
+                                },
+                                "serviceProviderConfiguration": {
+                                    "connectionName": "PrivateServiceBus",
+                                    "operationId": "sendMessage",
+                                    "serviceProviderId": "/serviceProviders/serviceBus"
+                                }
+                            },
+                            "runAfter": {}
+                        },
+                        "Terminate": {
+                            "type": "Terminate",
+                            "inputs": {
+                                "runStatus": "Failed",
+                                "runError": {
+                                    "code": "409",
+                                    "message": "HMM invoice duplicate detected in D365"
+                                }
+                            },
+                            "runAfter": {
+                                "Send_message_to_logger_for_duplicate_HMM_invoice": [
+                                    "Succeeded"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "Initialize_AX_Company": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "AxCompany",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_currency_for_customer_line": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Customer_AX_ID": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "AX_ID",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_AX_Company": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Default_Dimension_Display": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Default Dimension Display",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Loop_break_is_set_false": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_HMM_Tax_Amount": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "HMM Tax amount",
+                            "type": "float"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_customer_id": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Invoice_date": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "InvoiceDate(Line)",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_HMM_Tax_Amount": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Journal_Batch_Num": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Journal Num",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_UtilSumCredit": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_SalesTaxGroup": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SalesTaxGroup",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_account": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_account": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Account",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Default_Dimension_Display": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_currency_for_customer_line": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CustomerLineCurrency",
+                            "type": "string",
+                            "value": "CAD"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Invoice_date": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_customer_id": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CustomerId",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_SalesTaxGroup": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_HMMLineNum": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "HMMLineNum",
+                            "type": "integer",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_HMMLines": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "HMMLines",
+                            "type": "integer",
+                            "value": 1
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_HMMSumDebit": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_HMMSumDebit": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "HMMSumDebit",
+                            "type": "float"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_HMMLineNum": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_UtilSumCredit": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "UtilSumCredit",
+                            "type": "float",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_UtilSumDebit": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable_UtilSumDebit": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "UtilSumDebit",
+                            "type": "float",
+                            "value": 0
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_variable_HMMLines": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Loop_break_is_set_false": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Loop break",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Journal_Batch_Num": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@outputs('Compose')",
+                    "schema": {
+                        "properties": {
+                            "BA": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "InvoiceDate": {
+                                "type": "string"
+                            },
+                            "InvoiceId": {
+                                "type": "string"
+                            },
+                            "LAStartDate": {
+                                "type": "string"
+                            },
+                            "Source": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Compose": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Payment_term": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PaymentTerm",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Customer_AX_ID": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_payment_term_days": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PaymentTermDays",
+                            "type": "integer"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Payment_term": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Payment_term_response": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PaymentTermResponse",
+                            "type": "object"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_payment_term_days": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_queue": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "queueName": "hmm-invoice",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveQueueMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

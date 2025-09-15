@@ -1,0 +1,287 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Initialize_siteCode": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "SiteC",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_siteName": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_siteName": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "SiteN",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {},
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_CodeVal": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "codeVal",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_siteCode": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Scope_DoWork": {
+        "actions": {
+          "Condition": {
+            "actions": {
+              "HTTP_for_create_AFE": {
+                "inputs": {
+                  "authentication": {
+                    "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')",
+                    "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                    "type": "ClientCertificate"
+                  },
+                  "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><AfeBatch xmlns=\"http://www.digitaloilfield.com/ocp\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.digitaloilfield.com/ocp file:///Y:/New Service Delivery/Integration/rembrandt_schemas/AFEBatch.xsd\"><AFE><AFENumber>@{body('Parse_JSON')?['AFENumber']}</AFENumber><AFEName>@{body('Parse_JSON')?['AFEName']}</AFEName><Site><SiteCode SiteCodeType=\"AssignedByBuyer\">@{variables('SiteC')}</SiteCode><SiteName>@{variables('SiteN')}</SiteName></Site><DataEntityAction><DataEntityActionType>Activate</DataEntityActionType></DataEntityAction><AFEType>NOACCT</AFEType></AFE></AfeBatch>",
+                  "headers": {
+                    "Content-Type": "Application/xml"
+                  },
+                  "method": "POST",
+                  "uri": "@{parameters('OIUrl')}/docp/supply-chain/v1/afes"
+                },
+                "type": "Http"
+              }
+            },
+            "else": {
+              "actions": {}
+            },
+            "expression": {
+              "and": [
+                {
+                  "equals": [
+                    "@variables('codeVal')",
+                    "404"
+                  ]
+                }
+              ]
+            },
+            "runAfter": {
+              "Set_variable": [
+                "SUCCEEDED"
+              ]
+            },
+            "type": "If"
+          },
+          "HTTP_to_check_for_duplicate": {
+            "inputs": {
+              "authentication": {
+                "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')",
+                "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                "type": "ClientCertificate"
+              },
+              "method": "GET",
+              "uri": "@{parameters('OIUrl')}/docp/supply-chain/v1/afes/@{body('Parse_JSON')?['AFENumber']}"
+            },
+            "runAfter": {
+              "Send_message_to_Integration": [
+                "SUCCEEDED"
+              ]
+            },
+            "type": "Http"
+          },
+          "Parse_JSON": {
+            "inputs": {
+              "content": "@triggerOutputs()?['body']?['contentData']",
+              "schema": {
+                "properties": {
+                  "AFEName": {
+                    "type": "string"
+                  },
+                  "AFENumber": {
+                    "type": "string"
+                  },
+                  "RecId": {
+                    "type": "integer"
+                  },
+                  "SiteCode": {
+                    "type": "string"
+                  },
+                  "SiteName": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "trackedProperties": {
+              "AFENumber": "@triggerOutputs()?['body']?['contentData']?['AFENumber']"
+            },
+            "type": "ParseJson"
+          },
+          "Send_message_to_Integration": {
+            "inputs": {
+              "parameters": {
+                "entityName": "integration-logs",
+                "message": {
+                  "contentData": {
+                    "CorrelationId": "",
+                    "MessageDate": "@utcNow()",
+                    "MessageType": "Log",
+                    "Operation": "Information",
+                    "Payload": [
+                      {
+                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                        "Identifier": "@workflow()['run']['name']",
+                        "MessageBody": "@{outputs('Parse_JSON')}",
+                        "Workflow": "@workflow()['name']",
+                        "keyfield": "AFE Number:@{body('Parse_JSON')?['AFENumber']}",
+                        "status": "Received"
+                      }
+                    ],
+                    "Source": "@workflow().name",
+                    "SourceId": "@workflow().run.name"
+                  },
+                  "userProperties": {
+                    "Source": "@{workflow().name}"
+                  }
+                }
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "PrivateServiceBus",
+                "operationId": "sendMessage",
+                "serviceProviderId": "/serviceProviders/serviceBus"
+              }
+            },
+            "runAfter": {
+              "Set_Sitename": [
+                "SUCCEEDED"
+              ]
+            },
+            "type": "ServiceProvider"
+          },
+          "Send_message_to_int_log-success": {
+            "inputs": {
+              "parameters": {
+                "entityName": "integration-logs",
+                "message": {
+                  "contentData": {
+                    "CorrelationId": "",
+                    "MessageDate": "@utcNow()",
+                    "MessageType": "Log",
+                    "Operation": "Information",
+                    "Payload": [
+                      {
+                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                        "Identifier": "@workflow()['run']['name']",
+                        "MessageBody": "@{outputs('Parse_JSON')}",
+                        "Workflow": "@workflow()['name']",
+                        "keyfield": "AFE Number:@{body('Parse_JSON')?['AFENumber']}",
+                        "status": "Success"
+                      }
+                    ],
+                    "Source": "@workflow().name",
+                    "SourceId": "@workflow().run.name"
+                  },
+                  "userProperties": {
+                    "Source": "@{workflow().name}"
+                  }
+                }
+              },
+              "serviceProviderConfiguration": {
+                "connectionName": "PrivateServiceBus",
+                "operationId": "sendMessage",
+                "serviceProviderId": "/serviceProviders/serviceBus"
+              }
+            },
+            "runAfter": {
+              "Condition": [
+                "SUCCEEDED"
+              ]
+            },
+            "type": "ServiceProvider"
+          },
+          "Set_SiteCode": {
+            "inputs": {
+              "name": "SiteC",
+              "value": "@{toUpper(body('Parse_JSON')?['SiteCode'])}"
+            },
+            "runAfter": {
+              "Parse_JSON": [
+                "SUCCEEDED"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_Sitename": {
+            "inputs": {
+              "name": "SiteN",
+              "value": "@{concat(body('Parse_JSON')?['SiteName'],' - ',variables('SiteC'))}"
+            },
+            "runAfter": {
+              "Set_SiteCode": [
+                "SUCCEEDED"
+              ]
+            },
+            "type": "SetVariable"
+          },
+          "Set_variable": {
+            "inputs": {
+              "name": "codeVal",
+              "value": "@{body('HTTP_to_check_for_duplicate')?['confirmMessage']?['protocolStatusCode']?['codeValue']}"
+            },
+            "runAfter": {
+              "HTTP_to_check_for_duplicate": [
+                "SUCCEEDED",
+                "TIMEDOUT",
+                "FAILED"
+              ]
+            },
+            "type": "SetVariable"
+          }
+        },
+        "runAfter": {
+          "Initialize_variable_CodeVal": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "Scope"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_messages_are_available_in_a_topic_subscription": {
+        "inputs": {
+          "parameters": {
+            "isSessionsEnabled": false,
+            "subscriptionName": "oi-apinvoice-project",
+            "topicName": "d365fo-business-events"
+          },
+          "serviceProviderConfiguration": {
+            "connectionName": "PublicServiceBus",
+            "operationId": "receiveTopicMessages",
+            "serviceProviderId": "/serviceProviders/serviceBus"
+          }
+        },
+        "splitOn": "@triggerOutputs()?['body']",
+        "type": "ServiceProvider"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

@@ -1,0 +1,564 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "actions": {
+      "Initialize_CommulativeStatus": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "CommulativeStatus",
+              "type": "array"
+            }
+          ]
+        },
+        "runAfter": {},
+        "type": "InitializeVariable"
+      },
+      "Initialize_StatusMessage": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "StatusMessage",
+              "type": "string"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_TradeAgreementLineArray": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_TradeAgreementLineArray": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "TradeAgreementLineArray",
+              "type": "array"
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_variable_ProcessStatusCheck": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Initialize_variable_ProcessStatusCheck": {
+        "inputs": {
+          "variables": [
+            {
+              "name": "ProcessStatusCheck",
+              "type": "integer",
+              "value": 0
+            }
+          ]
+        },
+        "runAfter": {
+          "Initialize_CommulativeStatus": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "InitializeVariable"
+      },
+      "Response": {
+        "inputs": {
+          "body": "@variables('CommulativeStatus')",
+          "statusCode": 200
+        },
+        "kind": "Http",
+        "runAfter": {
+          "Scope_Work": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "Response"
+      },
+      "Scope_Work": {
+        "actions": {
+          "For_each": {
+            "actions": {
+              "Append_to_Commulative_Status_array": {
+                "inputs": {
+                  "name": "CommulativeStatus",
+                  "value": {
+                    "AccountRelation": "@{triggerBody()?['ACCOUNTRELATION']}",
+                    "Message": "@{body('Parse_JSON_status')?['data']?['errorMessage']}",
+                    "Status": "@{body('Parse_JSON_status')?['data']?['status']}"
+                  }
+                },
+                "runAfter": {
+                  "Until_1": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "AppendToArrayVariable"
+              },
+              "HTTP_Get_Token": {
+                "inputs": {
+                  "body": {
+                    "password": "@{parameters('MudTracAPIServer')['pwd']}",
+                    "userName": "@{parameters('MudTracAPIServer')['user']}"
+                  },
+                  "method": "POST",
+                  "uri": "@{parameters('MudTracAPIServer')['url']}api/auth/login"
+                },
+                "runAfter": {
+                  "Transform_D365_Line_To_MudTrac_JSON": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "runtimeConfiguration": {
+                  "contentTransfer": {
+                    "transferMode": "Chunked"
+                  }
+                },
+                "type": "Http"
+              },
+              "HTTP_Send_to_Mudtrac": {
+                "inputs": {
+                  "body": "@body('Transform_D365_Line_To_MudTrac_JSON')",
+                  "headers": {
+                    "Authorization": "Bearer @{body('Parse_JSON_token')?['data']?['token']}"
+                  },
+                  "method": "POST",
+                  "uri": "@{parameters('MudTracAPIServer')['url']}api/price-books/integrations/"
+                },
+                "runAfter": {
+                  "Parse_JSON_token": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "Http"
+              },
+              "Parse_JSON_mudtrac_response": {
+                "inputs": {
+                  "content": "@body('HTTP_Send_to_Mudtrac')",
+                  "schema": {
+                    "properties": {
+                      "data": {
+                        "properties": {
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "createdById": {
+                            "type": "string"
+                          },
+                          "errorMessage": {},
+                          "finishedAt": {},
+                          "id": {
+                            "type": "integer"
+                          },
+                          "journalNum": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "statusCode": {
+                        "type": "integer"
+                      },
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "timestamp": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "runAfter": {
+                  "HTTP_Send_to_Mudtrac": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "ParseJson"
+              },
+              "Parse_JSON_token": {
+                "inputs": {
+                  "content": "@body('HTTP_Get_Token')",
+                  "schema": {
+                    "properties": {
+                      "data": {
+                        "properties": {
+                          "refreshToken": {
+                            "type": "string"
+                          },
+                          "token": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "statusCode": {
+                        "type": "integer"
+                      },
+                      "success": {
+                        "type": "boolean"
+                      },
+                      "timestamp": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "runAfter": {
+                  "HTTP_Get_Token": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "ParseJson"
+              },
+              "Set_variable_ProcessStatusCheck": {
+                "inputs": {
+                  "name": "ProcessStatusCheck",
+                  "value": 1
+                },
+                "runAfter": {
+                  "Parse_JSON_mudtrac_response": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "SetVariable"
+              },
+              "Transform_D365_Line_To_MudTrac_JSON": {
+                "inputs": {
+                  "content": {
+                    "runid": "@{workflow()['run']['name']}",
+                    "value": "@items('For_each')"
+                  },
+                  "map": {
+                    "name": "D365PriceAgreementtoMudTracPricebook.liquid",
+                    "source": "LogicApp"
+                  }
+                },
+                "kind": "JsonToJson",
+                "type": "Liquid"
+              },
+              "Until_1": {
+                "actions": {
+                  "Delay_1": {
+                    "inputs": {
+                      "interval": {
+                        "count": 20,
+                        "unit": "Second"
+                      }
+                    },
+                    "runAfter": {
+                      "check_status": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "type": "Wait"
+                  },
+                  "HTTP_Get_Status": {
+                    "inputs": {
+                      "headers": {
+                        "Authorization": "Bearer @{body('Parse_JSON_status_auth_token')?['data']?['token']}"
+                      },
+                      "method": "GET",
+                      "uri": "@{parameters('MudTracAPIServer')['url']}api/price-books/integrations/@{body('Parse_JSON_mudtrac_response')?['data']?['id']}"
+                    },
+                    "runAfter": {
+                      "Parse_JSON_status_auth_token": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "runtimeConfiguration": {
+                      "contentTransfer": {
+                        "transferMode": "Chunked"
+                      }
+                    },
+                    "type": "Http"
+                  },
+                  "HTTP_status_auth_token": {
+                    "inputs": {
+                      "body": {
+                        "password": "@{parameters('MudTracAPIServer')['pwd']}",
+                        "userName": "@{parameters('MudTracAPIServer')['user']}"
+                      },
+                      "method": "POST",
+                      "uri": "@{parameters('MudTracAPIServer')['url']}api/auth/login"
+                    },
+                    "runtimeConfiguration": {
+                      "contentTransfer": {
+                        "transferMode": "Chunked"
+                      }
+                    },
+                    "type": "Http"
+                  },
+                  "Increment_ProcessStatus_Check": {
+                    "inputs": {
+                      "name": "ProcessStatusCheck",
+                      "value": 1
+                    },
+                    "runAfter": {
+                      "Set_variable_StatusMessage": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "type": "IncrementVariable"
+                  },
+                  "Parse_JSON_status": {
+                    "inputs": {
+                      "content": "@body('HTTP_Get_Status')",
+                      "schema": {
+                        "properties": {
+                          "data": {
+                            "properties": {
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "createdBy": {
+                                "properties": {
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "deletedAt": {},
+                                  "email": {
+                                    "type": "string"
+                                  },
+                                  "firstName": {
+                                    "type": "string"
+                                  },
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "isTempPassword": {
+                                    "type": "boolean"
+                                  },
+                                  "lastName": {
+                                    "type": "string"
+                                  },
+                                  "phone": {},
+                                  "roles": {
+                                    "items": {
+                                      "type": "string"
+                                    },
+                                    "type": "array"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "userName": {
+                                    "type": "string"
+                                  },
+                                  "vendorNumber": {}
+                                },
+                                "type": "object"
+                              },
+                              "createdById": {
+                                "type": "string"
+                              },
+                              "errorMessage": {},
+                              "finishedAt": {},
+                              "id": {
+                                "type": "integer"
+                              },
+                              "journalNum": {
+                                "type": "string"
+                              },
+                              "productCount": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "statusCode": {
+                            "type": "integer"
+                          },
+                          "success": {
+                            "type": "boolean"
+                          },
+                          "timestamp": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP_Get_Status": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  },
+                  "Parse_JSON_status_auth_token": {
+                    "inputs": {
+                      "content": "@body('HTTP_status_auth_token')",
+                      "schema": {
+                        "properties": {
+                          "data": {
+                            "properties": {
+                              "refreshToken": {
+                                "type": "string"
+                              },
+                              "token": {
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "statusCode": {
+                            "type": "integer"
+                          },
+                          "success": {
+                            "type": "boolean"
+                          },
+                          "timestamp": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "runAfter": {
+                      "HTTP_status_auth_token": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "type": "ParseJson"
+                  },
+                  "Set_variable_StatusMessage": {
+                    "inputs": {
+                      "name": "StatusMessage",
+                      "value": "@{body('Parse_JSON_status')?['data']?['status']}"
+                    },
+                    "runAfter": {
+                      "Parse_JSON_status": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "type": "SetVariable"
+                  },
+                  "check_status": {
+                    "actions": {
+                      "Set_ProcessStatusCheck": {
+                        "inputs": {
+                          "name": "ProcessStatusCheck",
+                          "value": 10
+                        },
+                        "type": "SetVariable"
+                      }
+                    },
+                    "else": {
+                      "actions": {}
+                    },
+                    "expression": {
+                      "and": [
+                        {
+                          "not": {
+                            "equals": [
+                              "@body('Parse_JSON_status')?['data']?['status']",
+                              1
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "runAfter": {
+                      "Increment_ProcessStatus_Check": [
+                        "SUCCEEDED"
+                      ]
+                    },
+                    "type": "If"
+                  }
+                },
+                "expression": "@greaterOrEquals(variables('ProcessStatusCheck'),10)",
+                "limit": {
+                  "count": 60,
+                  "timeout": "PT1H"
+                },
+                "runAfter": {
+                  "Set_variable_ProcessStatusCheck": [
+                    "SUCCEEDED"
+                  ]
+                },
+                "type": "Until"
+              }
+            },
+            "foreach": "@variables('TradeAgreementLineArray')",
+            "runAfter": {
+              "Set_TradeAgreementLineArray": [
+                "SUCCEEDED"
+              ]
+            },
+            "runtimeConfiguration": {
+              "concurrency": {
+                "repetitions": 1
+              }
+            },
+            "type": "Foreach"
+          },
+          "Lists_TradeAgreements_from_D365": {
+            "inputs": {
+              "host": {
+                "connection": {
+                  "referenceName": "dynamicsax"
+                }
+              },
+              "method": "get",
+              "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSSalesPriceAgreements'))}/items",
+              "queries": {
+                "$filter": "PriceCustomerGroupCode eq '@{triggerBody()?['ACCOUNTRELATION']}' and HSExclude eq Microsoft.Dynamics.DataEntities.NoYes'No'",
+                "cross-company": true
+              }
+            },
+            "type": "ApiConnection"
+          },
+          "Set_TradeAgreementLineArray": {
+            "inputs": {
+              "name": "TradeAgreementLineArray",
+              "value": "@chunk(body('Lists_TradeAgreements_from_D365')?['value'],500)"
+            },
+            "runAfter": {
+              "Lists_TradeAgreements_from_D365": [
+                "SUCCEEDED"
+              ]
+            },
+            "type": "SetVariable"
+          }
+        },
+        "runAfter": {
+          "Initialize_StatusMessage": [
+            "SUCCEEDED"
+          ]
+        },
+        "type": "Scope"
+      }
+    },
+    "contentVersion": "1.0.0.0",
+    "outputs": {},
+    "triggers": {
+      "When_a_HTTP_request_is_received": {
+        "inputs": {
+          "schema": {
+            "properties": {
+              "ACCOUNTRELATION": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "kind": "Http",
+        "type": "Request"
+      }
+    }
+  },
+  "kind": "Stateful"
+}

@@ -1,0 +1,576 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_MockServiceName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "MockServiceName",
+                            "type": "string",
+                            "value": "@{triggerOutputs()?['headers']?['mock-service-name']}"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_MockResponseBody": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "MockResponseBody",
+                            "type": "object",
+                            "value": {
+                                "MockServiceName": "@triggerOutputs()?['headers']?['mock-service-name']",
+                                "MockResponseStatus": "@triggerOutputs()?['headers']?['mock-response-status']"
+                            }
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_MockResponseStatus": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                    "statusCode": "@variables('MockResponseStatus')",
+                    "body": "@variables('MockResponseBody')"
+                },
+                "runAfter": {
+                    "Switch_MocksServiceName": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_MockResponseStatus": {
+                "type": "InitializeVariable",
+                "description": "Initialize to value of mock-response-status if present or 200",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "MockResponseStatus",
+                            "type": "integer",
+                            "value": "@if(equals(string(triggerOutputs()?['headers']?['mock-response-status']), ''), 200, triggerOutputs()?['headers']?['mock-response-status'])"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_MockServiceName": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Switch_MocksServiceName": {
+                "type": "Switch",
+                "expression": "@variables('MockServiceName')",
+                "default": {
+                    "actions": {}
+                },
+                "cases": {
+                    "Case_CustomServiceEndpoint01": {
+                        "actions": {
+                            "Set_MockResponseBody_for_CustomServiceEndpoint01": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "MockResponseBody",
+                                    "value": {
+                                        "$id": "1",
+                                        "StatusMessage": "@{variables('BatchStatuses_Queue')[rand(0, sub(length(variables('BatchStatuses_Queue')), 1))]}",
+                                        "Success": false,
+                                        "SourceID": "@{body('Parse_JSON_for_CustomServiceEndpoint01')?['SourceID']}",
+                                        "BatchID": "@string(rand(5000000000, 6000000000))",
+                                        "Response": null,
+                                        "MockServiceName": "@triggerOutputs()['headers']?['mock-service-name']",
+                                        "MockResponseStatus": "@triggerOutputs()['headers']?['mock-response-status']",
+                                        "ResponseFrom": "CustomServiceEndpoint01"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Parse_JSON_for_CustomServiceEndpoint01": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            },
+                            "Parse_JSON_for_CustomServiceEndpoint01": {
+                                "type": "ParseJson",
+                                "inputs": {
+                                    "content": "@triggerBody()",
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Attachments": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "AttachmentURI": {
+                                                            "type": "string"
+                                                        },
+                                                        "Container": {
+                                                            "type": "string"
+                                                        },
+                                                        "FileId": {
+                                                            "type": "string"
+                                                        },
+                                                        "FileName": {
+                                                            "type": "string"
+                                                        },
+                                                        "Restriction": {
+                                                            "type": "string"
+                                                        },
+                                                        "SalesLineId": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": []
+                                                }
+                                            },
+                                            "SalesLineEDI": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Account": {
+                                                            "type": "string"
+                                                        },
+                                                        "AccountQty": {
+                                                            "type": "string"
+                                                        },
+                                                        "Afe": {
+                                                            "type": "string"
+                                                        },
+                                                        "AfeOwner": {
+                                                            "type": "string"
+                                                        },
+                                                        "Alpha": {
+                                                            "type": "string"
+                                                        },
+                                                        "ApproverCoding": {
+                                                            "type": "string"
+                                                        },
+                                                        "AssetNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "Attnto": {
+                                                            "type": "string"
+                                                        },
+                                                        "AttnToName": {
+                                                            "type": "string"
+                                                        },
+                                                        "BuyerCode": {
+                                                            "type": "string"
+                                                        },
+                                                        "BuyerDepartmentDefault": {
+                                                            "type": "string"
+                                                        },
+                                                        "CatalogSerialNo": {
+                                                            "type": "string"
+                                                        },
+                                                        "CCType": {
+                                                            "type": "string"
+                                                        },
+                                                        "ChargeTo": {
+                                                            "type": "string"
+                                                        },
+                                                        "ChargeToName": {
+                                                            "type": "string"
+                                                        },
+                                                        "Company": {
+                                                            "type": "string"
+                                                        },
+                                                        "CompanyRep": {
+                                                            "type": "string"
+                                                        },
+                                                        "Contract": {
+                                                            "type": "string"
+                                                        },
+                                                        "ContractLineNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "CostCenter": {
+                                                            "type": "string"
+                                                        },
+                                                        "CostCenterName": {
+                                                            "type": "string"
+                                                        },
+                                                        "ediZip4": {
+                                                            "type": "string"
+                                                        },
+                                                        "FieldLocation": {
+                                                            "type": "string"
+                                                        },
+                                                        "GLAccount": {
+                                                            "type": "string"
+                                                        },
+                                                        "Joints": {
+                                                            "type": "string"
+                                                        },
+                                                        "LineNum": {
+                                                            "type": "integer"
+                                                        },
+                                                        "Location": {
+                                                            "type": "string"
+                                                        },
+                                                        "LocationComments": {
+                                                            "type": "string"
+                                                        },
+                                                        "MajorCode": {
+                                                            "type": "string"
+                                                        },
+                                                        "MaterialCode": {
+                                                            "type": "string"
+                                                        },
+                                                        "MatGrp": {
+                                                            "type": "string"
+                                                        },
+                                                        "MGDesc": {
+                                                            "type": "string"
+                                                        },
+                                                        "MinorCode": {
+                                                            "type": "string"
+                                                        },
+                                                        "NetworkActivity": {
+                                                            "type": "string"
+                                                        },
+                                                        "ObjSubna": {
+                                                            "type": "string"
+                                                        },
+                                                        "OperationCat": {
+                                                            "type": "string"
+                                                        },
+                                                        "OperatorCoding": {
+                                                            "type": "string"
+                                                        },
+                                                        "OPNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "OrderNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "POApprover": {
+                                                            "type": "string"
+                                                        },
+                                                        "POLine": {
+                                                            "type": "string"
+                                                        },
+                                                        "PONumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "ProfitCentre": {
+                                                            "type": "string"
+                                                        },
+                                                        "Project": {
+                                                            "type": "string"
+                                                        },
+                                                        "ProjectPONo": {
+                                                            "type": "string"
+                                                        },
+                                                        "ReportCentre": {
+                                                            "type": "string"
+                                                        },
+                                                        "Requisitioner": {
+                                                            "type": "string"
+                                                        },
+                                                        "SalesID": {
+                                                            "type": "string"
+                                                        },
+                                                        "SalesLineID": {
+                                                            "type": "string"
+                                                        },
+                                                        "SerialNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "Signatory": {
+                                                            "type": "string"
+                                                        },
+                                                        "SOLine": {
+                                                            "type": "string"
+                                                        },
+                                                        "SONumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "StkCond": {
+                                                            "type": "string"
+                                                        },
+                                                        "Sub": {
+                                                            "type": "string"
+                                                        },
+                                                        "SubCode": {
+                                                            "type": "string"
+                                                        },
+                                                        "Subfeature": {
+                                                            "type": "string"
+                                                        },
+                                                        "WBS": {
+                                                            "type": "string"
+                                                        },
+                                                        "WellFacility": {
+                                                            "type": "string"
+                                                        },
+                                                        "WONumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "WorkOrderBy": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": []
+                                                }
+                                            },
+                                            "SalesLines": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "ConfirmedShippingDate": {
+                                                            "type": "string"
+                                                        },
+                                                        "DataAreaId": {
+                                                            "type": "string"
+                                                        },
+                                                        "DefaultLedgerDimensionDisplayValue": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSBillOfLading": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSContentType": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSCutPercent": {
+                                                            "type": "integer"
+                                                        },
+                                                        "HSGeneratorID": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSGeneratorName": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSGrossWeight": {
+                                                            "type": "integer"
+                                                        },
+                                                        "HSIsDow": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSManifestNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSMaterialApproval": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSServiceTypeID": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSServiceTypeName": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSSourceLocationID": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSSourceLocationTypeID": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSSourceLocationTypeName": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSTareWeight": {
+                                                            "type": "integer"
+                                                        },
+                                                        "HSTicketNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSTruckingCompanyName": {
+                                                            "type": "string"
+                                                        },
+                                                        "HSWellClassification": {
+                                                            "type": "string"
+                                                        },
+                                                        "ItemNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "LineAmount": {
+                                                            "type": "integer"
+                                                        },
+                                                        "LineNumber": {
+                                                            "type": "integer"
+                                                        },
+                                                        "OrderedSalesQuantity": {
+                                                            "type": "number"
+                                                        },
+                                                        "ProductSizeId": {
+                                                            "type": "string"
+                                                        },
+                                                        "RequestedShippingDate": {
+                                                            "type": "string"
+                                                        },
+                                                        "SalesLineID": {
+                                                            "type": "string"
+                                                        },
+                                                        "SalesOrderNumber": {
+                                                            "type": "string"
+                                                        },
+                                                        "SalesPrice": {
+                                                            "type": "number"
+                                                        },
+                                                        "SalesUnitSymbol": {
+                                                            "type": "string"
+                                                        },
+                                                        "ShippingSiteId": {
+                                                            "type": "string"
+                                                        },
+                                                        "ShippingWarehouseId": {
+                                                            "type": "string"
+                                                        },
+                                                        "Text": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": []
+                                                }
+                                            },
+                                            "SourceID": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "case": "CustomServiceEndpoint01"
+                    },
+                    "Case_CustomServiceEndpoint02": {
+                        "actions": {
+                            "Set_MockResponseBody_for_CustomServiceEndpoint02": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "MockResponseBody",
+                                    "value": {
+                                        "$id": "1",
+                                        "StatusMessage": "@{variables('BatchStatuses_Poll')[rand(0, sub(length(variables('BatchStatuses_Poll')), 1))]}",
+                                        "Success": false,
+                                        "SourceID": "@{body('Parse_JSON_for_CustomServiceEndpoint02')?['SourceID']}",
+                                        "BatchID": "@body('Parse_JSON_for_CustomServiceEndpoint02')?['BatchID']",
+                                        "Response": [
+                                            {
+                                                "$id": "2",
+                                                "Message": " \n Interface log message.",
+                                                "Success": true,
+                                                "SaleslineID": "71e4c004-339e-411b-8b42-919df0f5111d"
+                                            },
+                                            {
+                                                "$id": "3",
+                                                "Message": " \n Interface log message.",
+                                                "Success": true,
+                                                "SaleslineID": "b97c7b7c-3eeb-4362-b2d9-5184c19707ba"
+                                            },
+                                            {
+                                                "$id": "4",
+                                                "Message": " \n Interface log message.",
+                                                "Success": false,
+                                                "SaleslineID": "c078b912-8703-4b56-b485-d27381224e9d"
+                                            }
+                                        ],
+                                        "MockServiceName": "@triggerOutputs()['headers']?['mock-service-name']",
+                                        "MockResponseStatus": "@triggerOutputs()['headers']?['mock-response-status']",
+                                        "ResponseFrom": "CustomServiceEndpoint02"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Parse_JSON_for_CustomServiceEndpoint02": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            },
+                            "Parse_JSON_for_CustomServiceEndpoint02": {
+                                "type": "ParseJson",
+                                "inputs": {
+                                    "content": "@triggerBody()",
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "SourceID": {
+                                                "type": "string"
+                                            },
+                                            "BatchID": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "case": "CustomServiceEndpoint02"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_BatchStatuses_Poll": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_BatchStatuses_Queue": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BatchStatuses_Queue",
+                            "type": "array",
+                            "value": [
+                                "Added to batch queue",
+                                "Added to batch queue",
+                                "Started",
+                                "Started",
+                                "Canceled",
+                                "Validation failed"
+                              ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_MockResponseBody": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_BatchStatuses_Poll": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BatchStatuses_Poll",
+                            "type": "array",
+                            "value": [
+                                "Executing",
+                                "Ready",
+                                "Waiting",
+                                "Ended",
+                                "Error",
+                                "Canceled"
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_BatchStatuses_Queue": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http"
+            }
+        }
+    },
+    "kind": "Stateful"
+}

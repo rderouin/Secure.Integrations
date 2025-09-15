@@ -1,0 +1,1753 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Try": {
+                "type": "Scope",
+                "actions": {
+                    "Parse_SalesLines_Body_as_Json": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@triggerBody()",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "Source": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "SourceId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageType": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Operation": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "CorrelationId": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "MessageDate": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "Blobs": {},
+                                    "Payload": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "SalesLineNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckTicketId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckTicketNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ProductId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ProductName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ProductNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Quantity": {
+                                                    "type": "number"
+                                                },
+                                                "QuantityPercent": {
+                                                    "type": "number"
+                                                },
+                                                "TareWeight": {
+                                                    "type": "number"
+                                                },
+                                                "GrossWeight": {
+                                                    "type": "number"
+                                                },
+                                                "UnitOfMeasure": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "OriginalRate": {},
+                                                "Rate": {
+                                                    "type": "number"
+                                                },
+                                                "TotalValue": {
+                                                    "type": "number"
+                                                },
+                                                "IsRateOverridden": {
+                                                    "type": "boolean"
+                                                },
+                                                "LoadConfirmationId": {},
+                                                "LoadConfirmationNumber": {},
+                                                "InvoiceId": {},
+                                                "ProformaInvoiceNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "IsReversed": {
+                                                    "type": "boolean"
+                                                },
+                                                "IsReversal": {
+                                                    "type": "boolean"
+                                                },
+                                                "ReversedSalesLineId": {},
+                                                "ReversalSalesLineId": {},
+                                                "SourceLocationId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "SourceLocationIdentifier": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "SourceLocationFormattedIdentifier": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "SourceLocationTypeId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "SourceLocationTypeName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "WellClassification": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CustomerId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CustomerName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "GeneratorId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "GeneratorName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "FacilityId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "FacilitySiteId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "IsAdditionalService": {
+                                                    "type": "boolean"
+                                                },
+                                                "IsReadOnlyLine": {
+                                                    "type": [
+                                                        "boolean",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "IsCutLine": {
+                                                    "type": "boolean"
+                                                },
+                                                "CutType": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "MaterialApprovalId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "MaterialApprovalNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ServiceTypeId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ServiceTypeName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckingCompanyId": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckingCompanyName": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "UserName": {},
+                                                "PriceChangeUserName": {},
+                                                "PriceChangeDate": {},
+                                                "ChangeReason": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ChangeComments": {},
+                                                "Status": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "ManifestNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "BillOfLading": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "DowNonDow": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckTicketDate": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "TruckTicketEffectiveDate": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "IsEdiValid": {
+                                                    "type": "boolean"
+                                                },
+                                                "PricingRuleId": {},
+                                                "EDIFieldValues": {
+                                                    "type": [
+                                                        "array",
+                                                        "null"
+                                                    ],
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "Id": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "EDIFieldDefinitionId": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "IsValid": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "EDIFieldName": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            },
+                                                            "EDIFieldValueContent": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "Attachments": {
+                                                    "type": [
+                                                        "array",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "EDIFieldsValueString": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "EDIFieldsValueStringHumanized": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "AttachmentIndicatorType": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "HasAttachments": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Substance": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Division": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "BusinessUnit": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "LegalEntity": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "AccountNumber": {},
+                                                "CustomerNumber": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CreatedBy": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CreatedById": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "CreatedAt": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "UpdatedAt": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "UpdatedBy": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "UpdatedById": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "DocumentType": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "EntityType": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "Id": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "trackedProperties": {}
+                    },
+                    "Create_D365FOCustomServiceEndpoint01_Request_Object": {
+                        "type": "JavaScriptCode",
+                        "inputs": {
+                            "code": "function transformTTSalesLineMessageToFOMessage(salesLineMessageTT) {\r\n  let sourceID = salesLineMessageTT.SourceId;\r\n  let payload = salesLineMessageTT.Payload.filter((p) => ![\"Exception\", \"Preview\"].includes(p[\"Status\"])).filter((p) => !(p.IsReversed || p.IsReversal));\r\n\r\n  let foSalesLines = payload.map((p) => ({\r\n      \"dataAreaId\": p[\"LegalEntity\"],\r\n      \"HSGeneratorID\": p[\"GeneratorId\"],\r\n      \"HSWellClassification\": p[\"WellClassification\"],\r\n      \"HSSourceLocationID\": p[\"SourceLocationFormattedIdentifier\"],\r\n      \"LineNumber\": p[\"SalesLineNumber\"].split('-')[0].substring(5),\r\n      \"SalesLineID\": p[\"Id\"],\r\n      \"HSServiceTypeName\": p[\"ServiceTypeName\"],\r\n      \"DefaultLedgerDimensionDisplayValue\": `${p[\"LegalEntity\"]}-${p[\"Division\"]}-${p[\"BusinessUnit\"]}-${p[\"FacilitySiteId\"]}`,\r\n      \"HSIsDow\": p[\"DowNonDow\"],\r\n      \"HSContentType\": p[\"CutType\"],\r\n      \"HSCutPercent\": p[\"QuantityPercent\"],\r\n      \"Text\": p[\"ProductName\"],\r\n      \"SalesPrice\": p[\"Rate\"],\r\n      \"SalesOrderNumber\": p[\"ProformaInvoiceNumber\"],\r\n      \"SalesOrderId\": p[\"InvoiceId\"] || p[\"HistoricalInvoiceId\"],\r\n      \"HSMaterialApproval\": p[\"MaterialApprovalNumber\"],\r\n      \"HSSourceLocationTypeName\": p[\"SourceLocationTypeName\"],\r\n      \"LineAmount\": p[\"TotalValue\"],\r\n      \"ProductSizeId\": p[\"Substance\"],\r\n      \"HSBillOfLading\": p[\"BillOfLading\"],\r\n      \"ConfirmedShippingDate\": p[\"TruckTicketDate\"],\r\n      \"HSManifestNumber\": p[\"ManifestNumber\"],\r\n      \"ShippingWarehouseId\": p[\"FacilitySiteId\"],\r\n      \"HSGrossWeight\": p[\"GrossWeight\"],\r\n      \"SalesUnitSymbol\": p[\"UnitOfMeasure\"],\r\n      \"HSGeneratorName\": p[\"GeneratorName\"],\r\n      \"ShippingSiteId\": p[\"FacilitySiteId\"],\r\n      \"OrderedSalesQuantity\": p[\"Quantity\"],\r\n      \"ItemNumber\": p[\"ProductNumber\"],\r\n      \"HSSourceLocationTypeID\": p[\"SourceLocationTypeId\"],\r\n      \"RequestedShippingDate\": p[\"TruckTicketDate\"],\r\n      \"HSTareWeight\": p[\"TareWeight\"],\r\n      \"HSTruckingCompanyName\": p[\"TruckingCompanyName\"],\r\n      \"HSTicketNumber\": p[\"TruckTicketNumber\"],\r\n      \"HSServiceTypeID\": p[\"ServiceTypeId\"],\r\n      \"HSEffectiveDate\": p[\"TruckTicketEffectiveDate\"].split('T')[0]\r\n  }));\r\n\r\n  let foSalesLineEDIs = payload.map((p) => {\r\n    let { Id: SalesLineId, EdiFieldValues } = p;\r\n\r\n    EdiFieldValues = EdiFieldValues || [];\r\n\r\n    let foSalesLineEDI = EdiFieldValues.reduce(\r\n      (a, v) => {\r\n        a[v[\"EDIFieldName\"]] = v[\"EDIFieldValueContent\"];\r\n        return a;\r\n      },\r\n      { SalesLineId: SalesLineId }\r\n    );\r\n\r\n    return foSalesLineEDI;\r\n  });\r\n\r\n  foSalesLineEDIs = foSalesLineEDIs.filter(edi => Object.keys(edi).length > 1);\r\n\r\n  let foSalesLineAttachments = payload.flatMap((p) => {\r\n    let SalesLineId = p.Id;\r\n\r\n    p.Attachments = p.Attachments || [];\r\n\r\n    return p.Attachments.map((a) => ({\r\n      \"ContainerName\": a.Container,\r\n      \"FileName\": a.File,\r\n      \"BlobPath\": a.Path,\r\n      \"FileId\": a.Id,\r\n      \"Restriction\": a.AttachmentType,\r\n      \"SalesLineId\": SalesLineId\r\n    }));\r\n  });\r\n\r\n  let foMessage = {\r\n    \"salesLineMessage\": {\r\n      SourceID: sourceID,\r\n      SalesLines: foSalesLines,\r\n      SalesLineEDI: foSalesLineEDIs,\r\n      Attachments: foSalesLineAttachments\r\n    }\r\n  };\r\n\r\n  return foMessage;\r\n}\r\n\r\nfunction transformTTSalesLineMessageToFOMessage_LA() {\r\n  console.error(\"Entering transformTTSalesLineMessageToFOMessage_LA\");\r\n\r\n  let salesLineMessageTT = workflowContext.actions.Parse_SalesLines_Body_as_Json.outputs.body\r\n\r\n  var salesLineMessageFO = transformTTSalesLineMessageToFOMessage(salesLineMessageTT);\r\n\r\n  console.log(salesLineMessageFO);\r\n\r\n  console.warn(\"Exiting transformTTSalesLineMessageToFOMessage_LA\");\r\n\r\n  return salesLineMessageFO;\r\n}\r\n\r\nfunction transformTTSalesLineMessageToFOMessage_Test() {\r\n  console.error(\"Entering transformTTSalesLineMessageToFOMessage_Test\");\r\n\r\n  const fs = require(\"fs\");\r\n\r\n  fs.readFile(\r\n    \"TTSalesLineMessage-TTINT.json\",\r\n    \"utf8\",\r\n    (err, salesLineMessageTTStr) => {\r\n      if (err) {\r\n        console.error(err);\r\n        return;\r\n      }\r\n\r\n      let salesLineMessageTT = JSON.parse(salesLineMessageTTStr);\r\n      var salesLineMessageFO = transformTTSalesLineMessageToFOMessage(salesLineMessageTT);\r\n      let salesLineMessageFOStr = JSON.stringify(salesLineMessageFO, null, 2);\r\n      \r\n      console.log(salesLineMessageFOStr);\r\n    }\r\n  );\r\n\r\n  console.warn(\"Exiting transformTTSalesLineMessageToFOMessage_Test\");\r\n}\r\n\r\nif (typeof workflowContext !== \"undefined\" && workflowContext) {\r\n  return transformTTSalesLineMessageToFOMessage_LA();\r\n} else {\r\n  console.warn(\"Starting...\");\r\n  transformTTSalesLineMessageToFOMessage_Test();\r\n  console.warn(\"Done.\");\r\n}\r\n"
+                        },
+                        "runAfter": {
+                            "Set_SalesLineLookup": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "trackedProperties": {}
+                    },
+                    "Parse_D365FOCustomServiceEndpoint01_Response": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@variables('D365FOCustomServiceEndpoint01ResponseBody')",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "$id": {
+                                        "type": "string"
+                                    },
+                                    "StatusMessage": {
+                                        "type": "string"
+                                    },
+                                    "Success": {
+                                        "type": "boolean"
+                                    },
+                                    "SourceID": {
+                                        "type": "string"
+                                    },
+                                    "BatchID": {
+                                        "type": [
+                                            "string",
+                                            "integer"
+                                        ]
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Invoke_D365FOCustomServiceEndpoint01_Scope": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Invoke_D365FOCustomServiceEndpoint01_Scope": {
+                        "type": "Scope",
+                        "actions": {
+                            "If_UseMocksForD365Api": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "equals": [
+                                                "@variables('UseMocksForD365Api')",
+                                                true
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Invoke_D365FOCustomServiceEndpoint01_Mock": {
+                                        "type": "Workflow",
+                                        "inputs": {
+                                            "host": {
+                                                "workflow": {
+                                                    "id": "TT-SB-D365FO-Sales-Orders-Tester-Mocks"
+                                                }
+                                            },
+                                            "headers": {
+                                                "Content-Type": "application/json",
+                                                "mock-service-name": "CustomServiceEndpoint01"
+                                            },
+                                            "body": "@outputs('Create_D365FOCustomServiceEndpoint01_Request_Object')"
+                                        }
+                                    },
+                                    "Set_D365FOCustomServiceEndpoint01ResponseBody_(from_Mocks)": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "D365FOCustomServiceEndpoint01ResponseBody",
+                                            "value": "@body('Invoke_D365FOCustomServiceEndpoint01_Mock')"
+                                        },
+                                        "runAfter": {
+                                            "Invoke_D365FOCustomServiceEndpoint01_Mock": [
+                                                "SUCCEEDED"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "actions": {
+                                        "Invoke_D365FOCustomServiceEndpoint01": {
+                                            "type": "Http",
+                                            "inputs": {
+                                                "uri": "@{concat('https://', parameters('D365FO'), '/api/services/HSSalesLineIntegrationService/HSSalesLineIntegrationService/ProcessSalesLine')}",
+                                                "method": "POST",
+                                                "headers": {
+                                                    "Content-Type": "application/json"
+                                                },
+                                                "body": "@outputs('Create_D365FOCustomServiceEndpoint01_Request_Object')",
+                                                "authentication": {
+                                                    "type": "ActiveDirectoryOAuth",
+                                                    "tenant": "@parameters('TenantId')",
+                                                    "audience": "@concat('https://',parameters('D365FO'))",
+                                                    "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                                    "secret": "@appSetting('D365_API_CLIENT_SECRET')"
+                                                },
+                                                "retryPolicy": {
+                                                    "type": "fixed",
+                                                    "count": 4,
+                                                    "interval": "PT5S"
+                                                }
+                                            }
+                                        },
+                                        "Set_D365FOCustomServiceEndpoint01ResponseBody": {
+                                            "type": "SetVariable",
+                                            "inputs": {
+                                                "name": "D365FOCustomServiceEndpoint01ResponseBody",
+                                                "value": "@body('Invoke_D365FOCustomServiceEndpoint01')"
+                                            },
+                                            "runAfter": {
+                                                "Invoke_D365FOCustomServiceEndpoint01": [
+                                                    "SUCCEEDED"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Create_D365FOCustomServiceEndpoint01_Request_Object": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Create_SalesLineLookup": {
+                        "type": "JavaScriptCode",
+                        "inputs": {
+                            "code": "function createSalesLineLookup(salesLineMessageTT) {\r\n  //console.log(salesLineMessageTT);\r\n\r\n  let salesLineLookup = salesLineMessageTT.Payload.reduce(\r\n    (a, v) => {\r\n      let salesLineLookupKey = v.Id;\r\n      let salesLineLookupValue = (({Id, SalesLineNumber, InvoiceId, ProformaInvoiceNumber, Status}) => ({Id, SalesLineNumber, InvoiceId, ProformaInvoiceNumber, Status}))(v);\r\n  \r\n      a[salesLineLookupKey] = salesLineLookupValue;\r\n  \r\n      return a;\r\n    },\r\n    {}\r\n  );\r\n\r\n  return salesLineLookup;\r\n}\r\n\r\nfunction createSalesLineLookup_LA() {\r\n  console.error(\"Entering createSalesLineLookup_LA\");\r\n\r\n  let salesLineMessageTT = workflowContext.actions.Parse_SalesLines_Body_as_Json.outputs.body\r\n\r\n  var salesLineLookup = createSalesLineLookup(salesLineMessageTT);\r\n\r\n  console.log(salesLineLookup);\r\n\r\n  console.warn(\"Exiting createSalesLineLookup_LA\");\r\n\r\n  return salesLineLookup;\r\n}\r\n\r\nfunction createSalesLineLookup_Test() {\r\n  console.error(\"Entering createSalesLineLookup_Test\");\r\n\r\n  const fs = require(\"fs\");\r\n\r\n  fs.readFile(\r\n    \"TTSalesLineMessage-TTINT.json\",\r\n    \"utf8\",\r\n    (err, salesLineMessageTTStr) => {\r\n      if (err) {\r\n        console.error(err);\r\n        return;\r\n      }\r\n\r\n      // console.log(salesLineMessageTTStr);\r\n\r\n      let salesLineMessageTT = JSON.parse(salesLineMessageTTStr);\r\n\r\n      var salesLineLookup =\r\n        createSalesLineLookup(salesLineMessageTT);\r\n\r\n      //console.log(JSON.stringify(salesLineLookup));\r\n      console.log(salesLineLookup);\r\n    }\r\n  );\r\n\r\n  console.warn(\"Exiting createSalesLineLookup_Test\");\r\n}\r\n\r\nif (typeof workflowContext !== \"undefined\" && workflowContext) {\r\n  return createSalesLineLookup_LA();\r\n} else {\r\n  console.warn(\"Starting...\");\r\n  createSalesLineLookup_Test();\r\n  console.warn(\"Done.\");\r\n}\r\n"
+                        },
+                        "runAfter": {
+                            "Parse_SalesLines_Body_as_Json": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Set_SalesLineLookup": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "SalesLineLookup",
+                            "value": "@outputs('Create_SalesLineLookup')"
+                        },
+                        "runAfter": {
+                            "Create_SalesLineLookup": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "If_Batch_is_Queued": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "contains": [
+                                        "@variables('BatchStatuses_Queued')",
+                                        "@body('Parse_D365FOCustomServiceEndpoint01_Response')?['StatusMessage']"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Poll_Until_Batch_is_Complete_or_Timedout": {
+                                "type": "Until",
+                                "expression": "@equals(variables('IsBatchRunning'), false)",
+                                "limit": {
+                                    "count": "@parameters('TT-SB-D365FO-Sales-Orders-2-Lines')['PollCountMax']",
+                                    "timeout": "@parameters('TT-SB-D365FO-Sales-Orders-2-Lines')['PollTimeoutDuration']"
+                                },
+                                "actions": {
+                                    "Parse_D365FOCustomServiceEndpoint02_Response": {
+                                        "type": "ParseJson",
+                                        "inputs": {
+                                            "content": "@variables('D365FOCustomServiceEndpoint02ResponseBody')",
+                                            "schema": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "$id": {
+                                                        "type": "string"
+                                                    },
+                                                    "StatusMessage": {
+                                                        "type": "string"
+                                                    },
+                                                    "Success": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "SourceID": {
+                                                        "type": "string"
+                                                    },
+                                                    "BatchID": {
+                                                        "type": [
+                                                            "string",
+                                                            "integer"
+                                                        ]
+                                                    },
+                                                    "Response": {
+                                                        "type": [
+                                                            "array",
+                                                            "null"
+                                                        ],
+                                                        "items": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "$id": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Message": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Success": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "SaleslineID": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Invoke_D365FOCustomServiceEndpoint02_Scope": [
+                                                "SUCCEEDED"
+                                            ]
+                                        },
+                                        "trackedProperties": {}
+                                    },
+                                    "If_Batch_Is_Running": {
+                                        "type": "If",
+                                        "expression": {
+                                            "and": [
+                                                {
+                                                    "equals": [
+                                                        "@variables('IsBatchRunning')",
+                                                        true
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "actions": {
+                                            "Wait_for_N_seconds": {
+                                                "type": "Wait",
+                                                "inputs": {
+                                                    "interval": {
+                                                        "count": "@parameters('TT-SB-D365FO-Sales-Orders-2-Lines')['PollWaitSeconds']",
+                                                        "unit": "Second"
+                                                    }
+                                                },
+                                                "trackedProperties": {}
+                                            }
+                                        },
+                                        "else": {
+                                            "actions": {}
+                                        },
+                                        "runAfter": {
+                                            "Set_IsBatchRunning": [
+                                                "SUCCEEDED"
+                                            ]
+                                        },
+                                        "trackedProperties": {}
+                                    },
+                                    "Set_BatchResult": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "BatchResult",
+                                            "value": "@body('Parse_D365FOCustomServiceEndpoint02_Response')"
+                                        },
+                                        "runAfter": {
+                                            "Parse_D365FOCustomServiceEndpoint02_Response": [
+                                                "SUCCEEDED"
+                                            ]
+                                        }
+                                    },
+                                    "Invoke_D365FOCustomServiceEndpoint02_Scope": {
+                                        "type": "Scope",
+                                        "actions": {
+                                            "If_UseMocksForD365Api_02": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "equals": [
+                                                                "@variables('UseMocksForD365Api')",
+                                                                true
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Invoke_D365FOCustomServiceEndpoint02_Mock": {
+                                                        "type": "Workflow",
+                                                        "inputs": {
+                                                            "host": {
+                                                                "workflow": {
+                                                                    "id": "TT-SB-D365FO-Sales-Orders-Tester-Mocks"
+                                                                }
+                                                            },
+                                                            "headers": {
+                                                                "Content-Type": "application/json",
+                                                                "mock-service-name": "CustomServiceEndpoint02"
+                                                            },
+                                                            "body": "@variables('BatchInfo')"
+                                                        }
+                                                    },
+                                                    "Set_D365FOCustomServiceEndpoint02ResponseBody_(from_Mocks)": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "D365FOCustomServiceEndpoint02ResponseBody",
+                                                            "value": "@body('Invoke_D365FOCustomServiceEndpoint02_Mock')"
+                                                        },
+                                                        "runAfter": {
+                                                            "Invoke_D365FOCustomServiceEndpoint02_Mock": [
+                                                                "SUCCEEDED"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "else": {
+                                                    "actions": {
+                                                        "Invoke_D365FOCustomServiceEndpoint02": {
+                                                            "type": "Http",
+                                                            "inputs": {
+                                                                "uri": "@{concat('https://', parameters('D365FO'), '/api/services/HSSalesLineIntegrationService/HSSalesLineIntegrationService/GetBatchResponse')}",
+                                                                "method": "POST",
+                                                                "headers": {
+                                                                    "Content-Type": "application/json"
+                                                                },
+                                                                "body": "@variables('BatchInfo')",
+                                                                "authentication": {
+                                                                    "type": "ActiveDirectoryOAuth",
+                                                                    "tenant": "@parameters('TenantId')",
+                                                                    "audience": "@concat('https://',parameters('D365FO'))",
+                                                                    "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                                                    "secret": "@appSetting('D365_API_CLIENT_SECRET')"
+                                                                },
+                                                                "retryPolicy": {
+                                                                    "type": "fixed",
+                                                                    "count": 4,
+                                                                    "interval": "PT5S"
+                                                                }
+                                                            }
+                                                        },
+                                                        "Set_D365FOCustomServiceEndpoint02ResponseBody": {
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "D365FOCustomServiceEndpoint02ResponseBody",
+                                                                "value": "@body('Invoke_D365FOCustomServiceEndpoint02')"
+                                                            },
+                                                            "runAfter": {
+                                                                "Invoke_D365FOCustomServiceEndpoint02": [
+                                                                    "SUCCEEDED"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "Set_IsBatchRunning_(Exit_Loop_Immediately)": {
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "IsBatchRunning",
+                                                                "value": false
+                                                            },
+                                                            "runAfter": {
+                                                                "Invoke_D365FOCustomServiceEndpoint02": [
+                                                                    "TIMEDOUT",
+                                                                    "SKIPPED",
+                                                                    "FAILED"
+                                                                ]
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "Set_IsBatchRunning": {
+                                        "type": "SetVariable",
+                                        "description": "True if (BatchResult.StatusMessage is not in BatchStatuses_Terminal or BatchResult.Response is null or empty) and number of saleslines is > 0",
+                                        "inputs": {
+                                            "name": "IsBatchRunning",
+                                            "value": "@and(or(not(contains(variables('BatchStatuses_Terminal'), variables('BatchResult')['StatusMessage'])), equals(variables('BatchResult')['Response'], null), lessOrEquals(length(variables('BatchResult')['Response']), 0)), greater(length(outputs('Create_D365FOCustomServiceEndpoint01_Request_Object').salesLineMessage.SalesLines), 0))"
+                                        },
+                                        "runAfter": {
+                                            "Set_BatchResult": [
+                                                "SUCCEEDED"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Set_BatchInfo": [
+                                        "SUCCEEDED"
+                                    ]
+                                },
+                                "trackedProperties": {}
+                            },
+                            "Set_ErrorState_to_Timedout": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "ErrorState",
+                                    "value": "Timedout"
+                                },
+                                "runAfter": {
+                                    "Poll_Until_Batch_is_Complete_or_Timedout": [
+                                        "TIMEDOUT"
+                                    ]
+                                },
+                                "trackedProperties": {}
+                            },
+                            "If_Batch_Is_Still_Running": {
+                                "type": "If",
+                                "description": "Batch polling loop is exited but batch is still running i.e. poll timeout/count max exceeded.",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "equals": [
+                                                "@variables('IsBatchRunning')",
+                                                true
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Set_ErrorState_to_PollingLimitExceeded": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "ErrorState",
+                                            "value": "PollingLimitExceeded"
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "actions": {
+                                        "If_BatchResult.StatusMessage_is_Ended": {
+                                            "type": "If",
+                                            "expression": {
+                                                "and": [
+                                                    {
+                                                        "equals": [
+                                                            "@variables('BatchResult')['StatusMessage']",
+                                                            "Ended"
+                                                        ]
+                                                    }
+                                                ]
+                                            },
+                                            "actions": {
+                                                "Compose_Batch_Completed_Successfully": {
+                                                    "type": "Compose",
+                                                    "inputs": "Batch Completed Successfully"
+                                                },
+                                                "Set_SalesLineResults": {
+                                                    "type": "SetVariable",
+                                                    "inputs": {
+                                                        "name": "SalesLineResults",
+                                                        "value": "@body('Select_SalesLines_Response')"
+                                                    },
+                                                    "runAfter": {
+                                                        "Compose_Batch_Completed_Successfully": [
+                                                            "SUCCEEDED"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "else": {
+                                                "actions": {
+                                                    "Set_ErrorState_to_StatusMessage": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "ErrorState",
+                                                            "value": "@{variables('BatchResult')['StatusMessage']}"
+                                                        }
+                                                    },
+                                                    "Set_SalesLineResultsError": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "SalesLineResultsError",
+                                                            "value": "@body('Select_SalesLines_Response')"
+                                                        },
+                                                        "runAfter": {
+                                                            "Set_ErrorState_to_StatusMessage": [
+                                                                "SUCCEEDED"
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "runAfter": {
+                                                "Select_SalesLines_Response": [
+                                                    "SUCCEEDED"
+                                                ]
+                                            }
+                                        },
+                                        "Select_SalesLines_Response": {
+                                            "type": "Select",
+                                            "inputs": {
+                                                "from": "@variables('BatchResult')['Response']",
+                                                "select": {
+                                                    "Id": "@{item()['SaleslineID']}",
+                                                    "IsSuccessful": "@{item()['Success']}",
+                                                    "Status": "@{variables('SalesLineLookup')?[item()['SaleslineID']]?['Status']}",
+                                                    "Message": "@{item()['Message']}",
+                                                    "SalesLineNumber": "@{variables('SalesLineLookup')?[item()['SaleslineID']]?['SalesLineNumber']}"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Poll_Until_Batch_is_Complete_or_Timedout": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            },
+                            "Set_BatchInfo": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "BatchInfo",
+                                    "value": {
+                                        "batchID": "@body('Parse_D365FOCustomServiceEndpoint01_Response')?['BatchID']",
+                                        "sourceID": "@{body('Parse_D365FOCustomServiceEndpoint01_Response')?['SourceID']}"
+                                    }
+                                }
+                            }
+                        },
+                        "else": {
+                            "actions": {
+                                "Set_ErrorState_to_BatchNotQueued": {
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "ErrorState",
+                                        "value": "BatchNotQueued"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Parse_D365FOCustomServiceEndpoint01_Response": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Initialize_UseMocksForD365Api": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "If_ErrorState_is_Not_Empty": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "not": {
+                                "equals": [
+                                    "@variables('ErrorState')",
+                                    ""
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "actions": {
+                    "On_Failure": {
+                        "type": "Scope",
+                        "actions": {
+                            "Send_SalesLineAck_Failure_Message": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "enterprise-entity-updates",
+                                        "message": {
+                                            "contentData": "@outputs('Compose_SalesLineAck_Failure_Message')",
+                                            "contentType": "application/json",
+                                            "sessionId": "@guid()",
+                                            "userProperties": {
+                                                "source": "D365FO",
+                                                "messageType": "SalesLineAck"
+                                            },
+                                            "messageId": "@guid()"
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose_SalesLineAck_Failure_Message": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Return_HTTP_500": {
+                                "type": "Response",
+                                "kind": "http",
+                                "inputs": {
+                                    "statusCode": 500,
+                                    "body": "@outputs('Compose_SalesLineAck_Failure_Message')"
+                                },
+                                "runAfter": {
+                                    "Send_SalesLineAck_Failure_Message": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Compose_SalesLineAck_Failure_Message": {
+                                "type": "Compose",
+                                "inputs": {
+                                    "Source": "D365FO",
+                                    "SourceId": "@{body('Parse_SalesLines_Body_as_Json')['SourceId']}",
+                                    "MessageType": "SalesLineAck",
+                                    "Operation": "@{body('Parse_SalesLines_Body_as_Json')['Operation']}",
+                                    "CorrelationId": "@{body('Parse_SalesLines_Body_as_Json')['CorrelationId']}",
+                                    "MessageDate": "@{body('Parse_SalesLines_Body_as_Json')['MessageDate']}",
+                                    "Blobs": null,
+                                    "Payload": "@variables('SalesLineResultsError')"
+                                },
+                                "runAfter": {
+                                    "If_Length_of_SalesLineResultsError_is_0": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            },
+                            "Terminate_with_Failed_Status": {
+                                "type": "Terminate",
+                                "inputs": {
+                                    "runStatus": "Failed",
+                                    "runError": {
+                                        "message": "@string(outputs('Compose_SalesLineAck_Failure_Message'))"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Log_Failure": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Log_Failure": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "integration-logs",
+                                        "message": {
+                                            "contentData": {
+                                                "CorrelationId": "",
+                                                "MessageDate": "@utcNow()",
+                                                "MessageType": "Log",
+                                                "Operation": "Information",
+                                                "Payload": [
+                                                    {
+                                                        "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                        "Identifier": "@workflow()['run']['name']",
+                                                        "MessageBody": "@{outputs('Compose_SalesLineAck_Failure_Message')}",
+                                                        "Workflow": "@workflow()['name']",
+                                                        "keyfield": "@{body('Parse_SalesLines_Body_as_Json')?['Payload']?[0]?['ProformaInvoiceNumber']}",
+                                                        "status": "Fail"
+                                                    }
+                                                ],
+                                                "Source": "@workflow().name",
+                                                "SourceId": "@workflow().run.name"
+                                            },
+                                            "userProperties": {
+                                                "Source": "@workflow().name"
+                                            }
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Return_HTTP_500": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "If_Length_of_SalesLineResultsError_is_0": {
+                                "type": "If",
+                                "expression": {
+                                    "and": [
+                                        {
+                                            "equals": [
+                                                "@length(variables('SalesLineResultsError'))",
+                                                0
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "actions": {
+                                    "Select_SalesLines_for_SalesLineResultsError": {
+                                        "type": "Select",
+                                        "inputs": {
+                                            "from": "@body('Parse_SalesLines_Body_as_Json')?['Payload']",
+                                            "select": {
+                                                "Id": "@{item()['Id']}",
+                                                "IsSuccessful": "false",
+                                                "Status": "@{variables('SalesLineLookup')?[item()['Id']]?['Status']}",
+                                                "Message": "@{variables('ErrorState')}",
+                                                "SalesLineNumber": "@{item()['SalesLineNumber']}"
+                                            }
+                                        }
+                                    },
+                                    "Set_SalesLineResultsError_(from_ErrorState)": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "SalesLineResultsError",
+                                            "value": "@body('Select_SalesLines_for_SalesLineResultsError')"
+                                        },
+                                        "runAfter": {
+                                            "Select_SalesLines_for_SalesLineResultsError": [
+                                                "SUCCEEDED"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "else": {
+                                    "actions": {}
+                                }
+                            }
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "On_Success": {
+                            "type": "Scope",
+                            "actions": {
+                                "Compose_SalesLineAck_Success_Message": {
+                                    "type": "Compose",
+                                    "inputs": {
+                                        "Source": "D365FO",
+                                        "SourceId": "@{body('Parse_SalesLines_Body_as_Json')['SourceId']}",
+                                        "MessageType": "SalesLineAck",
+                                        "Operation": "@{body('Parse_SalesLines_Body_as_Json')['Operation']}",
+                                        "CorrelationId": "@{body('Parse_SalesLines_Body_as_Json')['CorrelationId']}",
+                                        "MessageDate": "@{body('Parse_SalesLines_Body_as_Json')['MessageDate']}",
+                                        "Blobs": null,
+                                        "Payload": "@variables('SalesLineResults')"
+                                    }
+                                },
+                                "Send_SalesLineAck_Success_Message": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "enterprise-entity-updates",
+                                            "message": {
+                                                "contentData": "@outputs('Compose_SalesLineAck_Success_Message')",
+                                                "contentType": "application/json",
+                                                "sessionId": "@guid()",
+                                                "userProperties": {
+                                                    "source": "D365FO",
+                                                    "messageType": "SalesLineAck"
+                                                },
+                                                "messageId": "@guid()"
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Compose_SalesLineAck_Success_Message": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Return_HTTP_200": {
+                                    "type": "Response",
+                                    "kind": "http",
+                                    "inputs": {
+                                        "statusCode": 200,
+                                        "body": "@outputs('Compose_SalesLineAck_Success_Message')"
+                                    },
+                                    "runAfter": {
+                                        "Send_SalesLineAck_Success_Message": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                },
+                                "Log_Success": {
+                                    "type": "ServiceProvider",
+                                    "inputs": {
+                                        "parameters": {
+                                            "entityName": "integration-logs",
+                                            "message": {
+                                                "contentData": {
+                                                    "CorrelationId": "",
+                                                    "MessageDate": "@utcNow()",
+                                                    "MessageType": "Log",
+                                                    "Operation": "Information",
+                                                    "Payload": [
+                                                        {
+                                                            "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                            "Identifier": "@workflow()['run']['name']",
+                                                            "MessageBody": "Sales Lines Count: @{length(variables('SalesLineResults'))} Start Time: @{convertFromUtc(trigger().startTime,'Mountain Standard Time')}      @{outputs('Compose_SalesLineAck_Success_Message')}",
+                                                            "Workflow": "@workflow()['name']",
+                                                            "keyfield": "@{body('Parse_SalesLines_Body_as_Json')?['Payload']?[0]?['ProformaInvoiceNumber']}",
+                                                            "status": "@{if(contains(string(variables('SalesLineResults')),'False'),'Fail','Success')}"
+                                                        }
+                                                    ],
+                                                    "Source": "@workflow().name",
+                                                    "SourceId": "@workflow().run.name"
+                                                },
+                                                "userProperties": {
+                                                    "Source": "@workflow().name"
+                                                }
+                                            }
+                                        },
+                                        "serviceProviderConfiguration": {
+                                            "connectionName": "PrivateServiceBus",
+                                            "operationId": "sendMessage",
+                                            "serviceProviderId": "/serviceProviders/serviceBus"
+                                        }
+                                    },
+                                    "runAfter": {
+                                        "Return_HTTP_200": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "Succeeded"
+                    ]
+                },
+                "trackedProperties": {}
+            },
+            "Catch": {
+                "type": "Scope",
+                "actions": {
+                    "Filter_Error_Messages_from_All_Scopes": {
+                        "type": "Query",
+                        "inputs": {
+                            "from": "@outputs('Union_of_Results_of_All_Scopes')",
+                            "where": "@equals(item()['status'], 'Failed')"
+                        },
+                        "runAfter": {
+                            "Union_of_Results_of_All_Scopes": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Return_HTTP_500_From_Catch": {
+                        "type": "Response",
+                        "kind": "Http",
+                        "inputs": {
+                            "statusCode": 500,
+                            "body": {
+                                "ErrorMessage": "@{outputs('Compose_Error_Object')}"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_SalesLineAck_Failure_Message_(Catch)": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Terminate_with_Failed_Status_from_Catch": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed",
+                            "runError": {
+                                "code": "500",
+                                "message": "@{outputs('Compose_Error_Object')}"
+                            }
+                        },
+                        "runAfter": {
+                            "Return_HTTP_500_From_Catch": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Union_of_Results_of_All_Scopes": {
+                        "type": "Compose",
+                        "inputs": "@union(result('Try'), result('Invoke_D365FOCustomServiceEndpoint01_Scope'), result('If_UseMocksForD365Api'), result('If_Batch_is_Queued'), result('Poll_Until_Batch_is_Complete_or_Timedout'), result('Invoke_D365FOCustomServiceEndpoint02_Scope'), result('If_UseMocksForD365Api_02'), result('If_Batch_Is_Running'), result('If_Batch_Is_Still_Running'), result('If_BatchResult.StatusMessage_is_Ended'))"
+                    },
+                    "Compose_SalesLineAck_Failure_Message_(Catch)": {
+                        "type": "Compose",
+                        "inputs": {
+                            "Source": "D365FO",
+                            "SourceId": "@{body('Parse_SalesLines_Body_as_Json')['SourceId']}",
+                            "MessageType": "SalesLineAck",
+                            "Operation": "@{body('Parse_SalesLines_Body_as_Json')['Operation']}",
+                            "CorrelationId": "@{body('Parse_SalesLines_Body_as_Json')['CorrelationId']}",
+                            "MessageDate": "@{body('Parse_SalesLines_Body_as_Json')['MessageDate']}",
+                            "Blobs": null,
+                            "Payload": "@variables('SalesLineResultsError')"
+                        },
+                        "runAfter": {
+                            "Set_SalesLineResultsError_(from_Catch)": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Send_SalesLineAck_Failure_Message_(Catch)": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "enterprise-entity-updates",
+                                "message": {
+                                    "contentData": "@outputs('Compose_SalesLineAck_Failure_Message_(Catch)')",
+                                    "contentType": "application/json",
+                                    "sessionId": "@guid()",
+                                    "userProperties": {
+                                        "source": "D365FO",
+                                        "messageType": "SalesLineAck"
+                                    },
+                                    "messageId": "@guid()"
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Compose_SalesLineAck_Failure_Message_(Catch)": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Select_SalesLines_for_SalesLineResultsError_(Catch)": {
+                        "type": "Select",
+                        "inputs": {
+                            "from": "@body('Parse_SalesLines_Body_as_Json')?['Payload']",
+                            "select": {
+                                "Id": "@{item()['Id']}",
+                                "IsSuccessful": "false",
+                                "Status": "@{variables('SalesLineLookup')?[item()['Id']]?['Status']}",
+                                "Message": "@{outputs('Compose_Error_Object')}",
+                                "SalesLineNumber": "@{item()['SalesLineNumber']}"
+                            }
+                        },
+                        "runAfter": {
+                            "Log_Failure_from_Catch": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Compose_Error_Object": {
+                        "type": "Compose",
+                        "inputs": "@body('Select_Error_Messages')",
+                        "runAfter": {
+                            "Select_Error_Messages": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Select_Error_Messages": {
+                        "type": "Select",
+                        "inputs": {
+                            "from": "@body('Filter_Error_Messages_from_All_Scopes')",
+                            "select": {
+                                "name": "@{item()?['name']}",
+                                "code": "@{item()?['code']}",
+                                "status": "@{item()?['status']}",
+                                "error": "@{item()?['error']}"
+                            }
+                        },
+                        "runAfter": {
+                            "Filter_Error_Messages_from_All_Scopes": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Log_Failure_from_Catch": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "integration-logs",
+                                "message": {
+                                    "contentData": {
+                                        "CorrelationId": "",
+                                        "MessageDate": "@utcNow()",
+                                        "MessageType": "Log",
+                                        "Operation": "Information",
+                                        "Payload": [
+                                            {
+                                                "DateTime": "@convertFromUtc(utcNow(),'Mountain Standard Time')",
+                                                "Identifier": "@workflow()['run']['name']",
+                                                "MessageBody": "@{outputs('Compose_Error_Object')}",
+                                                "Workflow": "@workflow()['name']",
+                                                "keyfield": "@{triggerBody()?['SourceId']}",
+                                                "status": "Fail"
+                                            }
+                                        ],
+                                        "Source": "@workflow().name",
+                                        "SourceId": "@workflow().run.name"
+                                    },
+                                    "userProperties": {
+                                        "Source": "@workflow().name"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Compose_Error_Object": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Set_SalesLineResultsError_(from_Catch)": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "SalesLineResultsError",
+                            "value": "@body('Select_SalesLines_for_SalesLineResultsError_(Catch)')"
+                        },
+                        "runAfter": {
+                            "Select_SalesLines_for_SalesLineResultsError_(Catch)": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Try": [
+                        "FAILED",
+                        "SKIPPED",
+                        "TIMEDOUT"
+                    ]
+                }
+            },
+            "Initialize_SalesLineResults": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SalesLineResults",
+                            "type": "array",
+                            "value": []
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_ErrorState": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_SalesLineResultsError": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SalesLineResultsError",
+                            "type": "array",
+                            "value": []
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_SalesLineLookup": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_ErrorState": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ErrorState",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_SalesLineResultsError": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_BatchInfo": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BatchInfo",
+                            "type": "object",
+                            "value": {
+                                "BatchID": "",
+                                "SourceID": ""
+                            }
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_BatchStatuses_Terminal": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_BatchResult": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BatchResult",
+                            "type": "object",
+                            "value": {
+                                "BatchID": "@{variables('BatchInfo')['BatchID']}",
+                                "SourceID": "@{variables('BatchInfo')['SourceID']}",
+                                "StatusMessage": "Unknown",
+                                "Response": null
+                            }
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_BatchInfo": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_UseMocksForD365Api": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "UseMocksForD365Api",
+                            "type": "boolean",
+                            "value": "@if(equals(string(appsetting('UseMocksForD365Api')), 'true'), true, false)"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_D365FOCustomServiceEndpoint02ResponseBody": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_D365FOCustomServiceEndpoint01ResponseBody": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "D365FOCustomServiceEndpoint01ResponseBody",
+                            "type": "object",
+                            "value": {}
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_IsBatchRunning": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_D365FOCustomServiceEndpoint02ResponseBody": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "D365FOCustomServiceEndpoint02ResponseBody",
+                            "type": "object",
+                            "value": {}
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_D365FOCustomServiceEndpoint01ResponseBody": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_BatchStatuses_Terminal": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BatchStatuses_Terminal",
+                            "type": "array",
+                            "value": [
+                                "Ended",
+                                "Error",
+                                "Withhold",
+                                "Didn't run",
+                                "Canceled"
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_BatchStatuses_Queued": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_BatchStatuses_Queued": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "BatchStatuses_Queued",
+                            "type": "array",
+                            "value": [
+                                "Added to batch queue",
+                                "Started"
+                            ]
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_SalesLineResults": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_IsBatchRunning": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "IsBatchRunning",
+                            "type": "boolean",
+                            "value": true
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_BatchResult": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_SalesLineLookup": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SalesLineLookup",
+                            "type": "object",
+                            "value": {}
+                        }
+                    ]
+                },
+                "runAfter": {}
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "correlation": {
+                    "clientTrackingId": "@if(equals(triggerBody()?['Payload']?[0]?['ProformaInvoiceNumber'], null), guid(), triggerBody()?['Payload']?[0]?['ProformaInvoiceNumber'])"
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}

@@ -1,0 +1,520 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "For_each_expense_report": {
+                "type": "Foreach",
+                "foreach": "@body('Filter_array')",
+                "actions": {
+                    "Get_existing_journal_batch_number": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "dynamicsax-2"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "_invoiceId": "@items('For_each_expense_report')?['ApprovalCode']",
+                                "_dataAreaId": "@items('For_each_expense_report')?['EmpGLD1Name']"
+                            },
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/procedures/@{encodeURIComponent(encodeURIComponent('HSVendInvoiceJournalHeaders/Microsoft.Dynamics.DataEntities.GetJournalNumberByInvoiceID'))}"
+                        },
+                        "runAfter": {},
+                        "description": "This call is to determine if a journal already exists. The batch number itself is not used."
+                    },
+                    "Log_Error_(Get_existing_journal_batch_number)": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "integration-logs",
+                                "message": {
+                                    "contentData": {
+                                        "Source": "@workflow().name",
+                                        "SourceId": "@workflow().run.name",
+                                        "MessageType": "Log",
+                                        "Operation": "Error",
+                                        "MessageDate": "@utcNow()",
+                                        "Payload": [
+                                            {
+                                                "DataAreaId": "@items('For_each_expense_report')?['EmpGLD1Name']",
+                                                "EmployeeId": "@items('For_each_expense_report')?['EmployeeID']",
+                                                "FirstName": "@items('For_each_expense_report')?['FirstName']",
+                                                "LastName": "@items('For_each_expense_report')?['LastName']",
+                                                "FinancialDimensions": "@items('For_each_expense_report')?['EmpGLD2Name']",
+                                                "InvoiceNumber": "@items('For_each_expense_report')?['ApprovalCode']",
+                                                "ProcessedDate": "@items('For_each_expense_report')?['ProcessedDate']",
+                                                "TotalAmount": "@items('For_each_expense_report')?['TotalAmount']",
+                                                "DefaultTaxComponent": "@items('For_each_expense_report')?['EmpGLD3Code']",
+                                                "Currency": "@items('For_each_expense_report')?['Currency']",
+                                                "Description": "@{items('For_each_expense_report')?['ApprovalCode']} - @{items('For_each_expense_report')?['EmployeeID']} - @{items('For_each_expense_report')?['ExpenseReportName']}",
+                                                "JournalNumber": "@null",
+                                                "MessageBody": "@concat('Approval code ', items('For_each_expense_report')?['ApprovalCode'], ': ', body('Get_existing_journal_batch_number')?['message'])"
+                                            }
+                                        ]
+                                    },
+                                    "contentType": "application/json",
+                                    "userProperties": {
+                                        "Source": "@workflow().name",
+                                        "MessageType": "Log",
+                                        "Operation": "Error"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Get_existing_journal_batch_number": [
+                                "Failed"
+                            ]
+                        }
+                    },
+                    "Does_a_journal_already_exist_for_this_report": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "not": {
+                                        "equals": [
+                                            "@body('Get_existing_journal_batch_number')?['OutputParameters']?['value']",
+                                            "@trim(' ')"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": {},
+                        "runAfter": {
+                            "Get_existing_journal_batch_number": [
+                                "Succeeded"
+                            ]
+                        },
+                        "else": {
+                            "actions": {
+                                "Process_a_single_expense_report": {
+                                    "type": "Workflow",
+                                    "inputs": {
+                                        "host": {
+                                            "workflow": {
+                                                "id": "Certify-http-all-d365fo-2-ProcessSingleReport"
+                                            }
+                                        },
+                                        "body": {
+                                            "DataAreaId": "@items('For_each_expense_report')?['EmpGLD1Name']",
+                                            "EmployeeId": "@items('For_each_expense_report')?['EmployeeID']",
+                                            "FirstName": "@items('For_each_expense_report')?['FirstName']",
+                                            "LastName": "@items('For_each_expense_report')?['LastName']",
+                                            "ReportId": "@items('For_each_expense_report')?['ID']",
+                                            "ReportName": "@items('For_each_expense_report')?['ExpenseReportName']",
+                                            "FinancialDimensions": "@items('For_each_expense_report')?['EmpGLD2Name']",
+                                            "InvoiceNumber": "@items('For_each_expense_report')?['ApprovalCode']",
+                                            "ProcessedDate": "@items('For_each_expense_report')?['ProcessedDate']",
+                                            "TotalAmount": "@items('For_each_expense_report')?['TotalAmount']",
+                                            "DefaultTaxComponent": "@items('For_each_expense_report')?['EmpGLD3Code']",
+                                            "Currency": "@items('For_each_expense_report')?['Currency']",
+                                            "LinesOverride": "@triggerBody()?['LinesOverride']"
+                                        },
+                                        "retryPolicy": {
+                                            "type": "none"
+                                        }
+                                    },
+                                    "runAfter": {}
+                                },
+                                "Append_error_message_to_'Error_List'": {
+                                    "type": "AppendToArrayVariable",
+                                    "inputs": {
+                                        "name": "Error List",
+                                        "value": "@body('Process_a_single_expense_report')"
+                                    },
+                                    "runAfter": {
+                                        "Process_a_single_expense_report": [
+                                            "FAILED"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "Append_to_array_variable": {
+                        "type": "AppendToArrayVariable",
+                        "inputs": {
+                            "name": "Error List",
+                            "value": "@body('Get_existing_journal_batch_number')"
+                        },
+                        "runAfter": {
+                            "Log_Error_(Get_existing_journal_batch_number)": [
+                                "Succeeded",
+                                "TIMEDOUT",
+                                "FAILED"
+                            ]
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Filter_array": [
+                        "Succeeded"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "repetitions": 10
+                    }
+                }
+            },
+            "Get_Certify_Expense_Reports": {
+                "type": "Http",
+                "inputs": {
+                    "method": "GET",
+                    "uri": "@parameters('APCertifyExpensesURI')",
+                    "headers": {
+                        "x-api-key": "@parameters('APCertifyAPIKey')",
+                        "x-api-secret": "@parameters('APCertifyAPISecret')"
+                    },
+                    "queries": {
+                        "processed": "1",
+                        "startdate": "@convertFromUtc(addDays(utcNow(), -1), 'Mountain Standard Time', 'yyyy-MM-dd')"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Log_Error_(Get_Certify_Expense_Reports)": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "entityName": "integration-logs",
+                        "message": {
+                            "contentData": {
+                                "Source": "@workflow().name",
+                                "SourceId": "@workflow().run.name",
+                                "MessageType": "Log",
+                                "Operation": "Error",
+                                "MessageDate": "@utcNow()",
+                                "Payload": [
+                                    {
+                                        "DataAreaId": "@null",
+                                        "EmployeeId": "@null",
+                                        "FirstName": "@null",
+                                        "LastName": "@null",
+                                        "FinancialDimensions": "@null",
+                                        "InvoiceNumber": "@null",
+                                        "ProcessedDate": "@null",
+                                        "TotalAmount": "@null",
+                                        "DefaultTaxComponent": "@null",
+                                        "Currency": "@null",
+                                        "Description": "System Error",
+                                        "JournalNumber": "@null",
+                                        "MessageBody": "@concat('Error calling Certify API: ', body('Get_Certify_Expense_Reports'))"
+                                    }
+                                ]
+                            },
+                            "contentType": "application/json",
+                            "userProperties": {
+                                "Source": "@workflow().name",
+                                "MessageType": "Log",
+                                "Operation": "Error"
+                            }
+                        }
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "sendMessage",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "runAfter": {
+                    "Get_Certify_Expense_Reports": [
+                        "Failed"
+                    ]
+                }
+            },
+            "Parse_Certify_Expense_Reports": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@if(equals(triggerBody()?['HeaderOverride'], null), body('Get_Certify_Expense_Reports'), triggerBody()?['HeaderOverride'])",
+                    "schema": {
+                        "properties": {
+                            "ExpenseReports": {
+                                "items": {
+                                    "properties": {
+                                        "APSyncComplete": {
+                                            "type": "boolean"
+                                        },
+                                        "ApprovalCode": {
+                                            "type": "string"
+                                        },
+                                        "Currency": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD1Code": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD1Name": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD2Code": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD2Name": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD3Code": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD3Name": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD4Code": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD4Name": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD5Code": {
+                                            "type": "string"
+                                        },
+                                        "EmpGLD5Name": {
+                                            "type": "string"
+                                        },
+                                        "EmployeeDepartment": {
+                                            "type": "string"
+                                        },
+                                        "EmployeeID": {
+                                            "type": "string"
+                                        },
+                                        "EndDate": {
+                                            "type": "string"
+                                        },
+                                        "ExpenseReportDescription": {
+                                            "type": "string"
+                                        },
+                                        "ExpenseReportName": {
+                                            "type": "string"
+                                        },
+                                        "FirstName": {
+                                            "type": "string"
+                                        },
+                                        "ID": {
+                                            "type": "string"
+                                        },
+                                        "InitialApprovalDate": {
+                                            "type": "string"
+                                        },
+                                        "InitialApproverEmail": {
+                                            "type": "string"
+                                        },
+                                        "LastAction": {
+                                            "type": "string"
+                                        },
+                                        "LastName": {
+                                            "type": "string"
+                                        },
+                                        "NonReimAmount": {
+                                            "type": "number"
+                                        },
+                                        "Processed": {
+                                            "type": "boolean"
+                                        },
+                                        "ProcessedDate": {
+                                            "type": "string"
+                                        },
+                                        "ReimAmount": {
+                                            "type": "number"
+                                        },
+                                        "Reimbursed": {
+                                            "type": "boolean"
+                                        },
+                                        "ReimbursedDate": {
+                                            "type": "string"
+                                        },
+                                        "ReimbursementTransactionID": {
+                                            "type": "string"
+                                        },
+                                        "StartDate": {
+                                            "type": "string"
+                                        },
+                                        "Status": {
+                                            "type": "string"
+                                        },
+                                        "SubmittedDate": {
+                                            "type": "string"
+                                        },
+                                        "TotalAmount": {
+                                            "type": "number"
+                                        }
+                                    },
+                                    "required": [
+                                        "ID",
+                                        "EmployeeDepartment",
+                                        "FirstName",
+                                        "LastName",
+                                        "EmployeeID",
+                                        "NonReimAmount",
+                                        "ReimAmount",
+                                        "TotalAmount",
+                                        "Currency",
+                                        "SubmittedDate",
+                                        "InitialApprovalDate",
+                                        "Processed",
+                                        "ProcessedDate",
+                                        "ApprovalCode",
+                                        "InitialApproverEmail",
+                                        "StartDate",
+                                        "EndDate",
+                                        "ExpenseReportName",
+                                        "ExpenseReportDescription",
+                                        "Status",
+                                        "LastAction",
+                                        "APSyncComplete",
+                                        "Reimbursed",
+                                        "ReimbursedDate",
+                                        "ReimbursementTransactionID",
+                                        "EmpGLD1Name",
+                                        "EmpGLD1Code",
+                                        "EmpGLD2Name",
+                                        "EmpGLD2Code",
+                                        "EmpGLD3Name",
+                                        "EmpGLD3Code",
+                                        "EmpGLD4Name",
+                                        "EmpGLD4Code",
+                                        "EmpGLD5Name",
+                                        "EmpGLD5Code"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Get_Certify_Expense_Reports": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Error List",
+                            "type": "array",
+                            "value": []
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "If_errors_occurred": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                "@length(variables('Error List'))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Fail_with_errors_(2)": {
+                        "type": "Terminate",
+                        "inputs": {
+                            "runStatus": "Failed",
+                            "runError": {
+                                "code": "-1",
+                                "message": "@{variables('Error List')}"
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "For_each_expense_report": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Succeed": {
+                            "type": "Terminate",
+                            "inputs": {
+                                "runStatus": "Succeeded"
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            },
+            "Filter_array": {
+                "type": "Query",
+                "inputs": {
+                    "from": "@body('Parse_Certify_Expense_Reports')?['ExpenseReports']",
+                    "where": "@and(equals(item()?['NonReimAmount'], 0),greater(item()?['ReimAmount'], 0))"
+                },
+                "runAfter": {
+                    "Parse_Certify_Expense_Reports": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Fail_with_errors_(1)": {
+                "type": "Terminate",
+                "inputs": {
+                    "runStatus": "Failed",
+                    "runError": {
+                        "code": "-2",
+                        "message": "@{body('Get_Certify_Expense_Reports')}"
+                    }
+                },
+                "runAfter": {
+                    "Log_Error_(Get_Certify_Expense_Reports)": [
+                        "Succeeded",
+                        "TIMEDOUT",
+                        "FAILED"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "HeaderOverride": {
+                                "type": "object",
+                                "properties": {}
+                            },
+                            "LinesOverride": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    }
+                },
+                "runtimeConfiguration": {
+                    "concurrency": {
+                        "runs": 1
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

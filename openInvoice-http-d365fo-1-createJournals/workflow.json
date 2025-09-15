@@ -1,0 +1,2153 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Initialize_ActualBU": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ActualBU",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Project_Description": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_CompanyId": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "CompanyId",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_journalNum": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Divsion": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Division",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_ActualBU": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_LineNum": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "LineNum",
+                            "type": "integer",
+                            "value": 1
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_errorMessage": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_Total": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Total",
+                            "type": "float"
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Initialize_VendAccount": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "VendAccount",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Divsion": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_errorMessage": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "errorMessage",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_Total": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_journalNum": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "journalNum",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_VendAccount": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_projCategory": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "ProjCat",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_CompanyId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_JSON_invoice_details": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerBody()?['OpenInvoicePayLoad']",
+                    "schema": {
+                        "properties": {
+                            "?xml": {
+                                "properties": {
+                                    "@@encoding": {
+                                        "type": "string"
+                                    },
+                                    "@@version": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "SupplierConnectInvoice": {
+                                "properties": {
+                                    "@@type": {
+                                        "type": "string"
+                                    },
+                                    "@@xmlns": {
+                                        "type": "string"
+                                    },
+                                    "AttachmentsReference": {
+                                        "properties": {
+                                            "@@numOfAttachments": {
+                                                "type": "string"
+                                            },
+                                            "Attachment": {
+                                                "items": {
+                                                    "properties": {
+                                                        "@@id": {
+                                                            "type": "string"
+                                                        },
+                                                        "@@type": {
+                                                            "type": "string"
+                                                        },
+                                                        "ClientAttachmentPath": {},
+                                                        "ContentType": {
+                                                            "type": "string"
+                                                        },
+                                                        "LocationPath": {
+                                                            "type": "string"
+                                                        },
+                                                        "UniversalResourceIdentifier": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "@@type",
+                                                        "@@id",
+                                                        "LocationPath",
+                                                        "ContentType",
+                                                        "ClientAttachmentPath",
+                                                        "UniversalResourceIdentifier"
+                                                    ],
+                                                    "type": "object"
+                                                },
+                                                "type": "array"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "Invoice": {
+                                        "properties": {
+                                            "@@id": {
+                                                "type": "string"
+                                            },
+                                            "InvoiceDetails": {
+                                                "properties": {
+                                                    "Coding": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "AFENumber": {
+                                                                    "type": "string"
+                                                                },
+                                                                "AccountInformation": {
+                                                                    "properties": {
+                                                                        "MajorAccount": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "AccountType": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "MinorAccount": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "SubCode": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "AdditionalData": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "#text": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@internal_code": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "@@internal_code",
+                                                                            "#text"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": [
+                                                                        "array",
+                                                                        "object"
+                                                                    ]
+                                                                },
+                                                                "RateOrPercentage": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ReferenceData": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "@@code": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@name": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@type": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@typeFormat": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Code": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Description": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Value": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "@@code",
+                                                                            "@@name",
+                                                                            "@@type",
+                                                                            "Value"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": [
+                                                                        "array",
+                                                                        "object"
+                                                                    ]
+                                                                },
+                                                                "Tax": {
+                                                                    "properties": {
+                                                                        "TaxType": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "Total": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "RateOrPercentage",
+                                                                "Total",
+                                                                "AccountInformation"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": [
+                                                            "array",
+                                                            "object"
+                                                        ]
+                                                    },
+                                                    "LineItem": {
+                                                        "properties": {
+                                                            "Categorization": {
+                                                                "properties": {
+                                                                    "@@CategorizationScheme": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "CategoryCode": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "Coding": {
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "AFENumber": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "AccountInformation": {
+                                                                            "properties": {
+                                                                                "MajorAccount": {
+                                                                                    "properties": {
+                                                                                        "AccountNumber": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "AccountType": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "Description": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "MinorAccount": {
+                                                                                    "properties": {
+                                                                                        "AccountNumber": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "Description": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SubCode": {
+                                                                                    "properties": {
+                                                                                        "AccountNumber": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "AdditionalData": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "#text": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@internal_code": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "@@internal_code",
+                                                                                    "#text"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": [
+                                                                                "array",
+                                                                                "object"
+                                                                            ]
+                                                                        },
+                                                                        "RateOrPercentage": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "ReferenceData": {
+                                                                            "items": {
+                                                                                "properties": {
+                                                                                    "@@code": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@name": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@type": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "@@typeFormat": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "Code": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "Description": {
+                                                                                        "type": "string"
+                                                                                    },
+                                                                                    "Value": {
+                                                                                        "type": "string"
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "@@code",
+                                                                                    "@@name",
+                                                                                    "@@type",
+                                                                                    "Value"
+                                                                                ],
+                                                                                "type": "object"
+                                                                            },
+                                                                            "type": [
+                                                                                "array",
+                                                                                "object"
+                                                                            ]
+                                                                        },
+                                                                        "Tax": {
+                                                                            "properties": {
+                                                                                "TaxType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "Total": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "required": [
+                                                                        "RateOrPercentage",
+                                                                        "Total",
+                                                                        "AccountInformation"
+                                                                    ],
+                                                                    "type": "object"
+                                                                },
+                                                                "type": [
+                                                                    "array",
+                                                                    "object"
+                                                                ]
+                                                            },
+                                                            "Discount": {
+                                                                "properties": {
+                                                                    "RateOrPercentage": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "Total": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "LineItemChargeClass": {
+                                                                "type": "string"
+                                                            },
+                                                            "LineItemNumber": {
+                                                                "type": "string"
+                                                            },
+                                                            "LongDescription": {
+                                                                "type": "string"
+                                                            },
+                                                            "Quantity": {
+                                                                "type": "string"
+                                                            },
+                                                            "UnitPrice": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": [
+                                                            "object",
+                                                            "array"
+                                                        ]
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "InvoiceHeader": {
+                                                "properties": {
+                                                    "AdditionalData": {
+                                                        "properties": {
+                                                            "#text": {
+                                                                "type": "string"
+                                                            },
+                                                            "@@internal_code": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "CurrencyCode": {
+                                                        "type": "string"
+                                                    },
+                                                    "CurrentOwner": {
+                                                        "properties": {
+                                                            "Person": {
+                                                                "properties": {
+                                                                    "@@Role": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "EmailAddress": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "FirstName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "LastName": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "PersonIdentifier": {
+                                                                        "properties": {
+                                                                            "#text": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@PersonIdentifierType": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "type": "object"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "DiscountTotal": {
+                                                        "type": "string"
+                                                    },
+                                                    "DocumentAction": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "ActionDestination": {
+                                                                    "properties": {
+                                                                        "DepartmentOrGroup": {
+                                                                            "properties": {
+                                                                                "DepartmentName": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "EmailAddress": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "FirstName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LastName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "PersonIdentifier": {
+                                                                            "properties": {
+                                                                                "#text": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "@@personIdentifierIndicator": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "Site": {
+                                                                            "properties": {
+                                                                                "SiteCode": {
+                                                                                    "properties": {
+                                                                                        "#text": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "@@siteCodeIndicator": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SiteName": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "ActionSource": {
+                                                                    "properties": {
+                                                                        "@@role": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "DepartmentOrGroup": {
+                                                                            "properties": {
+                                                                                "DepartmentName": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "EmailAddress": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "FirstName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LastName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "Site": {
+                                                                            "properties": {
+                                                                                "SiteCode": {
+                                                                                    "properties": {
+                                                                                        "#text": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "@@siteCodeIndicator": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SiteName": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "ActionType": {
+                                                                    "type": "string"
+                                                                },
+                                                                "LongDescription": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Person": {
+                                                                    "properties": {
+                                                                        "@@Role": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "DepartmentOrGroup": {
+                                                                            "properties": {
+                                                                                "DepartmentName": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "EmailAddress": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "FirstName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "LastName": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "Site": {
+                                                                            "properties": {
+                                                                                "SiteCode": {
+                                                                                    "properties": {
+                                                                                        "#text": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "@@SiteCodeType": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "object"
+                                                                                },
+                                                                                "SiteName": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "Status": {
+                                                                    "type": "string"
+                                                                },
+                                                                "TransactionDateTime": {
+                                                                    "type": "string"
+                                                                },
+                                                                "TransactionIdentifier": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "Person",
+                                                                "ActionType",
+                                                                "Status",
+                                                                "TransactionDateTime",
+                                                                "TransactionIdentifier",
+                                                                "ActionSource"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "InvoiceDate": {
+                                                        "type": "string"
+                                                    },
+                                                    "InvoiceNumber": {
+                                                        "type": "string"
+                                                    },
+                                                    "InvoiceType": {
+                                                        "type": "string"
+                                                    },
+                                                    "LongDescription": {
+                                                        "type": "string"
+                                                    },
+                                                    "Partner": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "@@PartnerType": {
+                                                                    "type": "string"
+                                                                },
+                                                                "Company": {
+                                                                    "properties": {
+                                                                        "CompanyCode": {
+                                                                            "properties": {
+                                                                                "#text": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "@@CompanyCodeType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": [
+                                                                                "object",
+                                                                                "array"
+                                                                            ]
+                                                                        },
+                                                                        "CompanyName": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "Site": {
+                                                                    "properties": {
+                                                                        "Address": {
+                                                                            "properties": {
+                                                                                "@@AddressType": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "AddressLine": {
+                                                                                    "type": [
+                                                                                        "string",
+                                                                                        "array"
+                                                                                    ]
+                                                                                },
+                                                                                "City": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Country": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "CountryCode": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "PostalZipCode": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "StateProvince": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "StateProvinceCode": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": [
+                                                                                "object",
+                                                                                "array"
+                                                                            ]
+                                                                        },
+                                                                        "SiteCode": {
+                                                                            "properties": {
+                                                                                "#text": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "@@SiteCodeType": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "SiteName": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "@@PartnerType",
+                                                                "Company",
+                                                                "Site"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": "array"
+                                                    },
+                                                    "ReferenceData": {
+                                                        "properties": {
+                                                            "@@code": {
+                                                                "type": "string"
+                                                            },
+                                                            "@@name": {
+                                                                "type": "string"
+                                                            },
+                                                            "@@type": {
+                                                                "type": "string"
+                                                            },
+                                                            "Value": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "SubmittedTotal": {
+                                                        "type": "string"
+                                                    },
+                                                    "Total": {
+                                                        "type": "string"
+                                                    },
+                                                    "TotalLineItems": {
+                                                        "type": "string"
+                                                    },
+                                                    "TransportClass": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "Initialize__referenceData": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Initialize_Project_Description": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "PD",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_LineNum": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_vendName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "VendName",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_projCategory": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_DocumentName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "DocumentName",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_vendName": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Set_Legal_Entity_-_CompanyId": {
+                "type": "SetVariable",
+                "inputs": {
+                    "name": "CompanyId",
+                    "value": "@{if(equals(body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['DocumentAction']?[0]?['ActionSource']?['Site']?['SiteCode']?['#text'],'Legal'),'sesc',body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['DocumentAction']?[0]?['ActionSource']?['Site']?['SiteCode']?['#text'])}"
+                },
+                "runAfter": {
+                    "Parse_JSON_invoice_details": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize__referenceData": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "referenceData",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_DocumentName": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                    "statusCode": "@{if(greater(length(variables('errorMessage')),0),500,200)}",
+                    "body": {
+                        "JournalNum": "@{string(variables('journalNum'))}",
+                        "CompanyId": "@{string(variables('CompanyId'))}",
+                        "ErrorMessage": "@string(variables('errorMessage'))",
+                        "Division": "@string(variables('Division'))",
+                        "VendName": "@string(variables('VendName'))"
+                    }
+                },
+                "runAfter": {
+                    "Condition_to_check_valid_data_to_continue_process": [
+                        "SUCCEEDED",
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            },
+            "Filter_InvoiceDetails_By_Supplier_PartnerType": {
+                "type": "Query",
+                "inputs": {
+                    "from": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['Partner']",
+                    "where": "@equals(string(item()?['@PartnerType']),'Supplier')"
+                },
+                "runAfter": {
+                    "Set_Legal_Entity_-_CompanyId": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition_to_check_valid_data_to_continue_process": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "greater": [
+                                "@length(body('Filter_InvoiceDetails_By_Supplier_PartnerType'))",
+                                0
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Condition_for_valid_FO_VendaccountNum": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "not": {
+                                        "equals": [
+                                            "@body('Execute_action_to_find_FO_VendAccount')?['value']",
+                                            ""
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Compose_Line_details": {
+                                "type": "Compose",
+                                "inputs": "@array(body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceDetails']?['LineItem'])",
+                                "runAfter": {
+                                    "Create_Vendor_journal_line": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Create_Header": {
+                                "type": "Http",
+                                "inputs": {
+                                    "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalHeaders')}",
+                                    "method": "POST",
+                                    "body": {
+                                        "JournalName": "@parameters('OIJournalName')",
+                                        "dataAreaId": "@{if(equals(variables('CompanyID'),'Legal'),'SESC',variables('CompanyID'))}",
+                                        "Description": "@{if(contains(string(body('Parse_JSON_invoice_details')),'AFENumber'),'PRJ','AP')}-@{formatDateTime(convertFromUtc(utcNow(),'Mountain Standard Time','MM/dd/yyyy'),'MM')}@{formatDateTime(convertFromUtc(utcNow(),'Mountain Standard Time','MM/dd/yyyy'),'dd')}@{formatDateTime(convertFromUtc(utcNow(),'Mountain Standard Time','MM/dd/yyyy'),'yy')}-@{body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceNumber']}-@{substring(body('Execute_action_vend_Name')?['value'],add(indexOf(body('Execute_action_vend_Name')?['value'],','),1))}"
+                                    },
+                                    "authentication": {
+                                        "type": "ActiveDirectoryOAuth",
+                                        "tenant": "@parameters('TenantId')",
+                                        "audience": "@concat('https://',parameters('D365FO'))",
+                                        "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                        "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "fixed",
+                                        "count": 4,
+                                        "interval": "PT5S"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Set_vendName": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Create_Vendor_journal_line": {
+                                "type": "Http",
+                                "inputs": {
+                                    "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalLines')}",
+                                    "method": "POST",
+                                    "body": {
+                                        "JournalBatchNumber": "@body('Create_Header')?['JournalBatchNumber']",
+                                        "Currency": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['CurrencyCode']",
+                                        "dataAreaId": "@body('Create_Header')?['dataAreaId']",
+                                        "LineNumber": "@variables('LineNum')",
+                                        "Credit": "@if(greater(variables('Total'),0.00),variables('Total'),0.00)",
+                                        "MainAccountNumber": "@body('Execute_action_to_find_FO_VendAccount')?['value']",
+                                        "InvoiceDate": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceDate']",
+                                        "Debit": "@if(less(variables('Total'),0.00),mul(variables('Total'),-1),0.00)",
+                                        "Description": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['LongDescription']",
+                                        "AccountType": "Vend",
+                                        "Invoice": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['InvoiceNumber']",
+                                        "HSOIInvoiceId": "@body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['@id']"
+                                    },
+                                    "authentication": {
+                                        "type": "ActiveDirectoryOAuth",
+                                        "tenant": "@parameters('TenantId')",
+                                        "audience": "@concat('https://',parameters('D365FO'))",
+                                        "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                        "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "fixed",
+                                        "count": 4,
+                                        "interval": "PT5S"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Set_journalNum": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "For_each_Line_details": {
+                                "type": "Foreach",
+                                "foreach": "@outputs('Compose_Line_details')",
+                                "actions": {
+                                    "For_each_line": {
+                                        "type": "Foreach",
+                                        "foreach": "@body('Filter_array_by_Line_Total_greater_than_0')",
+                                        "actions": {
+                                            "Condition_to_check_for_AFE_number": {
+                                                "type": "If",
+                                                "expression": {
+                                                  "and": [
+                                                    {
+                                                      "not": {
+                                                        "equals": [
+                                                          "@items('For_each_line')?['AFENumber']",
+                                                          "@null"
+                                                        ]
+                                                      }
+                                                    }
+                                                  ]
+                                                },
+                                                "actions": {
+                                                  "Parse_JSON_ReferenceData": {
+                                                    "type": "ParseJson",
+                                                    "inputs": {
+                                                      "content": "@array(items('For_each_line')?['ReferenceData'])",
+                                                      "schema": {
+                                                        "properties": {
+                                                          "@@code": {
+                                                            "type": "string"
+                                                          },
+                                                          "@@name": {
+                                                            "type": "string"
+                                                          },
+                                                          "@@type": {
+                                                            "type": "string"
+                                                          },
+                                                          "@@typeFormat": {
+                                                            "type": "string"
+                                                          },
+                                                          "Code": {
+                                                            "type": "string"
+                                                          },
+                                                          "Description": {
+                                                            "type": "string"
+                                                          },
+                                                          "Value": {
+                                                            "type": "string"
+                                                          }
+                                                        },
+                                                        "type": [
+                                                          "array"
+                                                        ]
+                                                      }
+                                                    }
+                                                  },
+                                                  "Filter_ReferenceData_by_Project_Category": {
+                                                    "type": "Query",
+                                                    "inputs": {
+                                                      "from": "@body('Parse_JSON_ReferenceData')",
+                                                      "where": "@equals(string(item()?['@code']),'Project Category')"
+                                                    },
+                                                    "runAfter": {
+                                                      "Parse_JSON_ReferenceData": [
+                                                        "SUCCEEDED"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "Filter_Non_Project_Category_ReferenceData": {
+                                                    "type": "Query",
+                                                    "inputs": {
+                                                      "from": "@body('Parse_JSON_ReferenceData')",
+                                                      "where": "@not(contains(string(item()?['@code']),'Project Category'))"
+                                                    },
+                                                    "runAfter": {
+                                                      "Filter_ReferenceData_by_Project_Category": [
+                                                        "SUCCEEDED"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "Set_Project_Category": {
+                                                    "type": "SetVariable",
+                                                    "inputs": {
+                                                      "name": "ProjCat",
+                                                      "value": "@{string(first(body('Filter_ReferenceData_by_Project_Category'))?['Value'])}"
+                                                    },
+                                                    "runAfter": {
+                                                      "Filter_Non_Project_Category_ReferenceData": [
+                                                        "SUCCEEDED"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "Set_Project_Description": {
+                                                    "type": "SetVariable",
+                                                    "inputs": {
+                                                      "name": "PD",
+                                                      "value": "@{string(last(body('Filter_Non_Project_Category_ReferenceData'))?['Value'])}"
+                                                    },
+                                                    "runAfter": {
+                                                      "Set_Project_Category": [
+                                                        "SUCCEEDED"
+                                                      ]
+                                                    }
+                                                  },
+                                                  "Condition_if_proj_cat_exists": {
+                                                    "type": "If",
+                                                    "expression": {
+                                                      "and": [
+                                                        {
+                                                          "greater": [
+                                                            "@length(string(variables('ProjCat')))",
+                                                            0
+                                                          ]
+                                                        }
+                                                      ]
+                                                    },
+                                                    "actions": {
+                                                      "Create_project_journal_line": {
+                                                        "type": "Http",
+                                                        "inputs": {
+                                                          "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalLines')}",
+                                                          "method": "POST",
+                                                          "body": {
+                                                            "JournalBatchNumber": "@body('Create_Header')?['JournalBatchNumber']",
+                                                            "Currency": "@body('Create_Vendor_journal_line')['Currency']",
+                                                            "dataAreaId": "@body('Create_Header')?['dataAreaId']",
+                                                            "LineNumber": "@variables('LineNum')",
+                                                            "Divison": "@variables('Division')",
+                                                            "Credit": "@if(less(variables('Total'), 0.00), mul(variables('Total'), -1), 0.00)",
+                                                            "AFENumber": "@{items('For_each_line')?['AFENumber']}",
+                                                            "MainAccountNumber": "@{items('for_each_line')?['AFENumber']}",
+                                                            "InvoiceDate": "@body('Create_Vendor_journal_line')?['InvoiceDate']",
+                                                            "Debit": "@if(greater(variables('Total'), 0.00), variables('Total'), 0.00)",
+                                                            "ProjCategoryId": "@variables('ProjCat')",
+                                                            "Description": "@variables('PD')",
+                                                            "AccountType": "Project",
+                                                            "Invoice": "@body('Create_Vendor_journal_line')?['Invoice']",
+                                                            "HSOIInvoiceId": "@body('Create_Vendor_journal_line')?['HSOIInvoiceId']",
+                                                            "Document": "@if(equals(variables('DocumentName'),null),'',variables('DocumentName'))"
+                                                          },
+                                                          "authentication": {
+                                                            "type": "ActiveDirectoryOAuth",
+                                                            "tenant": "@parameters('TenantId')",
+                                                            "audience": "@concat('https://',parameters('D365FO'))",
+                                                            "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                                            "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                                          },
+                                                          "retryPolicy": {
+                                                            "type": "fixed",
+                                                            "count": 4,
+                                                            "interval": "PT5S"
+                                                          }
+                                                        }
+                                                      },
+                                                      "Parse_project_error_message": {
+                                                        "type": "ParseJson",
+                                                        "inputs": {
+                                                          "content": "@body('Create_project_journal_line')",
+                                                          "schema": {
+                                                            "properties": {
+                                                              "errors": {
+                                                                "type": "array"
+                                                              },
+                                                              "message": {
+                                                                "type": "string"
+                                                              },
+                                                              "source": {
+                                                                "type": "string"
+                                                              },
+                                                              "status": {
+                                                                "type": "number"
+                                                              }
+                                                            },
+                                                            "type": "object"
+                                                          }
+                                                        },
+                                                        "runAfter": {
+                                                          "Create_project_journal_line": [
+                                                            "FAILED",
+                                                            "TIMEDOUT"
+                                                          ]
+                                                        }
+                                                      },
+                                                      "Set_error_messae_for_proj_line_fails": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                          "name": "errorMessage",
+                                                          "value": "@body('Parse_project_error_message')?['message']"
+                                                        },
+                                                        "runAfter": {
+                                                          "Parse_project_error_message": [
+                                                            "Succeeded"
+                                                          ]
+                                                        }
+                                                      }
+                                                    },
+                                                    "else": {
+                                                      "actions": {
+                                                        "Set_ErrorMessage_Project_Category_Missing": {
+                                                          "type": "SetVariable",
+                                                          "inputs": {
+                                                            "name": "errorMessage",
+                                                            "value": "Project Category is missing for invoice @{body('Create_Vendor_journal_line')?['Invoice']}"
+                                                          }
+                                                        }
+                                                      }
+                                                    },
+                                                    "runAfter": {
+                                                      "Set_Project_Description": [
+                                                        "Succeeded"
+                                                      ]
+                                                    }
+                                                  }
+                                                },
+                                                "else": {
+                                                  "actions": {
+                                                    "Create_ledger_journal_line": {
+                                                      "type": "Http",
+                                                      "inputs": {
+                                                        "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalLines')}",
+                                                        "method": "POST",
+                                                        "body": {
+                                                          "JournalBatchNumber": "@body('Create_Header')?['JournalBatchNumber']",
+                                                          "Currency": "@body('Create_Vendor_journal_line')['Currency']",
+                                                          "dataAreaId": "@body('Create_Header')?['dataAreaId']",
+                                                          "LineNumber": "@variables('LineNum')",
+                                                          "Credit": "@if(less(variables('Total'), 0.00), mul(variables('Total'), -1), 0.00)",
+                                                          "InvoiceDate": "@body('Create_Vendor_journal_line')?['InvoiceDate']",
+                                                          "AccountDisplayValue": "@body('Get_LedgerDim')?['value']",
+                                                          "Debit": "@if(greater(variables('Total'), 0.00), variables('Total'), 0.00)",
+                                                          "Description": "@{if(equals(items('For_each_line')?['Tax']?['TaxType'],'GST'),body('Create_Vendor_journal_line')?['Invoice'],variables('referenceData'))}",
+                                                          "AccountType": "Ledger",
+                                                          "Invoice": "@body('Create_Vendor_journal_line')?['Invoice']",
+                                                          "HSOIInvoiceId": "@body('Create_Vendor_journal_line')?['HSOIInvoiceId']",
+                                                          "Document": "@if(equals(variables('DocumentName'),null),'',variables('DocumentName'))"
+                                                        },
+                                                        "authentication": {
+                                                          "type": "ActiveDirectoryOAuth",
+                                                          "tenant": "@parameters('TenantId')",
+                                                          "audience": "@concat('https://',parameters('D365FO'))",
+                                                          "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                                          "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                                        },
+                                                        "retryPolicy": {
+                                                          "type": "fixed",
+                                                          "count": 4,
+                                                          "interval": "PT5S"
+                                                        }
+                                                      },
+                                                      "runAfter": {
+                                                        "Set_Reference_Data": [
+                                                          "Succeeded"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "Get_LedgerDim": {
+                                                      "type": "Http",
+                                                      "inputs": {
+                                                        "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalLines/Microsoft.Dynamics.DataEntities.displayValueForLedger')}",
+                                                        "method": "POST",
+                                                        "body": {
+                                                          "_mainaccountid": "@{items('For_each_line')?['AccountInformation']?['MajorAccount']?['AccountNumber']}",
+                                                          "_legalEntity": "@variables('CompanyId')",
+                                                          "_BU": "@items('For_each_line')?['AccountInformation']?['MinorAccount']?['AccountNumber']",
+                                                          "_location": "@items('For_each_line')?['AccountInformation']?['SubCode']?['AccountNumber']",
+                                                          "_division": "@variables('Division')"
+                                                        },
+                                                        "authentication": {
+                                                          "type": "ActiveDirectoryOAuth",
+                                                          "tenant": "@parameters('TenantId')",
+                                                          "audience": "@concat('https://',parameters('D365FO'))",
+                                                          "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                                          "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                                        },
+                                                        "retryPolicy": {
+                                                          "type": "fixed",
+                                                          "count": 4,
+                                                          "interval": "PT5S"
+                                                        }
+                                                      },
+                                                      "runAfter": {"Parse_Reference_Data": [
+                                                        "Succeeded"
+                                                      ]}
+                                                    },
+                                                    "Parse_ledger_error_message": {
+                                                      "type": "ParseJson",
+                                                      "inputs": {
+                                                        "content": "@body('Create_ledger_journal_line')",
+                                                        "schema": {
+                                                          "properties": {
+                                                            "errors": {
+                                                              "type": "array"
+                                                            },
+                                                            "message": {
+                                                              "type": "string"
+                                                            },
+                                                            "source": {
+                                                              "type": "string"
+                                                            },
+                                                            "status": {
+                                                              "type": "number"
+                                                            }
+                                                          },
+                                                          "type": "object"
+                                                        }
+                                                      },
+                                                      "runAfter": {
+                                                        "Create_ledger_journal_line": [
+                                                          "TIMEDOUT",
+                                                          "SKIPPED",
+                                                          "FAILED"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "Set_error_message_on_ledger_line_fail": {
+                                                      "type": "SetVariable",
+                                                      "inputs": {
+                                                        "name": "errorMessage",
+                                                        "value": "@body('Parse_ledger_error_message')?['message']"
+                                                      },
+                                                      "runAfter": {
+                                                        "Parse_ledger_error_message": [
+                                                          "SUCCEEDED"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "Filter_Reference_Data": {
+                                                      "type": "Query",
+                                                      "inputs": {
+                                                        "from": "@body('Parse_Reference_Data')",
+                                                        "where": "@equals(string(item()?['@code']),'Reference Data')"
+                                                      },
+                                                      "runAfter": {
+                                                        "Get_LedgerDim": [
+                                                          "Succeeded"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "Set_Reference_Data": {
+                                                      "type": "SetVariable",
+                                                      "inputs": {
+                                                        "name": "referenceData",
+                                                        "value": "@{string(first(body('Filter_Reference_Data'))?['Value'])}"
+                                                      },
+                                                      "runAfter": {
+                                                        "Filter_Reference_Data": [
+                                                          "Succeeded"
+                                                        ]
+                                                      }
+                                                    },
+                                                    "Parse_Reference_Data": {
+                                                      "type": "ParseJson",
+                                                      "inputs": {
+                                                        "content": "@array(items('For_each_line')?['ReferenceData'])",
+                                                        "schema": {
+                                                          "properties": {
+                                                            "@@code": {
+                                                              "type": "string"
+                                                            },
+                                                            "@@name": {
+                                                              "type": "string"
+                                                            },
+                                                            "@@type": {
+                                                              "type": "string"
+                                                            },
+                                                            "@@typeFormat": {
+                                                              "type": "string"
+                                                            },
+                                                            "Code": {
+                                                              "type": "string"
+                                                            },
+                                                            "Description": {
+                                                              "type": "string"
+                                                            },
+                                                            "Value": {
+                                                              "type": "string"
+                                                            }
+                                                          },
+                                                          "type": [
+                                                            "array"
+                                                          ]
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                "runAfter": {
+                                                  "Increment_LineNum": [
+                                                    "Succeeded"
+                                                  ]
+                                                },
+                                                "trackedProperties": {}
+                                              },
+                                            "Get_financial_dimension_combination": {
+                                                "type": "ApiConnection",
+                                                "inputs": {
+                                                    "host": {
+                                                        "connection": {
+                                                            "referenceName": "sql_auditLogging"
+                                                        }
+                                                    },
+                                                    "method": "get",
+                                                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[Dimensions_Mapping]'))}/items",
+                                                    "queries": {
+                                                        "$filter": "Legal_Entity eq '@{variables('CompanyId')}' and BU_Dimension eq '@{variables('ActualBU')}'"
+                                                    }
+                                                },
+                                                "runAfter": {
+                                                    "Set_ActualBU": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Increment_LineNum": {
+                                                "type": "IncrementVariable",
+                                                "inputs": {
+                                                    "name": "LineNum",
+                                                    "value": 1
+                                                },
+                                                "runAfter": {
+                                                    "Set_line_total": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Set_ActualBU": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "ActualBU",
+                                                    "value": "@{if(or(equals(string(items('For_each_line')?['AccountInformation']?['MinorAccount']?['AccountNumber']),'-'),equals(string(items('For_each_line')?['AccountInformation']?['MinorAccount']?['AccountNumber']),'')),'GST',string(items('For_each_line')?['AccountInformation']?['MinorAccount']?['AccountNumber']))}"
+                                                },
+                                                "runAfter": {
+                                                    "Check_AdditionalData_element_exist": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Set_line_total": {
+                                                "type": "SetVariable",
+                                                "inputs": {
+                                                    "name": "Total",
+                                                    "value": "@float(items('For_each_line')?['Total'])"
+                                                },
+                                                "runAfter": {
+                                                    "Condition_to_get_division": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Condition_to_get_division": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "greater": [
+                                                                "@length(body('Get_financial_dimension_combination')?['value'])",
+                                                                1
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Get_division_for_multiBu_(V2)": {
+                                                        "type": "ApiConnection",
+                                                        "inputs": {
+                                                            "host": {
+                                                                "connection": {
+                                                                    "referenceName": "sql_auditLogging"
+                                                                }
+                                                            },
+                                                            "method": "get",
+                                                            "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent(parameters('OIServerName')))},@{encodeURIComponent(encodeURIComponent(parameters('OIDBName')))}/tables/@{encodeURIComponent(encodeURIComponent('[dbo].[Dimensions_Mapping]'))}/items",
+                                                            "queries": {
+                                                                "$filter": "Legal_Entity eq '@{variables('CompanyId')}' and BU_Dimension eq '@{variables('ActualBU')}' and Location eq '@{items('For_each_line')?['AccountInformation']?['SubCode']?['AccountNumber']}'"
+                                                            }
+                                                        }
+                                                    },
+                                                    "Set_Division": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "Division",
+                                                            "value": "@{string(last(array(body('Get_division_for_multiBu_(V2)')?['value']))?['Div_Dimension'])}"
+                                                        },
+                                                        "runAfter": {
+                                                            "Get_division_for_multiBu_(V2)": [
+                                                                "Succeeded"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "else": {
+                                                    "actions": {
+                                                        "Set_financial_div": {
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "Division",
+                                                                "value": "@{body('Get_financial_dimension_combination')?['value']?[0]?['Div_Dimension']}"
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "runAfter": {
+                                                    "Get_financial_dimension_combination": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            },
+                                            "Check_AdditionalData_element_exist": {
+                                                "type": "If",
+                                                "expression": {
+                                                    "and": [
+                                                        {
+                                                            "not": {
+                                                                "equals": [
+                                                                    "@items('For_each_Line')?['AdditionalData']",
+                                                                    "@null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "startsWith": [
+                                                                "@string(items('For_each_Line')?['AdditionalData'])",
+                                                                "["
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "actions": {
+                                                    "Filter_array_when_AdditionalCode_equals_Invoice_Document": {
+                                                        "type": "Query",
+                                                        "inputs": {
+                                                            "from": "@items('For_Each_Line')['AdditionalData']",
+                                                            "where": "@equals(item()['@internal_code'],'Invoice_Document')"
+                                                        }
+                                                    },
+                                                    "Set_Document_Name": {
+                                                        "type": "SetVariable",
+                                                        "inputs": {
+                                                            "name": "DocumentName",
+                                                            "value": "@{body('Filter_array_when_AdditionalCode_equals_Invoice_Document')?[0]?['#text']}"
+                                                        },
+                                                        "runAfter": {
+                                                            "Filter_array_when_AdditionalCode_equals_Invoice_Document": [
+                                                                "SUCCEEDED"
+                                                            ]
+                                                        }
+                                                    }
+                                                },
+                                                "else": {
+                                                    "actions": {
+                                                        "Set_DocumentName_variable": {
+                                                            "type": "SetVariable",
+                                                            "inputs": {
+                                                                "name": "DocumentName",
+                                                                "value": "@{if(equals(items('For_each_Line')?['AdditionalData'], null), '', if(equals(items('For_each_Line')?['AdditionalData']?['@internal_code'], 'Invoice_Document'),items('For_each_Line')?['AdditionalData']?['#text'], ''))}"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "runAfter": {
+                                            "Reset_DocumentName_Variable": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Parse_JSON_line_item_details": {
+                                        "type": "ParseJson",
+                                        "inputs": {
+                                            "content": "@items('For_each_Line_details')",
+                                            "schema": {
+                                                "properties": {
+                                                    "Categorization": {
+                                                        "properties": {
+                                                            "@@CategorizationScheme": {
+                                                                "type": "string"
+                                                            },
+                                                            "CategoryCode": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "Coding": {
+                                                        "items": {
+                                                            "properties": {
+                                                                "AFENumber": {
+                                                                    "type": "string"
+                                                                },
+                                                                "AccountInformation": {
+                                                                    "properties": {
+                                                                        "MajorAccount": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "AccountType": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "MinorAccount": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                },
+                                                                                "Description": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        },
+                                                                        "SubCode": {
+                                                                            "properties": {
+                                                                                "AccountNumber": {
+                                                                                    "type": "string"
+                                                                                }
+                                                                            },
+                                                                            "type": "object"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "AdditionalData": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "#text": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@internal_code": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "@@internal_code",
+                                                                            "#text"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": [
+                                                                        "array",
+                                                                        "object"
+                                                                    ]
+                                                                },
+                                                                "RateOrPercentage": {
+                                                                    "type": "string"
+                                                                },
+                                                                "ReferenceData": {
+                                                                    "items": {
+                                                                        "properties": {
+                                                                            "@@code": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@name": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@type": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "@@typeFormat": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Code": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Description": {
+                                                                                "type": "string"
+                                                                            },
+                                                                            "Value": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "@@code",
+                                                                            "@@name",
+                                                                            "@@type",
+                                                                            "Value"
+                                                                        ],
+                                                                        "type": "object"
+                                                                    },
+                                                                    "type": [
+                                                                        "array",
+                                                                        "object"
+                                                                    ]
+                                                                },
+                                                                "Tax": {
+                                                                    "properties": {
+                                                                        "TaxType": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                },
+                                                                "Total": {
+                                                                    "type": "string"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "RateOrPercentage",
+                                                                "Total",
+                                                                "AccountInformation"
+                                                            ],
+                                                            "type": "object"
+                                                        },
+                                                        "type": [
+                                                            "array",
+                                                            "object"
+                                                        ]
+                                                    },
+                                                    "Discount": {
+                                                        "properties": {
+                                                            "RateOrPercentage": {
+                                                                "type": "string"
+                                                            },
+                                                            "Total": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "LineItemChargeClass": {
+                                                        "type": "string"
+                                                    },
+                                                    "LineItemNumber": {
+                                                        "type": "string"
+                                                    },
+                                                    "LongDescription": {
+                                                        "type": "string"
+                                                    },
+                                                    "Quantity": {
+                                                        "type": "string"
+                                                    },
+                                                    "UnitPrice": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "Filter_array_by_Line_Total_greater_than_0": {
+                                        "type": "Query",
+                                        "inputs": {
+                                            "from": "@array(body('Parse_JSON_line_item_details')?['Coding'])",
+                                            "where": "@not(equals(float(item()['Total']), 0))"
+                                        },
+                                        "runAfter": {
+                                            "Parse_JSON_line_item_details": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    },
+                                    "Reset_DocumentName_Variable": {
+                                        "type": "SetVariable",
+                                        "inputs": {
+                                            "name": "DocumentName",
+                                            "value": "@{null}"
+                                        },
+                                        "runAfter": {
+                                            "Filter_array_by_Line_Total_greater_than_0": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "runAfter": {
+                                    "Compose_Line_details": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Parse_Header_error_message": {
+                                "type": "ParseJson",
+                                "inputs": {
+                                    "content": "@body('Create_Header')",
+                                    "schema": {
+                                        "properties": {
+                                            "errors": {
+                                                "type": "array"
+                                            },
+                                            "message": {
+                                                "type": "string"
+                                            },
+                                            "source": {
+                                                "type": "string"
+                                            },
+                                            "status": {
+                                                "type": "number"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Create_Header": [
+                                        "FAILED",
+                                        "TIMEDOUT",
+                                        "SKIPPED"
+                                    ]
+                                }
+                            },
+                            "Parse_JSON_for_vendor_error_message": {
+                                "type": "ParseJson",
+                                "inputs": {
+                                    "content": "@body('Create_Vendor_journal_line')",
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                          "error": {
+                                            "type": "object",
+                                            "properties": {
+                                              "code": {
+                                                "type": "string"
+                                              },
+                                              "message": {
+                                                "type": "string"
+                                              },
+                                              "innererror": {
+                                                "type": "object",
+                                                "properties": {
+                                                  "message": {
+                                                    "type": "string"
+                                                  },
+                                                  "type": {
+                                                    "type": "string"
+                                                  },
+                                                  "stacktrace": {
+                                                    "type": "string"
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                },
+                                "runAfter": {
+                                    "Create_Vendor_journal_line": [
+                                        "TIMEDOUT",
+                                        "SKIPPED",
+                                        "FAILED"
+                                    ]
+                                }
+                            },
+                            "Set_Total": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "Total",
+                                    "value": "@float(body('Parse_JSON_invoice_details')?['SupplierConnectInvoice']?['Invoice']?['InvoiceHeader']?['Total'])"
+                                }
+                            },
+                            "Set_journalNum": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "journalNum",
+                                    "value": "@body('Create_Header')?['JournalBatchNumber']"
+                                },
+                                "runAfter": {
+                                    "Create_Header": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_error_message_for_header_fail": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "errorMessage",
+                                    "value": "@body('Parse_Header_error_message')?['message']"
+                                },
+                                "runAfter": {
+                                    "Parse_Header_error_message": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_error_message_on_vendor_line_fails": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "errorMessage",
+                                    "value": "@body('Parse_JSON_for_vendor_error_message')?['error']?['innererror']?['message']"
+                                },
+                                "runAfter": {
+                                    "Parse_JSON_for_vendor_error_message": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Execute_action_vend_Name": {
+                                "type": "Http",
+                                "inputs": {
+                                    "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalLines/Microsoft.Dynamics.DataEntities.getFOVendor')}",
+                                    "method": "POST",
+                                    "body": {
+                                        "_value": "@variables('VendAccount')",
+                                        "_dataAreaId": "@variables('CompanyId')"
+                                    },
+                                    "authentication": {
+                                        "type": "ActiveDirectoryOAuth",
+                                        "tenant": "@parameters('TenantId')",
+                                        "audience": "@concat('https://',parameters('D365FO'))",
+                                        "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                        "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                                    },
+                                    "retryPolicy": {
+                                        "type": "fixed",
+                                        "count": 4,
+                                        "interval": "PT5S"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Set_Total": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_vendName": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "VendName",
+                                    "value": "@body('Execute_action_vend_Name')?['value']"
+                                },
+                                "runAfter": {
+                                    "Execute_action_vend_Name": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            }
+                        },
+                        "else": {
+                            "actions": {
+                                "Set_error_message_for_invalid_vendor_account": {
+                                    "type": "SetVariable",
+                                    "inputs": {
+                                        "name": "errorMessage",
+                                        "value": "'D365 vendor number lookup failed'"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Execute_action_to_find_FO_VendAccount": [
+                                "Succeeded",
+                                "TIMEDOUT",
+                                "SKIPPED",
+                                "FAILED"
+                            ]
+                        }
+                    },
+                    "Execute_action_to_find_FO_VendAccount": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalLines/Microsoft.Dynamics.DataEntities.getVendAccount')}",
+                            "method": "POST",
+                            "body": {
+                                "_value": "@variables('VendAccount')",
+                                "_dataAreaId": "@variables('CompanyId')"
+                            },
+                            "authentication": {
+                                "type": "ActiveDirectoryOAuth",
+                                "tenant": "@parameters('TenantId')",
+                                "audience": "@concat('https://',parameters('D365FO'))",
+                                "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                            },
+                            "retryPolicy": {
+                                "type": "fixed",
+                                "count": 4,
+                                "interval": "PT5S"
+                            }
+                        },
+                        "runAfter": {
+                            "Set_VendAccount": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Set_VendAccount": {
+                        "type": "SetVariable",
+                        "inputs": {
+                            "name": "VendAccount",
+                            "value": "@{string(first(body('Filter_InvoiceDetails_By_Supplier_PartnerType'))?['Site']?['SiteCode']?['#text'])}"
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {
+                        "Set_Error_Message_when_no_supplier_found": {
+                            "type": "SetVariable",
+                            "inputs": {
+                                "name": "errorMessage",
+                                "value": "Invoice Details does not have Supplier Invoice"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Filter_InvoiceDetails_By_Supplier_PartnerType": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "OpenInvoicePayLoad": {
+                                "type": "object",
+                                "properties": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

@@ -1,0 +1,158 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "properties": {
+                            "Blobs": {},
+                            "CorrelationId": {
+                                "type": "string"
+                            },
+                            "MessageDate": {
+                                "type": "string"
+                            },
+                            "MessageType": {
+                                "type": "string"
+                            },
+                            "Operation": {
+                                "type": "string"
+                            },
+                            "Payload": {
+                                "properties": {
+                                    "IsFieldTicketStatusUpdatesSupported": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsFieldTicketSubmissionSupported": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "IsStatusUpdate": {
+                                        "type": "boolean"
+                                    },
+                                    "IsSuccessful": {
+                                        "type": "boolean"
+                                    },
+                                    "Message": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "AdditionalMessage": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "RemoteStatus": {}
+                                },
+                                "type": "object"
+                            },
+                            "Source": {
+                                "type": "string"
+                            },
+                            "SourceId": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {},
+                "trackedProperties": {
+                    "CorrelationID": "@{body('Parse_JSON')?['SourceId']}"
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "not": {
+                                "equals": [
+                                    "@body('Parse_JSON')?['Payload']?['Message']",
+                                    "@null"
+                                ]
+                            }
+                        },
+                        {
+                            "equals": [
+                                "@body('Parse_JSON')?['Payload']?['IsStatusUpdate']",
+                                false
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Create_record": {
+                        "type": "ApiConnection",
+                        "inputs": {
+                            "host": {
+                                "connection": {
+                                    "referenceName": "dynamicsax"
+                                }
+                            },
+                            "method": "post",
+                            "body": {
+                                "CorrelationId": "@body('Parse_JSON')?['SourceId']",
+                                "InterfaceType": "@{if(equals(body('Parse_JSON')?['MessageType'],'InvoiceResponse'),'Invoice','FieldTicket')}",
+                                "Message": "@body('Parse_JSON')?['Payload']?['Message']",
+                                "AdditionalMessage": "@body('Parse_JSON')?['Payload']?['AdditionalMessage']",
+                                "MessageDateTime": "@body('Parse_JSON')?['MessageDate']",
+                                "IsSuccess": "@{if(equals(body('Parse_JSON')?['Payload']?['IsSuccessful'],true),'Yes','No')}"
+                            },
+                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent(parameters('D365FO')))}/tables/@{encodeURIComponent(encodeURIComponent('HSInterfaceLogs'))}/items"
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "else": {
+                    "actions": {
+                        "Terminate": {
+                            "type": "Terminate",
+                            "inputs": {
+                                "runStatus": "Cancelled"
+                            },
+                            "runAfter": {}
+                        }
+                    }
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "invoice-delivery",
+                        "subscriptionName": "d365fo",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PrivateServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}

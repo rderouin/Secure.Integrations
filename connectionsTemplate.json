@@ -1,0 +1,374 @@
+{
+  "managedApiConnections": {
+    "dynamicsax": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_1_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_1_RUNTIMEURL')"
+    },
+    "dynamicsax-2": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_2_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_2_RUNTIMEURL')"
+    },
+    "dynamicsax-3": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_3_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_3_RUNTIMEURL')"
+    },
+    "dynamicsax-4": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_4_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_4_RUNTIMEURL')"
+    },
+    "dynamicsax-5": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_5_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_5_RUNTIMEURL')"
+    },
+    "dynamicsax-6": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_6_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_6_RUNTIMEURL')"
+    },
+    "dynamicsax-7": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_7_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_7_RUNTIMEURL')"
+    },
+    "dynamicsax-8": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_8_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_8_RUNTIMEURL')"
+    },
+    "dynamicsax-9": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_9_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_9_RUNTIMEURL')"
+    },
+    "dynamicsax-10": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_10_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_10_RUNTIMEURL')"
+    },
+    "dynamicsax-11": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_11_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_11_RUNTIMEURL')"
+    },
+    "dynamicsax-12": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_12_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_12_RUNTIMEURL')"
+    },
+    "dynamicsax-13": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_13_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_13_RUNTIMEURL')"
+    },
+    "dynamicsax-14": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_14_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_14_RUNTIMEURL')"
+    },
+    "dynamicsax-15": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/dynamicsax"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('DYNAMICS_CONNECTION_15_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('DYNAMICS_CONNECTION_15_RUNTIMEURL')"
+    },
+    "integration_storage": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/azureblob"
+      },  
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+     },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('STORAGE_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('STORAGE_CONNECTION_RUNTIMEURL')"
+    },
+    "office365": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/office365"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('OFFICE_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('OFFICE_CONNECTION_RUNTIMEURL')"
+    },
+    "office365_loadconfirmations": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/office365"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('OFFICELOADCONFIRMATIONS_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('OFFICELOADCONFIRMATIONS_CONNECTION_RUNTIMEURL')"
+    },
+    "sharepoint": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/sharepointonline"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('SHAREPOINT_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('SHAREPOINT_CONNECTION_RUNTIMEURL')"
+    },
+    "sql_hazmat": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/sql"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('SQL_HAZMAT_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('SQL_HAZMAT_CONNECTION_RUNTIMEURL')"
+    },
+    "sql_auditLogging": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/sql"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('SQL_AUDITLOGGING_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('SQL_AUDITLOGGING_CONNECTION_RUNTIMEURL')"
+    },
+    "sql_auditLogging2": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/sql"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('SQL_AUDITLOGGING2_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('SQL_AUDITLOGGING2_CONNECTION_RUNTIMEURL')"
+    },
+    "sqlD365Replica": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/sql"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('sqlD365Replica_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('sqlD365Replica_CONNECTION_RUNTIMEURL')"
+    },
+    "sql_mudtrac": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/sql"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('SQL_MUDTRAC_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('SQL_MUDTRAC_CONNECTION_RUNTIMEURL')"
+    },
+    "keyvault": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/keyvault"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('KEYVAULT_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('KEYVAULT_CONNECTION_RUNTIMEURL')"
+    },
+    "publicServiceBus": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/keyvault"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('PUBLIC_SERVICEBUS_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('PUBLIC_SERVICEBUS_CONNECTION_RUNTIMEURL')"
+    },
+    "privateServiceBus": {
+      "api": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/providers/Microsoft.Web/locations/@appsetting('WORKFLOWS_LOCATION_NAME')/managedApis/keyvault"
+      },
+      "authentication": {
+        "type": "ManagedServiceIdentity"
+      },
+      "connection": {
+        "id": "/subscriptions/@appsetting('WORKFLOWS_SUBSCRIPTION_ID')/resourceGroups/@appsetting('WORKFLOWS_RESOURCE_GROUP_NAME')/providers/Microsoft.Web/connections/@appsetting('PRIVATE_SERVICEBUS_CONNECTION_NAME')"
+      },
+      "connectionRuntimeUrl": "@appsetting('PRIVATE_SERVICEBUS_CONNECTION_RUNTIMEURL')"
+    }
+  },
+    "serviceProviderConnections": {
+        "integration_storage": {
+            "displayName": "IntegrationStorage",
+            "parameterValues": {
+                "connectionString": "@appsetting('INTEGRATION_STORAGE_CONNECTION_STRING')"
+            },
+            "serviceProvider": {
+                "id": "/serviceProviders/AzureBlob"
+            }
+        },
+        "PrivateServiceBus": {
+            "displayName": "PrivateServiceBus",
+            "parameterValues": {
+                "connectionString": "@appsetting('PRIVATE_SERVICE_BUS_CONNECTIONSTRING')"
+            },
+            "serviceProvider": {
+                "id": "/serviceProviders/serviceBus"
+            }
+        },
+        "PublicServiceBus": {
+            "displayName": "PublicServiceBus",
+            "parameterValues": {
+                "connectionString": "@appsetting('PUBLIC_SERVICE_BUS_CONNECTIONSTRING')"
+            },
+            "serviceProvider": {
+                "id": "/serviceProviders/serviceBus"
+            }
+        },
+        "keyVault": {
+          "parameterValues": {
+            "VaultUri": "@appsetting('keyVault_VaultUri')",
+            "authProvider": {
+              "Type": "ActiveDirectoryOAuth",
+              "Authority": "",
+              "Tenant": "@appsetting('WORKFLOWS_TENANT_ID')",
+              "CredentialType": "Secret",
+              "ClientId": "@appsetting('D365_INTEGRATIONS_SP_CLIENTID')",
+              "Secret": "@appsetting('D365_INTEGRATIONS_SP_SECRET')"
+            }
+          },
+          "serviceProvider": {
+            "id": "/serviceProviders/keyVault"
+          },
+          "displayName": "OpenInvoiceCertKeyVault"
+        }
+    }
+  }

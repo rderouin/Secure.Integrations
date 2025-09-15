@@ -1,0 +1,554 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerBody()",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "JournalNum": {
+                                "type": "string"
+                            },
+                            "CompanyId": {
+                                "type": "string"
+                            },
+                            "ImageInvoiceId": {
+                                "type": "string"
+                            },
+                            "Total": {
+                                "type": "string"
+                            },
+                            "InvoiceNumber": {
+                                "type": "string"
+                            },
+                            "InvoiceDate": {
+                                "type": "string"
+                            },
+                            "VendName": {
+                                "type": "string"
+                            },
+                            "ErrorMessage": {
+                                "type": "string"
+                            },
+                            "ErrorLog": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Journal_Posting_Successful_variable": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Validate_Journals_for_Posting": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalHeaders/Microsoft.Dynamics.DataEntities.ledgerJournalPost')}",
+                    "method": "POST",
+                    "body": {
+                        "_journalNum": "@body('Parse_JSON')?['JournalNum']",
+                        "_dataAreaId": "@body('Parse_JSON')?['CompanyId']"
+                    },
+                    "authentication": {
+                        "type": "ActiveDirectoryOAuth",
+                        "tenant": "@parameters('TenantId')",
+                        "audience": "@concat('https://',parameters('D365FO'))",
+                        "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                        "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                    },
+                    "retryPolicy": {
+                        "type": "fixed",
+                        "count": 4,
+                        "interval": "PT5S"
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Check_whether_Journals_are_valid": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@body('Validate_Journals_for_Posting')?['value']",
+                                "Succeeded"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Post_message_to_OI_on_Creation_of_journal": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-post-update",
+                                "message": {
+                                    "contentData": {
+                                        "MessageBody": "D365 journal creation successful: @{body('Parse_JSON')?['JournalNum']}",
+                                        "OIDocumentID": "@body('Parse_JSON')?['ImageInvoiceId']"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_Audit_on_successful_Journal_Creation": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Post_Journals": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalHeaders/Microsoft.Dynamics.DataEntities.postCertifyLedgerJournal')}",
+                            "method": "POST",
+                            "body": {
+                                "_journalNum": "@body('Parse_JSON')?['JournalNum']",
+                                "_dataAreaId": "@body('Parse_JSON')?['CompanyId']"
+                            },
+                            "authentication": {
+                                "type": "ActiveDirectoryOAuth",
+                                "tenant": "@parameters('TenantId')",
+                                "audience": "@concat('https://',parameters('D365FO'))",
+                                "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                            },
+                            "retryPolicy": {
+                                "type": "fixed",
+                                "count": 4,
+                                "interval": "PT5S"
+                            }
+                        },
+                        "runAfter": {
+                            "Post_message_to_OI_on_Creation_of_journal": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Parse_Post_Journals_Response": {
+                        "type": "ParseJson",
+                        "inputs": {
+                            "content": "@body('Post_Journals')?['value']",
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "ErrorMsg": {
+                                        "type": "string"
+                                    },
+                                    "Posted": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        },
+                        "runAfter": {
+                            "Post_Journals": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Check_Posting_Successful": {
+                        "type": "If",
+                        "expression": {
+                            "and": [
+                                {
+                                    "equals": [
+                                        "@bool(body('Parse_Post_Journals_Response')?['Posted'])",
+                                        true
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Post_message_to_OI_on_posting_of_journal": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "open-invoice-post-update",
+                                        "message": {
+                                            "contentData": {
+                                                "MessageBody": "D365 journal posting successful: @{body('Parse_JSON')?['JournalNum']}",
+                                                "OIDocumentID": "@body('Parse_JSON')?['ImageInvoiceId']"
+                                            }
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                }
+                            },
+                            "Send_message_posting_success_Audit": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "open-invoice-audit",
+                                        "message": {
+                                            "contentData": {
+                                                "D365AttachmentAdded": "",
+                                                "D365JENumber": "",
+                                                "D365JournalCreated": "1",
+                                                "D365JournalPosted": "1",
+                                                "InRetryQueue": "",
+                                                "LastUpdated": "@{convertFromUtc(utcNow(), 'Mountain Standard Time')}",
+                                                "MessageBody": "D365 journal creation and posting successful: @{body('Parse_JSON')?['JournalNum']} ",
+                                                "OIApproved": "1",
+                                                "OIDocDataRetrieved": "",
+                                                "OIDocumentID": "@{body('Parse_JSON')?['ImageInvoiceId']}",
+                                                "OIExported": "",
+                                                "OIFutureDatedInvoice": "",
+                                                "OIInvoiceAmount": "@{body('Parse_JSON')?['Total']}",
+                                                "OIInvoiceNumber": "@{body('Parse_JSON')?['ImageInvoiceId']}",
+                                                "OIPOInvoice": "",
+                                                "OIVendor": "@{body('Parse_JSON')?['VendName']}",
+                                                "OIInvoiceDate": "@{body('Parse_JSON')?['InvoiceDate']}",
+                                                "RetryCount": "0",
+                                                "Identifier": "@{workflow()['run']['name']}",
+                                                "WORKFLOW": "@{workflow()['name']}"
+                                            }
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                },
+                                "runAfter": {
+                                    "Post_message_to_OI_on_posting_of_journal": [
+                                        "Succeeded"
+                                    ]
+                                }
+                            },
+                            "Set_Journal_Posting_Variable": {
+                                "type": "SetVariable",
+                                "inputs": {
+                                    "name": "Journal Posting Successful",
+                                    "value": true
+                                },
+                                "runAfter": {
+                                    "Send_message_posting_success_Audit": [
+                                        "SUCCEEDED"
+                                    ]
+                                }
+                            }
+                        },
+                        "else": {
+                            "actions": {}
+                        },
+                        "runAfter": {
+                            "Parse_Post_Journals_Response": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Send_Audit_on_successful_Journal_Creation": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-audit",
+                                "message": {
+                                    "contentData": {
+                                        "D365AttachmentAdded": "",
+                                        "D365JENumber": "@{body('Parse_JSON')?['JournalNum']}",
+                                        "D365JournalCreated": "1",
+                                        "D365JournalPosted": "0",
+                                        "InRetryQueue": "",
+                                        "LastUpdated": "@{convertFromUtc(utcNow(), 'Mountain Standard Time')}",
+                                        "MessageBody": "D365 journal creation successful: @{body('Parse_JSON')?['JournalNum']} ",
+                                        "OIApproved": "1",
+                                        "OIDocDataRetrieved": "",
+                                        "OIDocumentID": "@{body('Parse_JSON')?['ImageInvoiceId']}",
+                                        "OIExported": "",
+                                        "OIFutureDatedInvoice": "",
+                                        "OIInvoiceAmount": "@{body('Parse_JSON')?['Total']}",
+                                        "OIInvoiceNumber": "@{body('Parse_JSON')?['ImageInvoiceId']}",
+                                        "OIPOInvoice": "",
+                                        "OIVendor": "@{body('Parse_JSON')?['VendName']}",
+                                        "OIInvoiceDate": "@{body('Parse_JSON')?['InvoiceDate']}",
+                                        "RetryCount": "0",
+                                        "Identifier": "@{workflow()['run']['name']}",
+                                        "WORKFLOW": "@{workflow()['name']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "Validate_Journals_for_Posting": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Journal_Posting_Successful_variable": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "Journal Posting Successful",
+                            "type": "boolean",
+                            "value": false
+                        }
+                    ]
+                },
+                "runAfter": {}
+            },
+            "Response": {
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                    "statusCode": 200,
+                    "body": {
+                        "Journals Validation": "@string(body('Validate_Journals_for_Posting')?['value'])",
+                        "Journal Posting Successful": "@variables('Journal Posting Successful')"
+                    }
+                },
+                "runAfter": {
+                    "Is_Journals_Invalid_or_Posting_Unsuccessful": [
+                        "SUCCEEDED"
+                    ]
+                }
+            },
+            "Is_Journals_Invalid_or_Posting_Unsuccessful": {
+                "type": "If",
+                "expression": {
+                    "or": [
+                        {
+                            "not": {
+                                "equals": [
+                                    "@body('Validate_Journals_for_Posting')?['value']",
+                                    "Succeeded"
+                                ]
+                            }
+                        },
+                        {
+                            "equals": [
+                                "@variables('Journal Posting Successful')",
+                                false
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "Error_-_Delete_journal_and_lines_": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "@{concat('https://', parameters('D365FO'), '/data/HSVendInvoiceJournalHeaders/Microsoft.Dynamics.DataEntities.deleteJournal')}",
+                            "method": "POST",
+                            "body": {
+                                "_journalNum": "@body('Parse_JSON')?['JournalNum']",
+                                "_dataAreaId": "@body('Parse_JSON')?['CompanyId']"
+                            },
+                            "authentication": {
+                                "type": "ActiveDirectoryOAuth",
+                                "tenant": "@parameters('TenantId')",
+                                "audience": "@concat('https://',parameters('D365FO'))",
+                                "clientId": "@appSetting('D365_API_CLIENT_ID')",
+                                "secret": "@appsetting('D365_API_CLIENT_SECRET')"
+                            },
+                            "retryPolicy": {
+                                "type": "fixed",
+                                "count": 4,
+                                "interval": "PT5S"
+                            }
+                        }
+                    },
+                    "Check_for_retry_condition": {
+                        "type": "If",
+                        "expression": {
+                            "or": [
+                                {
+                                    "contains": [
+                                        "@body('Validate_Journals_for_Posting')?['value']",
+                                        "finished or defined as a header project"
+                                    ]
+                                },
+                                {
+                                    "contains": [
+                                        "@body('Validate_Journals_for_Posting')?['value']",
+                                        "Finished and does not allow recording"
+                                    ]
+                                },
+                                {
+                                    "contains": [
+                                        "@body('Validate_Journals_for_Posting')?['value']",
+                                        "has a hold for"
+                                    ]
+                                }
+                            ]
+                        },
+                        "actions": {
+                            "Send_to_retry_queue": {
+                                "type": "ServiceProvider",
+                                "inputs": {
+                                    "parameters": {
+                                        "entityName": "open-invoice-retry",
+                                        "message": {
+                                            "contentData": {
+                                                "ImageInvoiceId": "@{body('Parse_JSON')?['ImageInvoiceId']}"
+                                            },
+                                            "contentType": "text/plain"
+                                        }
+                                    },
+                                    "serviceProviderConfiguration": {
+                                        "connectionName": "PrivateServiceBus",
+                                        "operationId": "sendMessage",
+                                        "serviceProviderId": "/serviceProviders/serviceBus"
+                                    }
+                                }
+                            }
+                        },
+                        "else": {
+                            "actions": {}
+                        },
+                        "runAfter": {
+                            "Send_comment_to_OI": [
+                                "SUCCEEDED"
+                            ]
+                        }
+                    },
+                    "Send_message_to_audit(topic)_on_creation_of_journal_failed": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-audit",
+                                "message": {
+                                    "contentData": {
+                                        "D365AttachmentAdded": "",
+                                        "D365JENumber": "",
+                                        "D365JournalCreated": "0",
+                                        "D365JournalPosted": "0",
+                                        "InRetryQueue": "",
+                                        "LastUpdated": "@convertFromUtc(utcNow(), 'Mountain Standard Time')",
+                                        "MessageBody": "D365 journal creation failed: @{body('Validate_Journals_for_Posting')?['value']}",
+                                        "OIApproved": "1",
+                                        "OIDocDataRetrieved": "",
+                                        "OIDocumentID": "@{body('Parse_JSON')?['ImageInvoiceId']}",
+                                        "OIExported": "",
+                                        "OIFutureDatedInvoice": "",
+                                        "OIInvoiceAmount": "@{body('Parse_JSON')?['Total']}",
+                                        "OIInvoiceNumber": "@{body('Parse_JSON')?['ImageInvoiceId']}",
+                                        "OIPOInvoice": "",
+                                        "OIVendor": "@{body('Parse_JSON')?['VendName']}",
+                                        "OIInvoiceDate": "@{body('Parse_JSON')?['InvoiceDate']}",
+                                        "RetryCount": "0",
+                                        "Identifier": "@{workflow()['run']['name']}",
+                                        "WORKFLOW": "@{workflow()['name']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Error_-_Delete_journal_and_lines_": [
+                                "Succeeded"
+                            ]
+                        }
+                    },
+                    "Send_comment_to_OI": {
+                        "type": "ServiceProvider",
+                        "inputs": {
+                            "parameters": {
+                                "entityName": "open-invoice-post-update",
+                                "message": {
+                                    "contentData": {
+                                        "MessageBody": "D365 journal creation failed: @{body('Validate_Journals_for_Posting')?['value']}.",
+                                        "OIDocumentID": "@{body('Parse_JSON')?['ImageinvoiceId']}"
+                                    }
+                                }
+                            },
+                            "serviceProviderConfiguration": {
+                                "connectionName": "PrivateServiceBus",
+                                "operationId": "sendMessage",
+                                "serviceProviderId": "/serviceProviders/serviceBus"
+                            }
+                        },
+                        "runAfter": {
+                            "Send_message_to_audit(topic)_on_creation_of_journal_failed": [
+                                "Succeeded"
+                            ]
+                        }
+                    }
+                },
+                "else": {
+                    "actions": {}
+                },
+                "runAfter": {
+                    "Check_whether_Journals_are_valid": [
+                        "SUCCEEDED"
+                    ]
+                }
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {},
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "JournalNum": {
+                                "type": "string"
+                            },
+                            "CompanyId": {
+                                "type": "string"
+                            },
+                            "ImageInvoiceId": {
+                                "type": "string"
+                            },
+                            "Total": {
+                                "type": "string"
+                            },
+                            "InvoiceNumber": {
+                                "type": "string"
+                            },
+                            "InvoiceDate": {
+                                "type": "string"
+                            },
+                            "VendName": {
+                                "type": "string"
+                            },
+                            "ErrorMessage": {
+                                "type": "string"
+                            },
+                            "ErrorLog": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "kind": "Stateful"
+}

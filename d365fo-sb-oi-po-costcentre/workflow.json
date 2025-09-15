@@ -1,0 +1,160 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "actions": {
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@triggerOutputs()?['body']?['contentData']",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "CostCenterNumber": {
+                                "type": "string"
+                            },
+                            "SiteCode": {
+                                "type": "string"
+                            },
+                            "SiteName": {
+                                "type": "string"
+                            },
+                            "RecId": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {}
+            },
+            "HTTP_to_check_for_duplicate": {
+                "type": "Http",
+                "inputs": {
+                    "method": "GET",
+                    "uri": "@{parameters('OIUrl')}/docp/supply-chain/v1/cost-centers/@{body('Parse_JSON')?['CostCenterNumber']}",
+                    "authentication": {
+                        "type": "ClientCertificate",
+                        "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                        "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+                    }
+                },
+                "runAfter": {
+                    "Initialize_siteName": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Condition": {
+                "type": "If",
+                "expression": {
+                    "and": [
+                        {
+                            "equals": [
+                                "@variables('codeVal')",
+                                "404"
+                            ]
+                        }
+                    ]
+                },
+                "actions": {
+                    "HTTP_for_create_CC": {
+                        "type": "Http",
+                        "inputs": {
+                            "method": "POST",
+                            "uri": "@{parameters('OIUrl')}/docp/supply-chain/v1/cost-centers",
+                            "headers": {
+                                "Content-Type": "Application/xml"
+                            },
+                            "body": "<?xml version=\"1.0\"?><CostCenterBatch xmlns=\"http://www.digitaloilfield.com/ocp\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.digitaloilfield.com/ocp file:///Y:/New%20Service%20Delivery/Integration/rembrandt_schemas/CostCenterBatch.xsd\"><CostCenter><CostCenterNumber>@{body('Parse_JSON')?['CostCenterNumber']}</CostCenterNumber><Site><SiteCode SiteCodeType=\"AssignedByBuyer\">@{variables('SiteC')}</SiteCode><SiteName>@{variables('SiteN')}</SiteName></Site><CostCenterType>NOACCT</CostCenterType></CostCenter></CostCenterBatch>",
+                            "authentication": {
+                                "type": "ClientCertificate",
+                                "pfx": "@appSetting('OPEN_INVOICE_API_CERT')",
+                                "password": "@appSetting('OPEN_INVOICE_API_CERT_PASSWORD')"
+                            }
+                        },
+                        "runAfter": {}
+                    }
+                },
+                "runAfter": {
+                    "Initialize_variable": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_variable": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "codeVal",
+                            "type": "string",
+                            "value": "@{body('HTTP_to_check_for_duplicate')?['confirmMessage']?['protocolStatusCode']?['codeValue']}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "HTTP_to_check_for_duplicate": [
+                        "Succeeded",
+                        "TIMEDOUT",
+                        "SKIPPED",
+                        "FAILED"
+                    ]
+                }
+            },
+            "Initialize_siteCode": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SiteC",
+                            "type": "string",
+                            "value": "@{toUpper(body('Parse_JSON')?['SiteCode'])}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Initialize_siteName": {
+                "type": "InitializeVariable",
+                "inputs": {
+                    "variables": [
+                        {
+                            "name": "SiteN",
+                            "type": "string",
+                            "value": "@{concat(body('Parse_JSON')?['SiteName'],' - ',variables('SiteC'))}"
+                        }
+                    ]
+                },
+                "runAfter": {
+                    "Initialize_siteCode": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "triggers": {
+            "When_messages_are_available_in_a_topic_subscription": {
+                "type": "ServiceProvider",
+                "inputs": {
+                    "parameters": {
+                        "topicName": "d365fo-business-events",
+                        "subscriptionName": "oi-apinvoice-costcenter",
+                        "isSessionsEnabled": false
+                    },
+                    "serviceProviderConfiguration": {
+                        "connectionName": "PublicServiceBus",
+                        "operationId": "receiveTopicMessages",
+                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    }
+                },
+                "splitOn": "@triggerOutputs()?['body']"
+            }
+        },
+        "contentVersion": "1.0.0.0",
+        "outputs": {}
+    },
+    "kind": "Stateful"
+}
